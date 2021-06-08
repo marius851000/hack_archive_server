@@ -1,4 +1,3 @@
-use maud::Markup;
 use rocket::{get, response::Redirect, uri};
 
 use crate::RequestData;

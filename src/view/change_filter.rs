@@ -13,7 +13,7 @@ pub fn view_change_filter(data: RequestData) -> Markup {
                 @for (filter_id, filter) in &data.storage.filters.filters {
                     li {
                         (filter.label) b {" hides "}
-                        @if filter.hide.len() == 0 {
+                        @if filter.hide.is_empty() {
                             "no tags "
                         } @else {
                             "the tags "

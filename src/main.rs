@@ -2,14 +2,7 @@
 
 use std::path::PathBuf;
 
-use maud::Markup;
-use pmd_hack_archive_server::{
-    storage::Storage,
-    view,
-    view::{view_change_filter, view_main_page, view_set_filter},
-    RequestData, SiteData,
-};
-use rocket::response::Redirect;
+use pmd_hack_archive_server::{storage::Storage, view, SiteData};
 
 #[macro_use]
 extern crate rocket;

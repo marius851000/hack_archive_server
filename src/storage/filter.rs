@@ -73,13 +73,10 @@ impl Filters {
     }
 
     pub fn get_default(&self) -> Filter {
-        self.filters
-            .get(&self.default)
-            .map(|x| x.clone())
-            .unwrap_or(Filter::default())
+        self.filters.get(&self.default).cloned().unwrap_or_default()
     }
 
     pub fn get(&self, slug: &str) -> Option<Filter> {
-        self.filters.get(slug).map(|x| x.clone())
+        self.filters.get(slug).cloned()
     }
 }

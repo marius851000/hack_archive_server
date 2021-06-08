@@ -54,7 +54,7 @@ impl Storage {
                 .map_err(|e| StorageLoadError::CantGetFileType(e, hack_folder_path.clone()))?;
             if !hack_folder_metadata.is_dir() {
                 return Err(StorageLoadError::NotADirectory(
-                    hack_folder_path.to_path_buf(),
+                    hack_folder_path,
                     hacks_folder.to_path_buf(),
                 ));
             };
