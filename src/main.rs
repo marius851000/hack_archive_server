@@ -22,7 +22,8 @@ fn main() -> anyhow::Result<()> {
             routes![
                 view::view_main_page,
                 view::view_change_filter,
-                view::view_set_filter
+                view::view_set_filter,
+                view::search
             ],
         )
         .launch();

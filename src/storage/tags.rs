@@ -31,4 +31,8 @@ impl Tags {
             }
         }
     }
+
+    pub fn get_hack_for_tag(&self, tag: &Tag) -> Option<&HashSet<String>> {
+        self.tag_list.get(tag)
+    }
 }

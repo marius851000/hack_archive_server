@@ -9,3 +9,6 @@ pub use filter::{Filter, Filters, FiltersLoadError};
 
 mod tags;
 pub use tags::{Tag, Tags};
+
+mod query;
+pub use query::{Query, QueryFiltered, QueryIssue};

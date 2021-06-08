@@ -6,3 +6,6 @@ pub use set_filter::*;
 
 mod main_page;
 pub use main_page::*;
+
+mod search;
+pub use search::*;

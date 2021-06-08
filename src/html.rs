@@ -22,6 +22,12 @@ pub fn add_base(body: Markup, tab_title: &str, data: &RequestData) -> Markup {
                         li {
                             a href="/change_filter" { "current filter : " (data.get_filter().label) }
                         }
+                        li {
+                            form action="/search" {
+                                input name="q" {}
+                                input type="submit" value="🔍" {} //an utf-8 "magnifying glass"
+                            }
+                        }
                     }
                 }
                 "You have the header here..."
