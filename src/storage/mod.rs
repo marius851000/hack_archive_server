@@ -8,4 +8,4 @@ mod filter;
 pub use filter::{Filter, Filters, FiltersLoadError};
 
 mod tags;
-pub use tags::Tags;
+pub use tags::{Tag, Tags};

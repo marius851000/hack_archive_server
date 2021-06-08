@@ -22,14 +22,14 @@ pub enum StorageLoadError {
     #[error("The file name \"{0}\" is an invalid UTF-8 string (sub-file of {:?})")]
     InvalidFilename(String, PathBuf),
     #[error("Can't load filters")]
-    CantLoadFilters(#[from] FiltersLoadError)
+    CantLoadFilters(#[from] FiltersLoadError),
 }
 
 #[derive(Default)]
 pub struct Storage {
     pub hacks: HashMap<String, Hack>,
     pub filters: Filters,
-    pub tags: Tags
+    pub tags: Tags,
 }
 
 impl Storage {
@@ -72,7 +72,11 @@ impl Storage {
         Ok(())
     }
 
-    fn load_hack_from_folder(&mut self, hack_folder_path: &Path, hack_name: &str) -> Result<(), StorageLoadError> {
+    fn load_hack_from_folder(
+        &mut self,
+        hack_folder_path: &Path,
+        hack_name: &str,
+    ) -> Result<(), StorageLoadError> {
         self.add_hack(
             hack_name.to_string(),
             Hack::load_from_folder(hack_folder_path.to_path_buf())
@@ -81,25 +85,16 @@ impl Storage {
         Ok(())
     }
 
-    fn add_hack(&mut self, name: String, hack: Hack) -> Result<(), StorageLoadError>{
+    fn add_hack(&mut self, name: String, hack: Hack) -> Result<(), StorageLoadError> {
         for tag in hack.data.tags.iter() {
-            self.tags.add_tag_if_absent(tag);
-        };
-        self.hacks.insert(
-            name,
-            hack
-        );
+            self.tags.add_hack_with_tag(tag, &name);
+        }
+        self.hacks.insert(name, hack);
         Ok(())
     }
 
     fn load_filters(&mut self, filters_path: &Path) -> Result<(), StorageLoadError> {
         self.filters = Filters::load_from_path(filters_path)?;
-        for (_, filter) in &self.filters.filters {
-            for tag in &filter.hide {
-                self.tags.add_tag_if_absent(tag);
-            }
-        }
         Ok(())
     }
 }
-

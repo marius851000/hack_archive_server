@@ -7,19 +7,19 @@ use std::{
 };
 use thiserror::Error;
 
-use super::Hack;
+use super::{Hack, Tag};
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct Filter {
     pub label: String,
     #[serde(default)]
-    pub hide: Vec<String>,
+    pub hide: Vec<Tag>,
 }
 
 impl Default for Filter {
     fn default() -> Self {
         Self {
-            hide: vec!["suggestive".into(), "explicit".into()],
+            hide: vec![Tag("suggestive".into()), Tag("explicit".into())],
             label: "Default".into(),
         }
     }

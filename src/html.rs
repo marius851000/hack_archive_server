@@ -1,9 +1,9 @@
-use maud::{Markup, html, DOCTYPE};
+use maud::{html, Markup, DOCTYPE};
 
 use crate::RequestData;
 
 pub struct SiteData {
-    pub name: String
+    pub name: String,
 }
 
 pub fn add_base(body: Markup, tab_title: &str, data: &RequestData) -> Markup {
@@ -15,7 +15,14 @@ pub fn add_base(body: Markup, tab_title: &str, data: &RequestData) -> Markup {
             }
             body {
                 header {
-                    "current filter : " (data.get_current_filter().label)
+                    ul {
+                        li {
+                            a href="/" { "main page" }
+                        }
+                        li {
+                            a href="/change_filter" { "current filter : " (data.get_filter().label) }
+                        }
+                    }
                 }
                 "You have the header here..."
                 (body)
