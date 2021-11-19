@@ -1,4 +1,4 @@
-use super::{Filters, FiltersLoadError, Hack, HackLoadError, Tags};
+use super::{Hack, HackLoadError, Tags};
 use std::{
     collections::HashMap,
     fs::metadata,
@@ -17,33 +17,29 @@ pub enum StorageLoadError {
     CantGetFileType(#[source] io::Error, PathBuf),
     #[error("Cant load the hack in the folder {1:?}")]
     CantLoadHack(#[source] HackLoadError, PathBuf),
-    #[error("The file at {0:?} isn't a directory, but is child of the hack storage folder {1:?}")]
-    NotADirectory(PathBuf, PathBuf),
     #[error("The file name \"{0}\" is an invalid UTF-8 string (sub-file of {:?})")]
     InvalidFilename(String, PathBuf),
-    #[error("Can't load filters")]
-    CantLoadFilters(#[from] FiltersLoadError),
 }
 
 #[derive(Default)]
 pub struct Storage {
     pub hacks: HashMap<String, Hack>,
-    pub filters: Filters,
     pub tags: Tags,
 }
 
 impl Storage {
     pub fn load_from_folder(root_folder: &Path) -> Result<Self, StorageLoadError> {
         let hacks_folder = root_folder.join("hacks");
-        let filter_path = root_folder.join("filters.json");
         let mut result = Self::default();
 
         result.load_all_hacks_from_folder(&hacks_folder)?;
-        result.load_filters(&filter_path)?;
         Ok(result)
     }
 
-    fn load_all_hacks_from_folder(&mut self, hacks_folder: &Path) -> Result<(), StorageLoadError> {
+    pub fn load_all_hacks_from_folder(
+        &mut self,
+        hacks_folder: &Path,
+    ) -> Result<(), StorageLoadError> {
         for hack_folder_maybe in std::fs::read_dir(&hacks_folder)
             .map_err(|e| StorageLoadError::CantListFolder(e, hacks_folder.to_path_buf()))?
         {
@@ -53,10 +49,11 @@ impl Storage {
             let hack_folder_metadata = metadata(&hack_folder_path)
                 .map_err(|e| StorageLoadError::CantGetFileType(e, hack_folder_path.clone()))?;
             if !hack_folder_metadata.is_dir() {
-                return Err(StorageLoadError::NotADirectory(
-                    hack_folder_path,
-                    hacks_folder.to_path_buf(),
-                ));
+                println!(
+                    "warning: {:?} isn't a directory (in the hack list folder)",
+                    hack_folder_path
+                );
+                continue;
             };
             let hack_name = match hack_folder.file_name().to_str().map(|x| x.to_string()) {
                 Some(v) => v,
@@ -87,14 +84,9 @@ impl Storage {
 
     fn add_hack(&mut self, name: String, hack: Hack) -> Result<(), StorageLoadError> {
         for tag in hack.data.tags.iter() {
-            self.tags.add_hack_with_tag(tag, &name);
+            self.tags.add_hack_with_tag(tag, name.clone());
         }
         self.hacks.insert(name, hack);
-        Ok(())
-    }
-
-    fn load_filters(&mut self, filters_path: &Path) -> Result<(), StorageLoadError> {
-        self.filters = Filters::load_from_path(filters_path)?;
         Ok(())
     }
 }

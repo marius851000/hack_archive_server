@@ -19,14 +19,14 @@ pub struct Tags {
 }
 
 impl Tags {
-    pub fn add_hack_with_tag(&mut self, tag: &Tag, hack_slug: &String) {
+    pub fn add_hack_with_tag(&mut self, tag: &Tag, hack_slug: String) {
         match self.tag_list.get_mut(tag) {
             Some(hack_set) => {
-                hack_set.insert(hack_slug.to_string());
+                hack_set.insert(hack_slug);
             }
             None => {
                 let mut new_hack_set = HashSet::new();
-                new_hack_set.insert(hack_slug.to_string());
+                new_hack_set.insert(hack_slug);
                 self.tag_list.insert(tag.clone(), new_hack_set);
             }
         }

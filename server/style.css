@@ -1,0 +1,141 @@
+@font-face {
+    font-family: "Oswald Medium";
+    src: url("./Oswald-Medium.ttf");
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background-color: rgb(255, 199, 96);
+}
+
+header {
+    display: flex;
+    background-color: rgb(109, 74, 0);
+}
+
+header a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+main {
+    max-width: 70em;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: rgb(255, 235, 200);
+}
+
+#archivedlink {
+    margin-left: 1em;
+}
+
+#newslink {
+    margin-left: auto;
+    margin-right: 1em;
+}
+
+footer {
+    background-color: rgb(109, 74, 0);
+    color: white;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+footer a {
+    color: rgb(199, 255, 250);
+}
+
+h1 {
+    text-align: center;
+}
+
+.hackdescription {
+    font-style: italic;
+}
+
+.filedescription {
+    font-style: italic;
+}
+
+.person {
+    border-style: solid;
+    border-width: 1px;
+    border-color: blue;
+    background-color: lightblue;
+    color: black;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    margin-right: 0.1em;
+    margin-left: 0.1em;
+}
+
+.tag {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(0, 105, 18);
+    background-color: rgb(175, 223, 184);
+    color: black;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    margin-right: 0.1em;
+    margin-left: 0.1em;
+}
+
+.skytemple {
+    font-family: "Oswald Medium";
+}
+
+.screenshots {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.screenshots img {
+    max-width: 100%;
+    max-width: 30em;
+}
+
+.screenshots img {
+    margin: 0.5em;
+}
+
+.filelist {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.hack {
+    min-width: 20em;
+    border: solid rgb(160, 91, 0);
+    border-width: 3px;
+    background-color: rgb(255, 246, 208);
+    margin: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.hack h4 {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+}
+
+.hack p {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+}
+
+.language {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(105, 0, 82);
+    background-color: rgb(223, 175, 213);
+    color: black;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    margin-right: 0.1em;
+    margin-left: 0.1em;
+}
