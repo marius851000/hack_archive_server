@@ -1,4 +1,6 @@
-use super::{Hack, HackLoadError, Tags};
+use crate::TagInfo;
+
+use super::{Hack, HackLoadError, TagInfoLoadError, Tags};
 use std::{
     collections::HashMap,
     fs::metadata,
@@ -19,19 +21,27 @@ pub enum StorageLoadError {
     CantLoadHack(#[source] HackLoadError, PathBuf),
     #[error("The file name \"{0}\" is an invalid UTF-8 string (sub-file of {:?})")]
     InvalidFilename(String, PathBuf),
+    #[error("Cant load the tag info file at {1:?}")]
+    CantLoadTagInfo(#[source] TagInfoLoadError, PathBuf),
 }
 
-#[derive(Default)]
 pub struct Storage {
     pub hacks: HashMap<String, Hack>,
     pub tags: Tags,
+    pub taginfo: TagInfo,
 }
 
 impl Storage {
     pub fn load_from_folder(root_folder: &Path) -> Result<Self, StorageLoadError> {
+        let taginfo_path = root_folder.join("taginfo.json");
+        let taginfo = TagInfo::load_from_path(&taginfo_path)
+            .map_err(|e| StorageLoadError::CantLoadTagInfo(e, taginfo_path.clone()))?;
+        let mut result = Self {
+            hacks: HashMap::new(),
+            tags: Tags::default(),
+            taginfo,
+        };
         let hacks_folder = root_folder.join("hacks");
-        let mut result = Self::default();
-
         result.load_all_hacks_from_folder(&hacks_folder)?;
         Ok(result)
     }

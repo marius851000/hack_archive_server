@@ -49,6 +49,6 @@ pub async fn index_page(app_data: Data<Arc<AppData>>) -> Markup {
         PageInfo {
             name: "Archive of PMD hacks".into(),
         },
-        &app_data
+        &app_data,
     )
 }

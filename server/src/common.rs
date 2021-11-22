@@ -1,7 +1,7 @@
 use crate::AppData;
-use comrak::{ComrakOptions, markdown_to_html};
-use maud::{Markup, PreEscaped, html};
-use pmd_hack_storage::Hack;
+use comrak::{markdown_to_html, ComrakOptions};
+use maud::{html, Markup, PreEscaped};
+use pmd_hack_storage::{Hack, Tag};
 
 pub struct PageInfo {
     pub name: String,
@@ -51,4 +51,14 @@ pub fn make_hack_list(hacks: &[(String, &Hack)], app_data: &AppData) -> Markup {
 
 pub fn render_markdown(text: &str) -> PreEscaped<String> {
     PreEscaped(markdown_to_html(text, &ComrakOptions::default()))
+}
+
+pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
+    html! {
+        @if let Some(category_data) = app_data.storage.taginfo.get_category_for_hack(tag) {
+            span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (tag.0) }
+        } @else {
+            span class="tag" { (tag.0) }
+        }
+    }
 }

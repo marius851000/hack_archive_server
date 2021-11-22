@@ -14,14 +14,11 @@ mod common;
 pub use common::*;
 use pmd_hack_storage::{Query, Storage};
 
-
-
 use actix_web::get;
 #[get("/Oswald-Medium.ttf")]
 pub async fn oswald() -> &'static [u8] {
     include_bytes!("../Oswald-Medium.ttf")
 }
-
 
 pub struct AppData {
     pub root_url: String,

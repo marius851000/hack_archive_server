@@ -1,7 +1,7 @@
 use actix_web::{App, HttpServer};
 use clap::Parser;
 use pmd_hack_storage::{Query, Storage, Tag};
-use server::{AppData, css_page, file_page, hack_page, index_page, oswald};
+use server::{css_page, file_page, hack_page, index_page, oswald, AppData};
 use std::{path::PathBuf, sync::Arc};
 
 #[derive(Parser, Debug)]

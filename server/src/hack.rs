@@ -8,7 +8,7 @@ use actix_web::{
 };
 use maud::{html, Markup};
 
-use crate::{wrap_page, AppData, PageInfo, render_markdown};
+use crate::{render_markdown, render_tag, wrap_page, AppData, PageInfo};
 
 #[get("/{hack_id}")]
 pub async fn hack_page(
@@ -52,7 +52,7 @@ pub async fn hack_page(
                     "tags : "
                     @for (count, tag) in hack.data.tags.iter().enumerate() {
                         @let remaining = hack.data.tags.len() - count - 1;
-                        span class="tag" { (tag) }
+                        (render_tag(tag, &app_data));
                         @if remaining > 1 {
                             ", "
                         } @else if remaining == 1 {
@@ -121,7 +121,7 @@ pub async fn hack_page(
                                         (rendered)
                                     }
                                 }
-                                
+
                             }*/
                             //TODO: find a good way to present this
                             @if let Some(base) = &file.base {
@@ -156,6 +156,6 @@ pub async fn hack_page(
         PageInfo {
             name: format!("Archive of {}", hack.data.name),
         },
-        &app_data
+        &app_data,
     ))
 }

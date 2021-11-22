@@ -9,3 +9,6 @@ pub use tags::{Tag, Tags};
 
 mod query;
 pub use query::{Query, QueryIssue};
+
+mod taginfo;
+pub use taginfo::{TagInfo, TagInfoLoadError};
