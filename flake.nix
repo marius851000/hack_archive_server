@@ -10,17 +10,17 @@
       naersk-lib = naersk.lib."${system}";
     in rec {
       # `nix build`
-      packages.my-project = naersk-lib.buildPackage {
-        pname = "pmd_hack_server";
+      packages.pmd_hack_archive_server = naersk-lib.buildPackage {
+        pname = "pmd_hack_archive_server";
         root = ./.;
       };
-      defaultPackage = packages.my-project;
+      defaultPackage = packages.pmd_hack_archive_server;
 
       # `nix run`
-      apps.my-project = utils.lib.mkApp {
-        drv = packages.my-project;
+      apps.pmd_hack_archive_server = utils.lib.mkApp {
+        drv = packages.pmd_hack_archive_server;
       };
-      defaultApp = apps.my-project;
+      defaultApp = apps.pmd_hack_archive_server;
 
       # `nix develop`
       devShell = pkgs.mkShell {
