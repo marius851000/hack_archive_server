@@ -55,10 +55,17 @@ pub fn render_markdown(text: &str) -> PreEscaped<String> {
 
 pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
     html! {
-        @if let Some(category_data) = app_data.storage.taginfo.get_category_for_tag_id(tag) {
-            span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (tag.0) }
-        } @else {
-            span class="tag" { (tag.0) }
+        a href=(format!("{}/tagged/{}", app_data.root_url, tag.0)) {
+            @if let Some(single_tag_info) = app_data.storage.taginfo.get_tag(tag) {
+                @let label = single_tag_info.label.as_ref().unwrap_or_else(|| &tag.0);
+                @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(&single_tag_info, tag) {
+                    span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (label) }
+                } @else {
+                    span class="tag" { (label) }
+                }
+            } @else {
+                span class="tag" { (tag.0) }
+            }
         }
     }
 }
@@ -66,7 +73,7 @@ pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
 pub fn render_many_tags(tags: Vec<Tag>, app_data: &AppData) -> Markup {
     let tags = app_data.storage.taginfo.orders_tags(tags);
     html! {
-        p id="tagslist" {
+        p class="tagslist" {
             "tags : "
             @for (count, tag) in tags.iter().enumerate() {
                 @let remaining = tags.len() - count - 1;

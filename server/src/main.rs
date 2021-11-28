@@ -1,7 +1,7 @@
 use actix_web::{App, HttpServer};
 use clap::Parser;
 use pmd_hack_storage::{Query, Storage, Tag};
-use server::{css_page, file_page, hack_page, index_page, oswald, AppData};
+use server::{AppData, css_page, file_page, hack_page, index_page, oswald, tagged_page};
 use std::{path::PathBuf, sync::Arc};
 
 #[derive(Parser, Debug)]
@@ -22,7 +22,7 @@ async fn main() {
     println!("hacks loaded");
 
     let hidden_by_default = vec![(
-        "Hacks marked as being explicitly refused for the SkyTemple hack list".into(),
+        "Hacks marked as being explicitly refused for the SkyTemple hack list for moderation reason".into(),
         Query::AtLeastOneOfTag(vec![Tag("refused-skytemple".into())]),
     )];
 
@@ -38,6 +38,7 @@ async fn main() {
             .service(oswald)
             .service(css_page)
             .service(index_page)
+            .service(tagged_page)
             .service(hack_page)
             .service(file_page)
     })

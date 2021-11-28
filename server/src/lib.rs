@@ -10,8 +10,12 @@ pub use file::file_page;
 mod css;
 pub use css::css_page;
 
+mod tagged;
+pub use tagged::tagged_page;
+
 mod common;
 pub use common::*;
+
 use pmd_hack_storage::{Query, Storage};
 
 use actix_web::get;

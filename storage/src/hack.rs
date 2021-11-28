@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use serde_with::{serde_as, OneOrMany};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -33,20 +32,25 @@ pub struct HackData {
     pub files: Vec<HackFile>,
 }
 
-#[serde_as]
 #[derive(Deserialize)]
 pub struct HackFile {
     pub label: String,
-    #[serde_as(deserialize_as = "OneOrMany<_>")]
-    #[serde(default)]
-    pub language: Vec<String>,
     #[serde(default)]
     pub description: Option<String>,
     #[serde(default)]
-    pub base: Option<String>,
+    pub tags: HashSet<Tag>,
+    #[serde(default)]
+    pub implied_tags: HashSet<Tag>,
     pub filename: String,
 }
 
+impl HackFile {
+    pub fn get_all_tags(&self) -> HashSet<Tag> {
+        let mut r = self.tags.clone();
+        r.extend(self.implied_tags.clone());
+        r
+    }
+}
 #[derive(Error, Debug)]
 pub enum HackLoadError {
     #[error("Can't open the file containing hack data in {1:?}")]
@@ -66,26 +70,15 @@ impl Hack {
         let hack_data_path = folder.join("hack.json");
         let json_file = File::open(&hack_data_path)
             .map_err(|e| HackLoadError::CantOpenFile(e, hack_data_path.clone()))?;
-        let data: HackData = serde_json::from_reader(json_file)
+        let mut data: HackData = serde_json::from_reader(json_file)
             .map_err(|e| HackLoadError::CantParseReadFile(e, hack_data_path.clone()))?;
 
         // add implied tags, ensuring there are no infinite loops and it is recursive
-        let mut implied_tags = HashSet::new();
-        let mut all_tags = data.tags.clone();
-        let mut stack_to_manage: Vec<Tag> = all_tags.iter().map(|x| x.clone()).collect();
-
-        while let Some(tag) = stack_to_manage.pop() {
-            if let Some(info_for_tag) = taginfo.tags.get(&tag) {
-                for implied_tag in &info_for_tag.implies {
-                    if all_tags.get(&implied_tag).is_some() {
-                        continue;
-                    }
-                    implied_tags.insert(implied_tag.clone());
-                    all_tags.insert(implied_tag.clone());
-                    stack_to_manage.push(implied_tag.clone())
-                }
-            }
+        let implied_tags = taginfo.get_implied_tags(&data.tags);
+        for file in data.files.iter_mut() {
+            file.implied_tags = taginfo.get_implied_tags(&file.tags);
         }
+
         Ok(Self {
             data,
             folder,
@@ -130,6 +123,9 @@ impl Hack {
     pub fn all_tags(&self) -> HashSet<Tag> {
         let mut r = self.data.tags.clone();
         r.extend(self.implied_tags.clone());
+        for files in &self.data.files {
+            r.extend(files.implied_tags.clone());
+        }
         r
     }
 }

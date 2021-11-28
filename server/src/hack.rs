@@ -115,27 +115,9 @@ pub async fn hack_page(
 
                             }*/
                             //TODO: find a good way to present this
-                            @if let Some(base) = &file.base {
-                                //TODO: human-compatible name (create a new json file to store this ?)
-                                p { (format!("base rom : {}", base)) }
-                            }
-                            @if !file.language.is_empty() {
-                                p {
-                                    @if file.language.len() == 1 {
-                                        "language"
-                                    } @else {
-                                        "languages"
-                                    }
-                                    " : "
-                                    @for (remaining, language) in file.language.iter().rev().enumerate().rev() {
-                                        span class="language" { (language) }
-                                        @if remaining == 1 {
-                                            " and "
-                                        } @else if remaining > 1 {
-                                            ", "
-                                        }
-                                    }
-                            }
+                            @let file_tags = &file.get_all_tags();
+                            @if !file_tags.is_empty() {
+                                (render_many_tags(file_tags.iter().map(|x| x.clone()).collect(), &app_data))
                             }
                         }
                     }
