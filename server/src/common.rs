@@ -29,6 +29,14 @@ pub fn wrap_page(markup: Markup, page_info: PageInfo, app_data: &AppData) -> Mar
                         " on Discord). This site is not directly affiliated, and not to be confused with the "
                         a href="https://hacks.skytemple.org" { span class="skytemple" {"SkyTemple"} " hack list" } "."
                     }
+                    p {
+                        "Site data can be mirrored with rclone using the http directory at "
+                        a href="https://hacknews.pmdcollab.org/archive" { "hacknews.pmdcollab.org/archive" }
+                        "."
+                    }
+                    p {
+                        "Source code of the site avalaible on " a href="https://github.com/marius851000/hack_archive_server" { "GitHub" } "."
+                    }
                 }
             }
         }
