@@ -6,7 +6,7 @@ use pmd_hack_storage::Query;
 
 use crate::{make_hack_list, wrap_page, AppData, PageInfo};
 
-#[get("")]
+#[get("/")]
 pub async fn index_page(app_data: Data<Arc<AppData>>) -> Markup {
     let unfiltered_hacks = (Query::Difference(
         Box::new(Query::All),
