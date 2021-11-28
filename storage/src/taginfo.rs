@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use std::{
+    cmp::Ordering,
     collections::HashMap,
     fs::File,
     io,
@@ -32,17 +33,32 @@ impl TagInfo {
         Ok(result)
     }
 
-    pub fn get_category_for_hack(&self, hack: &Tag) -> Option<&CategoryInfo> {
-        if let Some(tag) = self.get_tag(hack) {
-            if let Some(category) = self.categories.get(&tag.category) {
-                println!("code !");
+    pub fn get_category_for_tag_id(&self, tag_id: &Tag) -> Option<&CategoryInfo> {
+        if let Some(tag) = self.get_tag(tag_id) {
+            self.get_category_for_single_tag_info(tag, tag_id)
+        } else {
+            println!("tag info for {:?} not found", tag_id);
+            None
+        }
+    }
+
+    pub fn get_category_for_single_tag_info(
+        &self,
+        tag: &SingleTagInfo,
+        tag_id: &Tag,
+    ) -> Option<&CategoryInfo> {
+        if let Some(category_id) = &tag.category {
+            if let Some(category) = self.categories.get(category_id) {
                 Some(category)
             } else {
-                println!("category not found");
+                println!(
+                    "category {:?} for tag {:?} nor found",
+                    &tag.category, tag_id
+                );
                 None
             }
         } else {
-            println!("tag not found");
+            println!("tag info for {:?} doesn't have a category entry", tag_id);
             None
         }
     }
@@ -50,11 +66,45 @@ impl TagInfo {
     pub fn get_tag(&self, tag_id: &Tag) -> Option<&SingleTagInfo> {
         self.tags.get(tag_id)
     }
+
+    fn compare_tag(&self, a_id: &Tag, b_id: &Tag) -> Ordering {
+        let a = self.get_tag(a_id);
+        let b = self.get_tag(b_id);
+        // sort by category
+        let a_category_priority = a.map_or(0, |a| {
+            self.get_category_for_single_tag_info(a, a_id)
+                .map_or(0, |x| x.priority)
+        });
+        let b_catgeory_priority = b.map_or(0, |b| {
+            self.get_category_for_single_tag_info(b, b_id)
+                .map_or(0, |x| x.priority)
+        });
+        match a_category_priority.cmp(&b_catgeory_priority) {
+            Ordering::Equal => (),
+            other => return other.reverse(),
+        };
+        // sort by tag priority
+        let a_priority = a.map_or(0, |x| x.priority);
+        let b_piority = b.map_or(0, |x| x.priority);
+        a_priority.cmp(&b_piority).reverse()
+    }
+
+    pub fn orders_tags(&self, mut tags: Vec<Tag>) -> Vec<Tag> {
+        tags.sort_unstable_by(|a, b| self.compare_tag(a, b));
+        tags
+    }
 }
 
 #[derive(Deserialize)]
 pub struct SingleTagInfo {
-    category: String,
+    #[serde(default)]
+    pub category: Option<String>,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub implies: Vec<Tag>,
+    #[serde(default)]
+    pub priority: u32,
 }
 
 #[derive(Deserialize)]
@@ -62,4 +112,6 @@ pub struct SingleTagInfo {
 pub struct CategoryInfo {
     pub background_color: String,
     pub border_color: String,
+    #[serde(default)]
+    pub priority: u32,
 }

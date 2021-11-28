@@ -8,7 +8,7 @@ use actix_web::{
 };
 use maud::{html, Markup};
 
-use crate::{render_markdown, render_tag, wrap_page, AppData, PageInfo};
+use crate::{render_many_tags, render_markdown, wrap_page, AppData, PageInfo};
 
 #[get("/{hack_id}")]
 pub async fn hack_page(
@@ -47,19 +47,10 @@ pub async fn hack_page(
                 }
             }
 
-            @if !hack.data.tags.is_empty() {
-                p id="tagslist" {
-                    "tags : "
-                    @for (count, tag) in hack.data.tags.iter().enumerate() {
-                        @let remaining = hack.data.tags.len() - count - 1;
-                        (render_tag(tag, &app_data));
-                        @if remaining > 1 {
-                            ", "
-                        } @else if remaining == 1 {
-                            " and "
-                        }
-                    }
-                }
+            @let all_tags = hack.all_tags();
+
+            @if !all_tags.is_empty() {
+                (render_many_tags(all_tags.iter().map(|x| x.clone()).collect(), &app_data))
             }
 
             @if let Some(source) = &hack.data.source {

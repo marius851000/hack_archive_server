@@ -21,16 +21,10 @@ async fn main() {
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
     println!("hacks loaded");
 
-    let hidden_by_default = vec![
-        (
-            "Hacks marked as suggestive".into(),
-            Query::AtLeastOneOfTag(vec![Tag("suggestive".into())]),
-        ),
-        (
-            "Hacks marked as explicit".into(),
-            Query::AtLeastOneOfTag(vec![Tag("explicit".into())]),
-        ),
-    ];
+    let hidden_by_default = vec![(
+        "Hacks marked as being explicitly refused for the SkyTemple hack list".into(),
+        Query::AtLeastOneOfTag(vec![Tag("refused-skytemple".into())]),
+    )];
 
     let app_data = Arc::new(AppData {
         root_url: opts.root_url,
@@ -53,3 +47,6 @@ async fn main() {
     .await
     .unwrap();
 }
+
+//TODO: consider making language hack-wide, and do not tag these in the file
+//TODO: sort tags

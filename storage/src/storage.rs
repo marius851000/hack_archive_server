@@ -86,15 +86,15 @@ impl Storage {
     ) -> Result<(), StorageLoadError> {
         self.add_hack(
             hack_name.to_string(),
-            Hack::load_from_folder(hack_folder_path.to_path_buf())
+            Hack::load_from_folder(hack_folder_path.to_path_buf(), &self.taginfo)
                 .map_err(|e| StorageLoadError::CantLoadHack(e, hack_folder_path.to_path_buf()))?,
         )?;
         Ok(())
     }
 
     fn add_hack(&mut self, name: String, hack: Hack) -> Result<(), StorageLoadError> {
-        for tag in hack.data.tags.iter() {
-            self.tags.add_hack_with_tag(tag, name.clone());
+        for tag in hack.all_tags() {
+            self.tags.add_hack_with_tag(&tag, name.clone());
         }
         self.hacks.insert(name, hack);
         Ok(())

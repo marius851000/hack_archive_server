@@ -9,6 +9,8 @@ use std::{
 };
 use thiserror::Error;
 
+use crate::TagInfo;
+
 use super::Tag;
 
 #[derive(Deserialize)]
@@ -55,19 +57,40 @@ pub enum HackLoadError {
 
 pub struct Hack {
     pub data: HackData,
+    pub implied_tags: HashSet<Tag>,
     pub folder: PathBuf,
 }
 
-//TODO: actually check that all files are referenced would be good and prevent a lot of errors !
-//TODO: the same but check that files exist
 impl Hack {
-    pub fn load_from_folder(folder: PathBuf) -> Result<Self, HackLoadError> {
+    pub fn load_from_folder(folder: PathBuf, taginfo: &TagInfo) -> Result<Self, HackLoadError> {
         let hack_data_path = folder.join("hack.json");
         let json_file = File::open(&hack_data_path)
             .map_err(|e| HackLoadError::CantOpenFile(e, hack_data_path.clone()))?;
         let data: HackData = serde_json::from_reader(json_file)
             .map_err(|e| HackLoadError::CantParseReadFile(e, hack_data_path.clone()))?;
-        Ok(Self { data, folder })
+
+        // add implied tags, ensuring there are no infinite loops and it is recursive
+        let mut implied_tags = HashSet::new();
+        let mut all_tags = data.tags.clone();
+        let mut stack_to_manage: Vec<Tag> = all_tags.iter().map(|x| x.clone()).collect();
+
+        while let Some(tag) = stack_to_manage.pop() {
+            if let Some(info_for_tag) = taginfo.tags.get(&tag) {
+                for implied_tag in &info_for_tag.implies {
+                    if all_tags.get(&implied_tag).is_some() {
+                        continue;
+                    }
+                    implied_tags.insert(implied_tag.clone());
+                    all_tags.insert(implied_tag.clone());
+                    stack_to_manage.push(implied_tag.clone())
+                }
+            }
+        }
+        Ok(Self {
+            data,
+            folder,
+            implied_tags,
+        })
     }
 
     pub fn check_files(&self) {
@@ -102,5 +125,11 @@ impl Hack {
                 self.folder, referenced_files
             );
         }
+    }
+
+    pub fn all_tags(&self) -> HashSet<Tag> {
+        let mut r = self.data.tags.clone();
+        r.extend(self.implied_tags.clone());
+        r
     }
 }

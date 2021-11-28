@@ -55,10 +55,28 @@ pub fn render_markdown(text: &str) -> PreEscaped<String> {
 
 pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
     html! {
-        @if let Some(category_data) = app_data.storage.taginfo.get_category_for_hack(tag) {
+        @if let Some(category_data) = app_data.storage.taginfo.get_category_for_tag_id(tag) {
             span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (tag.0) }
         } @else {
             span class="tag" { (tag.0) }
+        }
+    }
+}
+
+pub fn render_many_tags(tags: Vec<Tag>, app_data: &AppData) -> Markup {
+    let tags = app_data.storage.taginfo.orders_tags(tags);
+    html! {
+        p id="tagslist" {
+            "tags : "
+            @for (count, tag) in tags.iter().enumerate() {
+                @let remaining = tags.len() - count - 1;
+                (render_tag(tag, &app_data));
+                @if remaining > 1 {
+                    ", "
+                } @else if remaining == 1 {
+                    " and "
+                }
+            }
         }
     }
 }
