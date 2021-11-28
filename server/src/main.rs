@@ -1,4 +1,4 @@
-use actix_web::{App, HttpServer};
+use actix_web::{App, HttpServer, web};
 use clap::Parser;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::{AppData, css_page, file_page, hack_page, index_page, oswald, tagged_page};
@@ -12,6 +12,7 @@ pub struct Opts {
     bind_address: String,
     /// base url, shouldn't end with /
     root_url: String,
+    scope: String
 }
 
 #[actix_web::main]
@@ -35,12 +36,15 @@ async fn main() {
     HttpServer::new(move || {
         App::new()
             .data(app_data.clone())
-            .service(oswald)
-            .service(css_page)
-            .service(index_page)
-            .service(tagged_page)
-            .service(hack_page)
-            .service(file_page)
+            .service(
+                web::scope(&opts.scope)
+                    .service(oswald)
+                    .service(css_page)
+                    .service(index_page)
+                    .service(tagged_page)
+                    .service(hack_page)
+                    .service(file_page)
+            )
     })
     .bind(&opts.bind_address)
     .unwrap()
