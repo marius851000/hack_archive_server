@@ -1,7 +1,7 @@
-use actix_web::{App, HttpServer, web};
+use actix_web::{web, App, HttpServer};
 use clap::Parser;
 use pmd_hack_storage::{Query, Storage, Tag};
-use server::{AppData, css_page, file_page, hack_page, index_page, oswald, tagged_page};
+use server::{css_page, file_page, hack_page, index_page, oswald, tagged_page, AppData};
 use std::{path::PathBuf, sync::Arc};
 
 #[derive(Parser, Debug)]
@@ -12,7 +12,7 @@ pub struct Opts {
     bind_address: String,
     /// base url, shouldn't end with /
     root_url: String,
-    scope: String
+    scope: String,
 }
 
 #[actix_web::main]
@@ -22,10 +22,20 @@ async fn main() {
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
     println!("hacks loaded");
 
-    let hidden_by_default = vec![(
-        "Hacks marked as being explicitly refused for the SkyTemple hack list for moderation reason".into(),
+    let hidden_by_default = vec![
+    (
+        "Hacks marked being considered as being likely to be perceived as offensive".into(),
+        Query::AtLeastOneOfTag(vec![Tag("likely-offensive".into())])
+    ),
+    (
+        "Hacks marked as being explicitly refused in the SkyTemple hack list for moderation reason".into(),
         Query::AtLeastOneOfTag(vec![Tag("refused-skytemple".into())]),
-    )];
+    ),
+    (
+        "Merged hack".into(),
+        Query::AtLeastOneOfTag(vec![Tag("deprecated".into())]),
+    )
+    ];
 
     let app_data = Arc::new(AppData {
         root_url: opts.root_url,
@@ -34,17 +44,15 @@ async fn main() {
     });
 
     HttpServer::new(move || {
-        App::new()
-            .data(app_data.clone())
-            .service(
-                web::scope(&opts.scope)
-                    .service(oswald)
-                    .service(css_page)
-                    .service(index_page)
-                    .service(tagged_page)
-                    .service(hack_page)
-                    .service(file_page)
-            )
+        App::new().data(app_data.clone()).service(
+            web::scope(&opts.scope)
+                .service(oswald)
+                .service(css_page)
+                .service(index_page)
+                .service(tagged_page)
+                .service(hack_page)
+                .service(file_page),
+        )
     })
     .bind(&opts.bind_address)
     .unwrap()
