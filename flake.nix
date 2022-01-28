@@ -1,26 +1,22 @@
 {
   inputs = {
     utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:nix-community/naersk";
   };
 
-  outputs = { self, nixpkgs, utils, naersk }:
+  outputs = { self, nixpkgs, utils }:
     utils.lib.eachSystem utils.lib.allSystems (system: let
       pkgs = nixpkgs.legacyPackages."${system}";
-      naersk-lib = naersk.lib."${system}";
     in rec {
       # `nix build`
-      packages.pmd_hack_archive_server = naersk-lib.buildPackage {
-        pname = "pmd_hack_archive_server";
-        root = ./.;
+      packages.pmd_hack_archive_server = pkgs.rustPlatform.buildRustPackage rec {
+        pname = "hacknews-server";
+        version = "0.1.0";
+
+        cargoSha256 = "sha256-KatGlOc7GhoOmo/+uVZSi8uYeg/trIkTmHzGj9KD/XQ=";
+
+        src = ./.;
       };
       defaultPackage = packages.pmd_hack_archive_server;
-
-      # `nix run`
-      apps.pmd_hack_archive_server = utils.lib.mkApp {
-        drv = packages.pmd_hack_archive_server;
-      };
-      defaultApp = apps.pmd_hack_archive_server;
 
       # `nix develop`
       devShell = pkgs.mkShell {
