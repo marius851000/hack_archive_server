@@ -4,7 +4,7 @@
   };
 
   outputs = { self, nixpkgs, utils }:
-    utils.lib.eachSystem utils.lib.allSystems (system: let
+    utils.lib.eachSystem (utils.lib.defaultSystems ++ ["armv7l-linux"]) (system: let
       pkgs = nixpkgs.legacyPackages."${system}";
     in rec {
       # `nix build`
