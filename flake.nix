@@ -12,7 +12,7 @@
         pname = "hacknews-server";
         version = "0.1.0";
 
-        cargoSha256 = "sha256-KatGlOc7GhoOmo/+uVZSi8uYeg/trIkTmHzGj9KD/XQ=";
+        cargoSha256 = "sha256-7zNHqFgrUKYyNEROHAZPsnxgNF2tJJmcF+Ov9/4m4gM=";
 
         src = ./.;
       };

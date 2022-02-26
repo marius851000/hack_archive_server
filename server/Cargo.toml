@@ -10,6 +10,6 @@ maud = { version="0.23.0", features=["actix-web"] }
 actix-web = "3"
 clap = "3.0.0-beta.5"
 actix-files = "0.5.0"
-safe_join = { git = "https://github.com/trailofbits/safe_join.git", rev="40ca21f70bd430a3f7352f231a83bdbc7ee37738"}
+safe_join = { git = "https://github.com/marius851000/safe_join_mirror.git", rev="40ca21f70bd430a3f7352f231a83bdbc7ee37738"}
 comrak = "0.12.1"
 pmd_hack_storage = { path = "../storage" }

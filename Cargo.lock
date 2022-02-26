@@ -1622,7 +1622,7 @@ checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 [[package]]
 name = "safe_join"
 version = "0.1.0"
-source = "git+https://github.com/trailofbits/safe_join.git?rev=40ca21f70bd430a3f7352f231a83bdbc7ee37738#40ca21f70bd430a3f7352f231a83bdbc7ee37738"
+source = "git+https://github.com/marius851000/safe_join_mirror.git?rev=40ca21f70bd430a3f7352f231a83bdbc7ee37738#40ca21f70bd430a3f7352f231a83bdbc7ee37738"
 
 [[package]]
 name = "safemem"
