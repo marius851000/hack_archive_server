@@ -84,7 +84,7 @@ impl Query {
             Query::Intersection(query_1, query_2) => {
                 let (result, mut issues) = query_1.get_list_of_matching_hack(storage);
                 let (result_2, issues_2) = query_2.get_list_of_matching_hack(storage);
-                let result = result.intersection(&result_2).map(|x| x.clone()).collect();
+                let result = result.intersection(&result_2).cloned().collect();
                 issues.extend(issues_2);
                 (result, issues)
             }

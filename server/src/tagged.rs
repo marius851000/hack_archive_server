@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use actix_web::{get, web::{Data, Path}};
+use actix_web::{
+    get,
+    web::{Data, Path},
+};
 use maud::{html, Markup};
 use pmd_hack_storage::{Query, Tag};
 
@@ -12,7 +15,7 @@ pub async fn tagged_page(app_data: Data<Arc<AppData>>, Path(tag_id): Path<String
 
     //TODO: share this code with the index page
     let unfiltered_hacks = (Query::Difference(
-        Box::new(base_query.clone()),
+        Box::new(base_query),
         Box::new(Query::Or(
             app_data
                 .hidden_by_default
@@ -55,7 +58,7 @@ pub async fn tagged_page(app_data: Data<Arc<AppData>>, Path(tag_id): Path<String
             }
         ),
         PageInfo {
-            name: format!("Hack tagged {}", tag_id)
+            name: format!("Hack tagged {}", tag_id),
         },
         &app_data,
     )

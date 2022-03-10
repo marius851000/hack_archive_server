@@ -65,8 +65,8 @@ pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
     html! {
         a href=(format!("{}/tagged/{}", app_data.root_url, tag.0)) {
             @if let Some(single_tag_info) = app_data.storage.taginfo.get_tag(tag) {
-                @let label = single_tag_info.label.as_ref().unwrap_or_else(|| &tag.0);
-                @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(&single_tag_info, tag) {
+                @let label = single_tag_info.label.as_ref().unwrap_or(&tag.0);
+                @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(single_tag_info, tag) {
                     span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (label) }
                 } @else {
                     span class="tag" { (label) }
@@ -85,11 +85,11 @@ pub fn render_many_tags(tags: Vec<Tag>, app_data: &AppData) -> Markup {
             "tags : "
             @for (count, tag) in tags.iter().enumerate() {
                 @let remaining = tags.len() - count - 1;
-                (render_tag(tag, &app_data));
-                @if remaining > 1 {
-                    ", "
-                } @else if remaining == 1 {
-                    " and "
+                (render_tag(tag, app_data));
+                @match remaining {
+                    1 => ", and",
+                    2.. => ", ",
+                    _ => ""
                 }
             }
         }

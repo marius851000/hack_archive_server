@@ -1,5 +1,11 @@
 use serde::Deserialize;
-use std::{cmp::Ordering, collections::{HashMap, HashSet}, fs::File, io, path::{Path, PathBuf}};
+use std::{
+    cmp::Ordering,
+    collections::{HashMap, HashSet},
+    fs::File,
+    io,
+    path::{Path, PathBuf},
+};
 use thiserror::Error;
 
 use crate::Tag;
@@ -88,7 +94,6 @@ impl TagInfo {
         let a_label = a.map_or(&a_id.0, |x| x.label.as_ref().unwrap_or(&a_id.0));
         let b_label = b.map_or(&b_id.0, |x| x.label.as_ref().unwrap_or(&b_id.0));
         a_label.cmp(b_label)
-
     }
 
     pub fn orders_tags(&self, mut tags: Vec<Tag>) -> Vec<Tag> {
@@ -99,12 +104,12 @@ impl TagInfo {
     pub fn get_implied_tags(&self, base_tags: &HashSet<Tag>) -> HashSet<Tag> {
         let mut implied_tags = HashSet::new();
         let mut all_tags = base_tags.clone();
-        let mut stack_to_manage: Vec<Tag> = all_tags.iter().map(|x| x.clone()).collect();
+        let mut stack_to_manage: Vec<Tag> = all_tags.iter().cloned().collect();
 
         while let Some(tag) = stack_to_manage.pop() {
             if let Some(info_for_tag) = self.tags.get(&tag) {
                 for implied_tag in &info_for_tag.implies {
-                    if all_tags.get(&implied_tag).is_some() {
+                    if all_tags.get(implied_tag).is_some() {
                         continue;
                     }
                     implied_tags.insert(implied_tag.clone());
@@ -112,7 +117,7 @@ impl TagInfo {
                     stack_to_manage.push(implied_tag.clone())
                 }
             }
-        };
+        }
 
         all_tags
     }
@@ -129,7 +134,7 @@ pub struct SingleTagInfo {
     #[serde(default)]
     pub priority: u32,
     #[serde(default)]
-    pub label: Option<String>
+    pub label: Option<String>,
 }
 
 #[derive(Deserialize)]

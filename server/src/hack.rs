@@ -38,10 +38,10 @@ pub async fn hack_page(
                     "made by : "
                     @for (remaining, author) in hack.data.authors.iter().rev().enumerate().rev() {
                         span class="person" { (author) }
-                        @if remaining > 1 {
-                            ", "
-                        } @else if remaining == 1 {
-                            " and "
+                        @match remaining {
+                            1 => ", and",
+                            2.. => ", ",
+                            _ => ""
                         }
                     }
                 }
@@ -50,7 +50,7 @@ pub async fn hack_page(
             @let all_tags = hack.all_tags();
 
             @if !all_tags.is_empty() {
-                (render_many_tags(all_tags.iter().map(|x| x.clone()).collect(), &app_data))
+                (render_many_tags(all_tags.iter().cloned().collect(), &app_data))
             }
 
             @if let Some(source) = &hack.data.source {
@@ -117,7 +117,7 @@ pub async fn hack_page(
                             //TODO: find a good way to present this
                             @let file_tags = &file.get_all_tags();
                             @if !file_tags.is_empty() {
-                                (render_many_tags(file_tags.iter().map(|x| x.clone()).collect(), &app_data))
+                                (render_many_tags(file_tags.iter().cloned().collect(), &app_data))
                             }
                         }
                     }
