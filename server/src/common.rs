@@ -1,4 +1,9 @@
-use crate::AppData;
+use crate::{extractor::UserData, AppData};
+use actix_web::{
+    cookie::Cookie,
+    http::{header::ContentType, StatusCode},
+    HttpResponse,
+};
 use comrak::{markdown_to_html, ComrakOptions};
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Tag};
@@ -7,10 +12,16 @@ pub struct PageInfo {
     pub name: String,
 }
 
-pub fn wrap_page(markup: Markup, page_info: PageInfo, app_data: &AppData) -> Markup {
-    html!(
+pub fn wrap_page(
+    markup: Markup,
+    page_info: PageInfo,
+    app_data: &AppData,
+    user_data: UserData,
+) -> HttpResponse {
+    let markup = html!(
         html {
             head {
+                meta charset="utf-8" {}
                 title { (page_info.name) }
                 link rel="stylesheet" href=(format!("{}/style.css", app_data.root_url)) {}
             }
@@ -20,6 +31,24 @@ pub fn wrap_page(markup: Markup, page_info: PageInfo, app_data: &AppData) -> Mar
                     a id="newslink" href="https://hacknews.pmdcollab.org/" { "Return to the news site" }
                 }
                 main {
+                    //TODO: better error message displaying. In particular, separate error from others
+                    @if !user_data.messages.is_empty() {
+                        div class="errorcontainer" {
+                            @if user_data.messages.have_error() {
+                                p {
+                                    "Error occured while generating this page :"
+                                }
+                            }
+                            @for error_message in user_data.messages.messages() {
+                                div class="errormessage" {
+                                    p {
+                                        (error_message.value().clone())
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     (markup)
                 }
                 footer {
@@ -29,6 +58,28 @@ pub fn wrap_page(markup: Markup, page_info: PageInfo, app_data: &AppData) -> Mar
                         " on Discord). This site is not directly affiliated, and not to be confused with the "
                         a href="https://hacks.skytemple.org" { span class="skytemple" {"SkyTemple"} " hack list" } "."
                     }
+                    /*@if let Some(majority_check) = user_data.majority.as_ref() {
+                        p {
+                            @if user_data.have_access_to_major_only_content {
+                                (format!("You are connected with the valid majority token {}.", majority_check.token))
+                            } @else {
+                                "You are connected with the "
+                                b { "invalid" }
+                                " majority token "
+                                (majority_check.token)
+                                "."
+                            }
+                        }
+                    }
+                    form {
+                        label for="majority_code" {
+                            "Majority code ("
+                            a href=(format!("{}/majority", app_data.root_url)) { "more info" }
+                            ") "
+                        }
+                        input type="text" id="majority_code" name="majority_code" {}
+                        input type="submit" value="Submit" {}
+                    }*/
                     p {
                         "Site data can be mirrored with rclone using the http directory at "
                         a href="https://hacknews.pmdcollab.org/archive" { "hacknews.pmdcollab.org/archive" }
@@ -40,7 +91,19 @@ pub fn wrap_page(markup: Markup, page_info: PageInfo, app_data: &AppData) -> Mar
                 }
             }
         }
-    )
+    );
+
+    let markup: String = markup.into();
+    let mut response_builder = HttpResponse::build(StatusCode::OK);
+    let response_builder = response_builder.set(ContentType::html());
+
+    let response_builder = if let Some(token) = user_data.majority_cookie_to_set.as_ref() {
+        response_builder.cookie(Cookie::build("majority_token", token).finish())
+    } else {
+        response_builder
+    };
+
+    response_builder.message_body(markup.into())
 }
 
 pub fn make_hack_list(hacks: &[(String, &Hack)], app_data: &AppData) -> Markup {

@@ -3,14 +3,19 @@ use std::sync::Arc;
 use actix_web::{
     get,
     web::{Data, Path},
+    HttpResponse,
 };
-use maud::{html, Markup};
+use maud::html;
 use pmd_hack_storage::{Query, Tag};
 
-use crate::{make_hack_list, wrap_page, AppData, PageInfo};
+use crate::{extractor::UserData, make_hack_list, wrap_page, AppData, PageInfo};
 
 #[get("/tagged/{tag_id}")]
-pub async fn tagged_page(app_data: Data<Arc<AppData>>, Path(tag_id): Path<String>) -> Markup {
+pub async fn tagged(
+    app_data: Data<Arc<AppData>>,
+    Path(tag_id): Path<String>,
+    user_data: UserData,
+) -> HttpResponse {
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
 
     //TODO: share this code with the index page
@@ -61,5 +66,6 @@ pub async fn tagged_page(app_data: Data<Arc<AppData>>, Path(tag_id): Path<String
             name: format!("Hack tagged {}", tag_id),
         },
         &app_data,
+        user_data,
     )
 }

@@ -4,17 +4,18 @@ use actix_web::{
     error::ErrorNotFound,
     get,
     web::{Data, Path},
-    Result,
+    HttpResponse, Result,
 };
-use maud::{html, Markup};
+use maud::html;
 
-use crate::{render_many_tags, render_markdown, wrap_page, AppData, PageInfo};
+use crate::{extractor::UserData, render_many_tags, render_markdown, wrap_page, AppData, PageInfo};
 
 #[get("/{hack_id}")]
-pub async fn hack_page(
+pub async fn hack(
     app_data: Data<Arc<AppData>>,
     Path(hack_id): Path<String>,
-) -> Result<Markup> {
+    user_data: UserData,
+) -> Result<HttpResponse> {
     let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
         hack
     } else {
@@ -39,9 +40,9 @@ pub async fn hack_page(
                     @for (remaining, author) in hack.data.authors.iter().rev().enumerate().rev() {
                         span class="person" { (author) }
                         @match remaining {
-                            1 => ", and",
+                            1 => " and ",
                             2.. => ", ",
-                            _ => ""
+                            _ => "",
                         }
                     }
                 }
@@ -130,5 +131,6 @@ pub async fn hack_page(
             name: format!("Archive of {}", hack.data.name),
         },
         &app_data,
+        user_data,
     ))
 }

@@ -12,7 +12,7 @@ use safe_join::SafeJoin;
 use crate::AppData;
 
 #[get("/{hack_id}/{filename}")]
-pub async fn file_page(
+pub async fn file(
     app_data: Data<Arc<AppData>>,
     Path((hack_id, filename)): Path<(String, String)>,
 ) -> Result<NamedFile> {

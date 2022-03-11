@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
-use actix_web::{get, web::Data};
-use maud::{html, Markup};
+use actix_web::{get, web::Data, HttpResponse};
+use maud::html;
 use pmd_hack_storage::Query;
 
-use crate::{make_hack_list, wrap_page, AppData, PageInfo};
+use crate::{extractor::UserData, make_hack_list, wrap_page, AppData, PageInfo};
 
 #[get("/")]
-pub async fn index_page(app_data: Data<Arc<AppData>>) -> Markup {
+pub async fn index(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpResponse {
     let unfiltered_hacks = (Query::Difference(
         Box::new(Query::All),
         Box::new(Query::Or(
@@ -50,5 +50,6 @@ pub async fn index_page(app_data: Data<Arc<AppData>>) -> Markup {
             name: "Archive of PMD hacks".into(),
         },
         &app_data,
+        user_data,
     )
 }

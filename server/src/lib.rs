@@ -1,28 +1,13 @@
-mod index;
-pub use index::index_page;
-
-mod hack;
-pub use hack::hack_page;
-
-mod file;
-pub use file::file_page;
-
-mod css;
-pub use css::css_page;
-
-mod tagged;
-pub use tagged::tagged_page;
-
 mod common;
 pub use common::*;
 
-use pmd_hack_storage::{Query, Storage};
+pub mod extractor;
 
-use actix_web::get;
-#[get("/Oswald-Medium.ttf")]
-pub async fn oswald() -> &'static [u8] {
-    include_bytes!("../Oswald-Medium.ttf")
-}
+pub mod pages;
+
+pub mod message;
+
+use pmd_hack_storage::{Query, Storage};
 
 pub struct AppData {
     pub root_url: String,
