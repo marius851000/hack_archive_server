@@ -33,7 +33,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
                         "This code can be delivered by any person that already have a code (of course, they should check themselves the person is major the way they want)."
                     }
                     li {
-                        "I (marius) can also deliver these code. I will just do a quick online check to see if the user is plausibly not a minor (Yep, that's what I consider a sufficient check. But if I go deeper, I'll have to protect personal data. And that's insanely complicated and far more dangerous."
+                        "I (marius) can also deliver these code. I will just do a quick online check to see if the user is plausibly not a minor (Yep, that's what I consider a sufficient check. But if I go deeper, I'll have to protect personal data. And that's insanely complicated and far more dangerous)."
                     }
 
                 }
@@ -46,7 +46,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
 
                 br {}
 
-                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these image. If you live somewhere it's allowed, I encourage you to archive them and to make them avalaible to extend permitted by your laws." }
+                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these hacks. If you live somewhere it's allowed, I encourage you to archive them and to make them avalaible to extend permitted by your laws." }
 
                 br {}
 
