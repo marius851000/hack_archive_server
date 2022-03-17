@@ -19,7 +19,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
 
                 br {}
 
-                "Also, in france, major person are those who are 18 or more. Even if you live in Mali or other country where the majority is sooner than 18 years old. It will be 18 for everyone (also apply for country where the majority is more than 18 years old)"
+                "Also, in France, major person are those who are 18 or more. Even if you live in Mali or other country where the majority is sooner than 18 years old. It will be 18 for everyone (also apply for country where the majority is more than 18 years old)"
 
                 br {}
 
@@ -30,7 +30,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
                         "A user have a unique and personal code allowing they can enter that certify they are major."
                     }
                     li {
-                        "This code can be delivered by any person that already have this code (of course, they should check themselves the person is major the way they want)."
+                        "This code can be delivered by any person that already have a code (of course, they should check themselves the person is major the way they want)."
                     }
                     li {
                         "I (marius) can also deliver these code. I will just do a quick online check to see if the user is plausibly not a minor (Yep, that's what I consider a sufficient check. But if I go deeper, I'll have to protect personal data. And that's insanely complicated and far more dangerous."
