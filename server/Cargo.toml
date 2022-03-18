@@ -9,7 +9,7 @@ edition = "2021"
 maud = { version="0.23.0", features=["actix-web"] }
 actix-web = "3"
 clap = { version="3", features=["derive"] }
-actix-files = "0.5.0"
+actix-files = "0.6.0"
 #TODO: get rid of this safe_join
 safe_join = { git = "https://github.com/marius851000/safe_join_mirror.git", rev="3f541a0222685f45b816a80664bb84ed825b93df"}
 comrak = "0.12.1"
