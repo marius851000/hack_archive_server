@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 maud = { version="0.23.0", features=["actix-web"] }
-actix-web = "3"
+actix-web = "4"
 clap = { version="3", features=["derive"] }
 actix-files = "0.5.0"
 #TODO: get rid of this safe_join
