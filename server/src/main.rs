@@ -1,7 +1,7 @@
 use actix_web::{web, App, HttpServer};
 use clap::Parser;
-use database::MongoDriver;
-use mongodb::options::ClientOptions;
+//use database::MongoDriver;
+//use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{css, file, hack, index, majority, oswald, tagged};
 use server::AppData;
@@ -16,7 +16,7 @@ pub struct Opts {
     /// base url, shouldn't end with /
     root_url: String,
     scope: String,
-    mongo_connection_string: String,
+    //mongo_connection_string: String,
 }
 
 #[actix_web::main]
@@ -47,7 +47,7 @@ async fn main() {
         hidden_by_default,
     });
 
-    let client_options = ClientOptions::parse(&opts.mongo_connection_string)
+    /*let client_options = ClientOptions::parse(&opts.mongo_connection_string)
         .await
         .unwrap();
     let client = mongodb::Client::with_options(client_options).unwrap();
@@ -55,12 +55,12 @@ async fn main() {
     let db = client.database("archivedb");
     let driver = MongoDriver::new(db).await;
 
-    println!("connected to mongodb");
+    println!("connected to mongodb");*/
 
     HttpServer::new(move || {
         App::new()
             .data(app_data.clone())
-            .data(driver.clone())
+            //.data(driver.clone())
             .service(
                 web::scope(&opts.scope)
                     .service(oswald)

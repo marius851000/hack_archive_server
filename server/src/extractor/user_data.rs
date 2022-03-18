@@ -1,13 +1,13 @@
 use std::{future::Future, pin::Pin};
 
-use actix_web::{web::Data, FromRequest, HttpMessage};
-use database::{MajorityCheck, MongoDriver};
+use actix_web::{FromRequest, HttpMessage};
+//use database::{MajorityCheck, MongoDriver};
 use qstring::QString;
 
-use crate::message::{MessageKind, Messages};
+use crate::message::Messages;
 
 pub struct UserData {
-    pub majority: Option<MajorityCheck>,
+    //pub majority: Option<MajorityCheck>,
     pub have_access_to_major_only_content: bool,
     pub messages: Messages,
     pub majority_cookie_to_set: Option<String>,
@@ -26,15 +26,22 @@ impl FromRequest for UserData {
     ) -> Self::Future {
         //TODO: maybe put the majority token in post
         //TODO: button to remove the token
-        let cookie = req.cookie("majority_token");
-        let mongodriver = req.app_data::<Data<MongoDriver>>().unwrap().clone();
+        let _cookie = req.cookie("majority_token");
+        //let mongodriver = req.app_data::<Data<MongoDriver>>().unwrap().clone();
 
         let query_string = QString::from(req.query_string());
-        let parameter_majority_token = query_string
+        let _parameter_majority_token = query_string
             .get("majority_code")
             .map(|code| code.to_string());
 
         Box::pin(async move {
+            Ok(Self {
+                have_access_to_major_only_content: false,
+                messages: Messages::default(),
+                majority_cookie_to_set: None,
+            })
+        })
+        /*Box::pin(async move {
             let mut messages = Messages::default();
             let parameter_majority_token: Option<String> = parameter_majority_token;
             let majority_token: Option<String> =
@@ -100,6 +107,6 @@ impl FromRequest for UserData {
                     None
                 },
             })
-        })
+        })*/
     }
 }

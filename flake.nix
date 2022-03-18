@@ -29,12 +29,16 @@
         # all of that work (e.g. via cachix) when running in CI
         cargoArtifacts = craneLib.buildDepsOnly {
           inherit src;
+          buildInputs = [ pkgs.openssl ];
+          nativeBuildInputs = [ pkgs.pkg-config ];
         };
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
         pmd_hack_archive_server = craneLib.buildPackage {
-          inherit cargoArtifacts src;
+          inherit src cargoArtifacts;
+          buildInputs = [ pkgs.openssl ];
+          nativeBuildInputs = [ pkgs.pkg-config ];
         };
       in
       {
@@ -51,6 +55,8 @@
           pmd_hack_archive_server-clippy = craneLib.cargoClippy {
             inherit cargoArtifacts src;
             cargoClippyExtraArgs = "-- --deny warnings";
+            buildInputs = [ pkgs.openssl ];
+            nativeBuildInputs = [ pkgs.pkg-config ];
           };
 
           # Check formatting
@@ -79,6 +85,8 @@
           nativeBuildInputs = with pkgs; [
             cargo
             rustc
+            openssl
+            pkg-config
           ];
         };
       });
