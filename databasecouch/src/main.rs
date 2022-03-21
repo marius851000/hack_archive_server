@@ -1,7 +1,30 @@
+use std::collections::BTreeSet;
+
 use couch_rs::Client;
+use databasecouch::{model::MajorityToken, FieldWithTime, HackClient};
 
 #[tokio::main]
 async fn main() {
-    let client = Client::new("http://127.0.0.1:5984", "admin", "test").unwrap();
-    client.make_db("users").await.unwrap();
+    let db_client = Client::new("http://127.0.0.1:5984", "admin", "test").unwrap();
+    let hackclient = HackClient::new(db_client).await.unwrap();
+
+    hackclient
+        .save_majority_token(MajorityToken {
+            _id: "testpassword".to_string(),
+            _rev: "".to_string(),
+            certify: BTreeSet::new(),
+            admin_flags: FieldWithTime::new(databasecouch::model::MajorityTokenAdminFlags {
+                can_certify: true,
+                need_certification: false,
+                revoked: false,
+            }),
+            _deleted: None,
+        })
+        .await
+        .unwrap();
+
+    println!(
+        "{:?}",
+        hackclient.get_majority_token("testpassword").await.unwrap()
+    );
 }

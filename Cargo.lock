@@ -695,6 +695,8 @@ name = "databasecouch"
 version = "0.1.0"
 dependencies = [
  "couch_rs",
+ "http",
+ "serde",
  "tokio 1.17.0",
 ]
 
