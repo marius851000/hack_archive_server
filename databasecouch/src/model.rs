@@ -18,6 +18,9 @@ pub struct MajorityToken {
     // Assumed to be append-only
     pub certify: BTreeSet<String>,
     pub admin_flags: FieldWithTime<MajorityTokenAdminFlags>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default = "Vec::default")]
+    pub _conflicts: Vec<MajorityToken>
 }
 
 impl Mergeable for MajorityToken {
@@ -28,6 +31,10 @@ impl Mergeable for MajorityToken {
 
     fn mark_as_deleted(&mut self) {
         self._deleted = Some(true);
+    }
+
+    fn get_conflicts_mut(&mut self) -> &mut Vec<Self> {
+        &mut self._conflicts
     }
 }
 

@@ -19,6 +19,7 @@ async fn main() {
                 revoked: false,
             }),
             _deleted: None,
+            _conflicts: Vec::new(),
         })
         .await
         .unwrap();
