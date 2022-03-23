@@ -691,7 +691,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "databasecouch"
+name = "database"
 version = "0.1.0"
 dependencies = [
  "couch_rs",
