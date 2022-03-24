@@ -4,7 +4,10 @@ use actix_web::{web::Data, FromRequest};
 use database::{model::MajorityToken, HackClient};
 use qstring::QString;
 
-use crate::{message::{MessageKind, Messages}, AppData};
+use crate::{
+    message::{MessageKind, Messages},
+    AppData,
+};
 
 pub struct UserData {
     pub majority: Option<MajorityToken>,
@@ -29,9 +32,9 @@ impl FromRequest for UserData {
                     majority: None,
                     have_access_to_major_only_content: false,
                     messages: Messages::default(),
-                    majority_cookie_to_set: None
+                    majority_cookie_to_set: None,
                 })
-            })
+            });
         }
 
         //TODO: maybe put the majority token in post
