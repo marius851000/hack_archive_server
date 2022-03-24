@@ -66,6 +66,7 @@ pub async fn tagged(
         ),
         PageInfo {
             name: format!("Hack tagged {}", tag_id),
+            discourage_reload: false,
         },
         &app_data,
         user_data,

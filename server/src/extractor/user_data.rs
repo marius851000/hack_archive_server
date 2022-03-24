@@ -12,6 +12,7 @@ use crate::{
 pub struct UserData {
     pub majority: Option<MajorityToken>,
     pub have_access_to_major_only_content: bool,
+    pub can_certify: bool,
     pub messages: Messages,
     pub majority_cookie_to_set: Option<String>,
 }
@@ -31,6 +32,7 @@ impl FromRequest for UserData {
                 Ok(UserData {
                     majority: None,
                     have_access_to_major_only_content: false,
+                    can_certify: false,
                     messages: Messages::default(),
                     majority_cookie_to_set: None,
                 })
@@ -57,7 +59,9 @@ impl FromRequest for UserData {
                     cookie.map(|cookie| cookie.value().to_string())
                 };
 
-            let (majority, have_access_to_major_only_content) = if let Some(majority_token) =
+            let (majority, have_access_to_major_only_content, can_certify) = if let Some(
+                majority_token,
+            ) =
                 majority_token.as_ref()
             {
                 match hackclient.get_majority_token(majority_token).await {
@@ -68,9 +72,10 @@ impl FromRequest for UserData {
                                     .into(),
                                 MessageKind::Error,
                             );
-                            (Some(majority), false)
+                            (Some(majority), false, false)
                         } else {
-                            (Some(majority), true)
+                            let can_certify = majority.admin_flags.get().can_certify;
+                            (Some(majority), true, can_certify)
                         }
                     }
                     Ok(None) => {
@@ -78,7 +83,7 @@ impl FromRequest for UserData {
                             "The provided majority token doesn't exist".into(),
                             MessageKind::Error,
                         );
-                        (None, false)
+                        (None, false, false)
                     }
                     Err(e) => {
                         println!(
@@ -89,15 +94,16 @@ impl FromRequest for UserData {
                         "An (internal ?) error occured while checking wheter you have access to mature content or not. You won't have access to this content. If you need help, contact the author, marius.".into(),
                         MessageKind::Error
                         );
-                        (None, false)
+                        (None, false, false)
                     }
                 }
             } else {
-                (None, false)
+                (None, false, false)
             };
             Ok(Self {
                 majority,
                 have_access_to_major_only_content,
+                can_certify,
                 messages,
                 majority_cookie_to_set: if have_access_to_major_only_content {
                     parameter_majority_token

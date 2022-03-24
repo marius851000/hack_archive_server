@@ -130,6 +130,7 @@ pub async fn hack(
         ),
         PageInfo {
             name: format!("Archive of {}", hack.data.name),
+            discourage_reload: false,
         },
         &app_data,
         user_data,

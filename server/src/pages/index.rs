@@ -48,6 +48,7 @@ pub async fn index(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpRes
         ),
         PageInfo {
             name: "Archive of PMD hacks".into(),
+            discourage_reload: false,
         },
         &app_data,
         user_data,

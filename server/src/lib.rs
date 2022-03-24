@@ -19,6 +19,7 @@ pub struct AppData {
 }
 
 /// Return true if the hack id is illegal (due to being reserved/user for a page)
+/// Currently unused
 pub fn is_illegal_hack_slug(name: &str) -> bool {
     if name.contains('/') {
         true
@@ -29,6 +30,7 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
             "style.css" => true,
             "majority" => true,
             "tagged" => true,
+            "create_majority_token" => true,
 
             //likely to be used
             "faq" => true,

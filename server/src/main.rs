@@ -5,7 +5,7 @@ use database::HackClient;
 //use database::MongoDriver;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
-use server::pages::{css, file, hack, index, majority, oswald, tagged};
+use server::pages::{create_majority_token, css, file, hack, index, majority, oswald, tagged};
 use server::AppData;
 use std::{path::PathBuf, sync::Arc};
 
@@ -21,7 +21,7 @@ pub struct Opts {
     couch_uri: String,
     couch_username: String,
     couch_password: String,
-    /// feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it's just graphical)
+    /// experimental feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it's just graphical)
     #[clap(short, long)]
     use_majority_token: bool,
 }
@@ -75,6 +75,7 @@ async fn main() {
                     .service(css::css)
                     .service(index::index)
                     .service(majority::majority)
+                    .service(create_majority_token::create_majority_token)
                     .service(tagged::tagged)
                     .service(hack::hack)
                     .service(file::file),

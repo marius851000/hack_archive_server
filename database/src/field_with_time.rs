@@ -16,8 +16,10 @@ impl<T: PartialEq + std::fmt::Debug + Clone> FieldWithTime<T> {
     }
 
     pub fn update(&mut self, value: T) {
-        self.0 = value;
-        self.1 = get_timestamp();
+        if self.0 != value {
+            self.0 = value;
+            self.1 = get_timestamp();
+        }
     }
 
     pub fn get(&self) -> &T {
@@ -33,11 +35,9 @@ impl<T: PartialEq + std::fmt::Debug + Clone> FieldWithTime<T> {
     }
 
     pub fn merge(&mut self, other: &Self) {
-        if &self.0 != &other.0 {
-            if other.1 >= self.1 {
-                self.1 = other.1;
-                self.0 = other.0.clone();
-            }
+        if other.1 >= self.1 {
+            self.1 = other.1;
+            self.0 = other.0.clone();
         }
     }
 

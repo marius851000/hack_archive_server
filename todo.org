@@ -4,7 +4,9 @@
 ** TODO Also filter the online-exposed mirrorable archive
 *** TODO First make it generated via the server
 *** TODO Then force the use of a cookie to access major-only rom
+** TODO ability to create a majority token
 ** DONE Make the majority stuff hideable
+* TODO create an appropriate 404 page (and sent it also for hack, tag and filename not found -- maybe with some customisation)
 * TODO CONSIDER moving the hack data to couchdb too
 ** TODO maybe add a new /h/{id} path to get hacks data exclusively for newly added hacks, but still allowing the old path scheme for older hacks (hack data need a version identifier)
 * TODO CONSIDER using a common prefix for "pokemon-mystery-dungeon" and "pmd" prefixed hacks

@@ -49,15 +49,26 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
 
                 br {}
 
-                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these hacks. If you live somewhere it's allowed, I encourage you to archive them and to make them avalaible to extend permitted by your laws." }
+                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these hacks. If you live somewhere it's allowed, feel free to archive them and make them avalaible to the extend permitted by your laws." }
 
                 br {}
 
                 i { "Oh ! And if you know a better solution, I'll be happy to know it too !" }
             }
+
+            @if user_data.majority.is_some() {
+                hr {}
+                p { "You currently have a majority token loaded. More information about it can be found at the bottom of the page." }
+                @if user_data.can_certify {
+                    p { "You can create for another user. You should make sure, in your own way, that they are actually major as in the legal definition in France (more than 18 year). They will themselves be able to create other majority tokens." }
+
+                    a href=(format!("{}/create_majority_token", app_data.root_url)) { "Create a new majority token" }
+                }
+            }
         ),
         PageInfo {
             name: "Info about the majority check".to_string(),
+            discourage_reload: false,
         },
         &app_data,
         user_data,

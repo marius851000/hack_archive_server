@@ -6,6 +6,7 @@ use pmd_hack_storage::{Hack, Tag};
 
 pub struct PageInfo {
     pub name: String,
+    pub discourage_reload: bool,
 }
 
 pub fn wrap_page(
@@ -27,7 +28,7 @@ pub fn wrap_page(
                     a id="newslink" href="https://hacknews.pmdcollab.org/" { "Return to the news site" }
                 }
                 main {
-                    //TODO: better error message displaying. In particular, separate error from others
+                    //TODO: better error message displaying. In particular, separate error from other more generic message
                     @if !user_data.messages.is_empty() {
                         div class="errorcontainer" {
                             @if user_data.messages.have_error() {
@@ -67,15 +68,26 @@ pub fn wrap_page(
                                     "."
                                 }
                             }
+                            @if user_data.can_certify {
+                                p {
+                                    "You can create a token for another user on the "
+                                    a href=(format!("{}/majority, app_data.root_url", app_data.root_url)) { "information page" }
+                                    "."
+                                }
+                            }
                         }
                         form {
-                            label for="majority_token" {
-                                "Majority code ("
-                                a href=(format!("{}/majority", app_data.root_url)) { "more info" }
-                                ") "
+                            @if page_info.discourage_reload {
+                                p { "Go to a non-interactive page to enter a majority token (it would reload the page)."}
+                            } @else {
+                                label for="majority_token" {
+                                    "Majority code ("
+                                    a href=(format!("{}/majority", app_data.root_url)) { "more info" }
+                                    ") "
+                                }
+                                input type="text" id="majority_token" name="majority_token" {}
+                                input type="submit" value="Submit" {}
                             }
-                            input type="text" id="majority_token" name="majority_token" {}
-                            input type="submit" value="Submit" {}
                         }
                     }
                     p {
