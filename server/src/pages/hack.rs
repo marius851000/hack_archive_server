@@ -13,9 +13,10 @@ use crate::{extractor::UserData, render_many_tags, render_markdown, wrap_page, A
 #[get("/{hack_id}")]
 pub async fn hack(
     app_data: Data<Arc<AppData>>,
-    Path(hack_id): Path<String>,
+    path: Path<String>,
     user_data: UserData,
 ) -> Result<HttpResponse> {
+    let hack_id = path.into_inner();
     let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
         hack
     } else {

@@ -19,10 +19,7 @@ pub struct FieldWithTime<T: PartialEq + std::fmt::Debug + Clone>(
 
 impl<T: PartialEq + std::fmt::Debug + Clone> FieldWithTime<T> {
     pub fn new(value: T) -> Self {
-        Self (
-            value,
-            get_timestamp(),
-        )
+        Self(value, get_timestamp())
     }
 
     pub fn update(&mut self, value: T) {

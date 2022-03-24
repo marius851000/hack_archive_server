@@ -44,6 +44,7 @@ impl HackClientError {
     }
 }
 
+#[derive(Clone)]
 pub struct HackClient {
     majority_token: Database,
 }
@@ -55,12 +56,25 @@ impl HackClient {
         })
     }
 
+    pub async fn new_from_connection_info(
+        uri: &str,
+        username: &str,
+        password: &str,
+    ) -> Result<Self, HackClientError> {
+        let client = Client::new(uri, username, password)?;
+        Self::new(client).await
+    }
+
     async fn get_and_resolve_conflict_one<T: TypedCouchDocument + std::fmt::Debug + Mergeable>(
         &self,
         database: &Database,
-        id: DocumentId
+        id: DocumentId,
     ) -> Result<Option<T>, HackClientError> {
-        Ok(self.get_and_resolve_conflict(database, vec![id]).await?.into_iter().next())
+        Ok(self
+            .get_and_resolve_conflict(database, vec![id])
+            .await?
+            .into_iter()
+            .next())
     }
 
     async fn get_and_resolve_conflict<T: TypedCouchDocument + std::fmt::Debug + Mergeable>(
@@ -69,12 +83,9 @@ impl HackClient {
         ids: Vec<DocumentId>,
     ) -> Result<Vec<T>, HackClientError> {
         let potentially_conflicting = database
-            .get_bulk_params::<T>(
-                ids.clone(),
-                Some(QueryParams::default().conflicts(true)),
-            )
+            .get_bulk_params::<T>(ids.clone(), Some(QueryParams::default().conflicts(true)))
             .await?;
-        
+
         let mut resolved_document: Vec<T> = Vec::new();
         'main: for mut document in &mut potentially_conflicting.rows.into_iter() {
             let mut conflicts = document.get_conflicts_mut();
@@ -101,18 +112,18 @@ impl HackClient {
                             return Err(HackClientError::InternalDBError(e));
                         }
                     }
-                };
+                }
                 let new_potentially_conflicting = database
                     .get_bulk_params::<T>(
                         vec![document_id],
                         Some(QueryParams::default().conflicts(true)),
                     )
                     .await?;
-                
+
                 document = match new_potentially_conflicting.total_rows {
                     0 => break 'main,
                     1 => new_potentially_conflicting.rows.get(0).unwrap().clone(),
-                    _ => unreachable!() //TODO:
+                    _ => unreachable!(), //TODO:
                 };
 
                 conflicts = document.get_conflicts_mut();
@@ -143,9 +154,11 @@ impl HackClient {
                                 Some(QueryParams::default().conflicts(true)),
                             )
                             .await?;
-                        
+
                         let mut raw_docs = Vec::new();
-                        if let Some(mut conflicting_document) = conflicting_documents.rows.into_iter().next() {
+                        if let Some(mut conflicting_document) =
+                            conflicting_documents.rows.into_iter().next()
+                        {
                             //merge conflicting documents
                             let mut conflicts = Vec::new();
                             swap(&mut conflicts, conflicting_document.get_conflicts_mut());
@@ -158,7 +171,7 @@ impl HackClient {
                             document.set_rev(conflicting_document.get_rev().as_ref());
                         }
                         raw_docs.push(document.clone());
-                        
+
                         let mut have_problem = false;
                         for result in database.bulk_docs(&mut raw_docs).await? {
                             if let Err(e) = result {

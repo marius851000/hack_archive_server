@@ -1,9 +1,5 @@
 use crate::{extractor::UserData, AppData};
-use actix_web::{
-    cookie::Cookie,
-    http::{header::ContentType, StatusCode},
-    HttpResponse,
-};
+use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Tag};
@@ -58,28 +54,30 @@ pub fn wrap_page(
                         " on Discord). This site is not directly affiliated, and not to be confused with the "
                         a href="https://hacks.skytemple.org" { span class="skytemple" {"SkyTemple"} " hack list" } "."
                     }
-                    /*@if let Some(majority_check) = user_data.majority.as_ref() {
-                        p {
-                            @if user_data.have_access_to_major_only_content {
-                                (format!("You are connected with the valid majority token {}.", majority_check.token))
-                            } @else {
-                                "You are connected with the "
-                                b { "invalid" }
-                                " majority token "
-                                (majority_check.token)
-                                "."
+                    @if app_data.use_majority_token {
+                        @if let Some(majority_check) = user_data.majority.as_ref() {
+                            p {
+                                @if user_data.have_access_to_major_only_content {
+                                    (format!("You are connected with the valid majority token {}.", majority_check._id))
+                                } @else {
+                                    "You are connected with the "
+                                    b { "invalid" }
+                                    " majority token "
+                                    (majority_check._id)
+                                    "."
+                                }
                             }
                         }
-                    }
-                    form {
-                        label for="majority_code" {
-                            "Majority code ("
-                            a href=(format!("{}/majority", app_data.root_url)) { "more info" }
-                            ") "
+                        form {
+                            label for="majority_token" {
+                                "Majority code ("
+                                a href=(format!("{}/majority", app_data.root_url)) { "more info" }
+                                ") "
+                            }
+                            input type="text" id="majority_token" name="majority_token" {}
+                            input type="submit" value="Submit" {}
                         }
-                        input type="text" id="majority_code" name="majority_code" {}
-                        input type="submit" value="Submit" {}
-                    }*/
+                    }
                     p {
                         "Site data can be mirrored with rclone using the http directory at "
                         a href="https://hacknews.pmdcollab.org/archive" { "hacknews.pmdcollab.org/archive" }
@@ -95,15 +93,13 @@ pub fn wrap_page(
 
     let markup: String = markup.into();
     let mut response_builder = HttpResponse::build(StatusCode::OK);
-    let response_builder = response_builder.set(ContentType::html());
+    response_builder.content_type(mime::TEXT_HTML_UTF_8);
 
-    let response_builder = if let Some(token) = user_data.majority_cookie_to_set.as_ref() {
-        response_builder.cookie(Cookie::build("majority_token", token).finish())
-    } else {
-        response_builder
+    if let Some(token) = user_data.majority_cookie_to_set.as_ref() {
+        response_builder.cookie(Cookie::build("majority_token", token).finish());
     };
 
-    response_builder.message_body(markup.into())
+    response_builder.body(markup.into_boxed_str().into_string())
 }
 
 pub fn make_hack_list(hacks: &[(String, &Hack)], app_data: &AppData) -> Markup {

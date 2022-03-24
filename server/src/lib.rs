@@ -15,4 +15,5 @@ pub struct AppData {
     /// String: description of the reason
     /// Query: when does it match
     pub hidden_by_default: Vec<(String, Query)>,
+    pub use_majority_token: bool,
 }

@@ -13,9 +13,11 @@ use crate::{extractor::UserData, make_hack_list, wrap_page, AppData, PageInfo};
 #[get("/tagged/{tag_id}")]
 pub async fn tagged(
     app_data: Data<Arc<AppData>>,
-    Path(tag_id): Path<String>,
+    path: Path<String>,
     user_data: UserData,
 ) -> HttpResponse {
+    let tag_id = path.into_inner();
+
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
 
     //TODO: share this code with the index page

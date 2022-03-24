@@ -20,7 +20,7 @@ pub struct MajorityToken {
     pub admin_flags: FieldWithTime<MajorityTokenAdminFlags>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default = "Vec::default")]
-    pub _conflicts: Vec<MajorityToken>
+    pub _conflicts: Vec<MajorityToken>,
 }
 
 impl Mergeable for MajorityToken {

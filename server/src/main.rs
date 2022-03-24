@@ -1,5 +1,7 @@
+use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use clap::Parser;
+use database::HackClient;
 //use database::MongoDriver;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
@@ -16,10 +18,15 @@ pub struct Opts {
     /// base url, shouldn't end with /
     root_url: String,
     scope: String,
-    //mongo_connection_string: String,
+    couch_uri: String,
+    couch_username: String,
+    couch_password: String,
+    /// feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it's just graphical)
+    #[clap(short, long)]
+    use_majority_token: bool,
 }
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() {
     let opts = Opts::parse();
 
@@ -45,22 +52,23 @@ async fn main() {
         root_url: opts.root_url,
         storage,
         hidden_by_default,
+        use_majority_token: opts.use_majority_token,
     });
 
-    /*let client_options = ClientOptions::parse(&opts.mongo_connection_string)
-        .await
-        .unwrap();
-    let client = mongodb::Client::with_options(client_options).unwrap();
+    let hackclient = HackClient::new_from_connection_info(
+        &opts.couch_uri,
+        &opts.couch_username,
+        &opts.couch_password,
+    )
+    .await
+    .unwrap();
 
-    let db = client.database("archivedb");
-    let driver = MongoDriver::new(db).await;
-
-    println!("connected to mongodb");*/
+    println!("connected to couchdb");
 
     HttpServer::new(move || {
         App::new()
-            .data(app_data.clone())
-            //.data(driver.clone())
+            .app_data(Data::new(app_data.clone()))
+            .app_data(Data::new(hackclient.clone()))
             .service(
                 web::scope(&opts.scope)
                     .service(oswald)

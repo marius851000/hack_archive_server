@@ -1,24 +1,22 @@
-use std::{future::Future, pin::Pin};
+use std::{convert::Infallible, future::Future, pin::Pin};
 
-use actix_web::{FromRequest, HttpMessage};
-//use database::{MajorityCheck, MongoDriver};
+use actix_web::{web::Data, FromRequest};
+use database::{model::MajorityToken, HackClient};
 use qstring::QString;
 
-use crate::message::Messages;
+use crate::message::{MessageKind, Messages};
 
 pub struct UserData {
-    //pub majority: Option<MajorityCheck>,
+    pub majority: Option<MajorityToken>,
     pub have_access_to_major_only_content: bool,
     pub messages: Messages,
     pub majority_cookie_to_set: Option<String>,
 }
 
 impl FromRequest for UserData {
-    type Error = ();
+    type Error = Infallible;
 
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
-
-    type Config = ();
 
     fn from_request(
         req: &actix_web::HttpRequest,
@@ -26,22 +24,15 @@ impl FromRequest for UserData {
     ) -> Self::Future {
         //TODO: maybe put the majority token in post
         //TODO: button to remove the token
-        let _cookie = req.cookie("majority_token");
-        //let mongodriver = req.app_data::<Data<MongoDriver>>().unwrap().clone();
+        let cookie = req.cookie("majority_token");
+        let hackclient = req.app_data::<Data<HackClient>>().unwrap().clone();
 
         let query_string = QString::from(req.query_string());
-        let _parameter_majority_token = query_string
-            .get("majority_code")
+        let parameter_majority_token = query_string
+            .get("majority_token")
             .map(|code| code.to_string());
 
         Box::pin(async move {
-            Ok(Self {
-                have_access_to_major_only_content: false,
-                messages: Messages::default(),
-                majority_cookie_to_set: None,
-            })
-        })
-        /*Box::pin(async move {
             let mut messages = Messages::default();
             let parameter_majority_token: Option<String> = parameter_majority_token;
             let majority_token: Option<String> =
@@ -54,33 +45,25 @@ impl FromRequest for UserData {
             let (majority, have_access_to_major_only_content) = if let Some(majority_token) =
                 majority_token.as_ref()
             {
-                match mongodriver
-                    .get_majority_check_by_token(majority_token)
-                    .await
-                {
-                    Ok(majority) => {
-                        if let Some(majority) = majority {
-                            let have_access =
-                                !majority.sources.is_empty() || !majority.require_source;
-                            if have_access {
-                                messages.add_message_from_string(
-                                    "The provided majority token is valid".into(),
-                                    MessageKind::Error,
-                                );
-                            } else {
-                                messages.add_message_from_string(
-                                "The current token doesn't allow access to mature content. It may have been revoked. Please contact the administrator.".into(),
-                                MessageKind::Error
-                                );
-                            }
-                            (Some(majority), have_access)
-                        } else {
+                match hackclient.get_majority_token(majority_token).await {
+                    Ok(Some(majority)) => {
+                        if majority.admin_flags.get().revoked {
                             messages.add_message_from_string(
-                                "The token provided doesn't exist in the database.".into(),
+                                "The provided majority token has been revoked by an administrator"
+                                    .into(),
                                 MessageKind::Error,
                             );
-                            (None, false)
+                            (Some(majority), false)
+                        } else {
+                            (Some(majority), true)
                         }
+                    }
+                    Ok(None) => {
+                        messages.add_message_from_string(
+                            "The provided majority token doesn't exist".into(),
+                            MessageKind::Error,
+                        );
+                        (None, false)
                     }
                     Err(e) => {
                         println!(
@@ -107,6 +90,6 @@ impl FromRequest for UserData {
                     None
                 },
             })
-        })*/
+        })
     }
 }

@@ -1,0 +1,7 @@
+* majority token
+** TODO Allow to disconnect from the majority token
+** TODO Handle token revokation
+** TODO Also filter the online-exposed mirrorable archive
+*** TODO First make it generated via the server
+*** TODO Then force the use of a cookie to access major-only rom
+** TODO Make the majority stuff hideable

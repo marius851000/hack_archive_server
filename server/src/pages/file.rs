@@ -12,10 +12,8 @@ use safe_join::SafeJoin;
 use crate::AppData;
 
 #[get("/{hack_id}/{filename}")]
-pub async fn file(
-    app_data: Data<Arc<AppData>>,
-    Path((hack_id, filename)): Path<(String, String)>,
-) -> Result<NamedFile> {
+pub async fn file(app_data: Data<Arc<AppData>>, path: Path<(String, String)>) -> Result<NamedFile> {
+    let (hack_id, filename) = path.into_inner();
     let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
         hack
     } else {
