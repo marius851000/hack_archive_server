@@ -1,10 +1,10 @@
-use std::{convert::Infallible, future::Future, pin::Pin};
+use std::{convert::Infallible, future::Future, pin::Pin, sync::Arc};
 
 use actix_web::{web::Data, FromRequest};
 use database::{model::MajorityToken, HackClient};
 use qstring::QString;
 
-use crate::message::{MessageKind, Messages};
+use crate::{message::{MessageKind, Messages}, AppData};
 
 pub struct UserData {
     pub majority: Option<MajorityToken>,
@@ -22,6 +22,18 @@ impl FromRequest for UserData {
         req: &actix_web::HttpRequest,
         _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
+        let app_data = req.app_data::<Data<Arc<AppData>>>().unwrap().clone();
+        if !app_data.use_majority_token {
+            return Box::pin(async move {
+                Ok(UserData {
+                    majority: None,
+                    have_access_to_major_only_content: false,
+                    messages: Messages::default(),
+                    majority_cookie_to_set: None
+                })
+            })
+        }
+
         //TODO: maybe put the majority token in post
         //TODO: button to remove the token
         let cookie = req.cookie("majority_token");

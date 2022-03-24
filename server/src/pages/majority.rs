@@ -1,12 +1,15 @@
 use std::sync::Arc;
 
-use actix_web::{get, web::Data, HttpResponse};
+use actix_web::{get, web::Data, HttpResponse, http::StatusCode};
 use maud::html;
 
 use crate::{extractor::UserData, wrap_page, AppData, PageInfo};
 
 #[get("/majority")]
 pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpResponse {
+    if !app_data.use_majority_token {
+        return HttpResponse::new(StatusCode::NOT_IMPLEMENTED)
+    }
     wrap_page(
         html!(
             h1 { "Information about the majority check" }
