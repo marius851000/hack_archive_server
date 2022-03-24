@@ -1,4 +1,6 @@
 mod client;
+use std::time::{SystemTime, Duration};
+
 pub use client::{HackClient, HackClientError};
 
 pub mod model;
@@ -14,4 +16,11 @@ pub trait Mergeable: Sized + Clone {
     fn mark_as_deleted(&mut self);
 
     fn get_conflicts_mut(&mut self) -> &mut Vec<Self>;
+}
+
+pub(crate) fn get_timestamp() -> u64 {
+    let time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or(Duration::ZERO);
+    time.as_secs()
 }

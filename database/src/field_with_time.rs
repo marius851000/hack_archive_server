@@ -1,20 +1,13 @@
-use std::time::{Duration, SystemTime};
-
 use serde::{Deserialize, Serialize};
 
-fn get_timestamp() -> u64 {
-    let time = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or(Duration::ZERO);
-    time.as_secs()
-}
+use crate::get_timestamp;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FieldWithTime<T: PartialEq + std::fmt::Debug + Clone>(
     /// current value
-    T,
+    pub T,
     /// timestamp at which the current value was set
-    u64,
+    pub u64,
 );
 
 impl<T: PartialEq + std::fmt::Debug + Clone> FieldWithTime<T> {
@@ -40,9 +33,11 @@ impl<T: PartialEq + std::fmt::Debug + Clone> FieldWithTime<T> {
     }
 
     pub fn merge(&mut self, other: &Self) {
-        if other.1 >= self.1 {
-            self.1 = other.1;
-            self.0 = other.0.clone();
+        if &self.0 != &other.0 {
+            if other.1 >= self.1 {
+                self.1 = other.1;
+                self.0 = other.0.clone();
+            }
         }
     }
 
