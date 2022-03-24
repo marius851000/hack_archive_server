@@ -1063,7 +1063,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "maud"
 version = "0.23.0"
-source = "git+https://github.com/lambda-fairy/maud.git?rev=e6787cd62165a075c7f16a32f8bbacc398f52d13#e6787cd62165a075c7f16a32f8bbacc398f52d13"
+source = "git+https://github.com/marius851000/maud.git?rev=27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac#27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac"
 dependencies = [
  "actix-web",
  "futures-util",
@@ -1074,7 +1074,7 @@ dependencies = [
 [[package]]
 name = "maud_macros"
 version = "0.23.0"
-source = "git+https://github.com/lambda-fairy/maud.git?rev=e6787cd62165a075c7f16a32f8bbacc398f52d13#e6787cd62165a075c7f16a32f8bbacc398f52d13"
+source = "git+https://github.com/marius851000/maud.git?rev=27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac#27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
