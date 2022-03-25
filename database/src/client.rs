@@ -4,12 +4,17 @@ use couch_rs::{
     database::Database,
     document::TypedCouchDocument,
     error::CouchError,
-    types::{document::DocumentId, query::QueryParams},
+    types::{
+        document::{DocumentCreatedDetails, DocumentId},
+        query::QueryParams,
+    },
     Client,
 };
 use http::StatusCode;
+use serde_json::json;
+use uuid::Uuid;
 
-use crate::{model::MajorityToken, Mergeable};
+use crate::{get_timestamp, model::MajorityToken, Mergeable};
 
 #[derive(Debug)]
 pub enum HackClientError {
@@ -47,12 +52,15 @@ impl HackClientError {
 #[derive(Clone)]
 pub struct HackClient {
     majority_token: Database,
+    /// A database logging resolution of conflict, for debugging purpose. Is only written to.
+    conflict_log: Database,
 }
 
 impl HackClient {
     pub async fn new(db_client: Client) -> Result<Self, HackClientError> {
         Ok(Self {
             majority_token: db_client.db("majority_token").await?,
+            conflict_log: db_client.db("conflict_log").await?,
         })
     }
 
@@ -63,6 +71,26 @@ impl HackClient {
     ) -> Result<Self, HackClientError> {
         let client = Client::new(uri, username, password)?;
         Self::new(client).await
+    }
+
+    async fn log_handled_conflict<T: TypedCouchDocument>(
+        &self,
+        db_name: &str,
+        raw_docs: &[T],
+        conflicting_docs: Vec<T>,
+    ) -> Result<DocumentCreatedDetails, HackClientError> {
+        Ok(self
+            .conflict_log
+            .save(&mut json!(
+                {
+                    "_id": Uuid::new_v4(),
+                    "db": db_name,
+                    "timestamp": get_timestamp(),
+                    "raw_docs": raw_docs,
+                    "conflicting_docs": conflicting_docs
+                }
+            ))
+            .await?)
     }
 
     async fn get_and_resolve_conflict_one<T: TypedCouchDocument + std::fmt::Debug + Mergeable>(
@@ -89,22 +117,28 @@ impl HackClient {
         let mut resolved_document: Vec<T> = Vec::new();
         'main: for mut document in &mut potentially_conflicting.rows.into_iter() {
             let mut conflicts = document.get_conflicts_mut();
+            //TODO: try to put some of this in common with the save conflict resolution
             while !conflicts.is_empty() {
-                println!("way ! An iteration of this conflict resolver");
                 // conflict. Let's resolve it before answering
                 let mut empty_conflicts = Vec::new();
                 swap(&mut empty_conflicts, conflicts);
                 let conflict_owned = empty_conflicts;
 
                 let document_id = document.get_id().to_string();
+                let mut logged_conflicts = Vec::new();
 
                 let mut raw_docs: Vec<T> = Vec::new();
                 for mut other_document in conflict_owned.into_iter() {
+                    logged_conflicts.push(other_document.clone());
                     document.merge(&other_document);
                     other_document.mark_as_deleted();
                     raw_docs.push(other_document);
                 }
+                logged_conflicts.push(document.clone());
                 raw_docs.push(document);
+
+                self.log_handled_conflict(database.name(), &raw_docs, logged_conflicts)
+                    .await?;
 
                 for result in database.bulk_docs(&mut raw_docs).await? {
                     if let Err(e) = result {
@@ -156,6 +190,9 @@ impl HackClient {
                             .await?;
 
                         let mut raw_docs = Vec::new();
+                        let mut logged_conflicts = Vec::new();
+                        logged_conflicts.push(document.clone());
+
                         if let Some(mut conflicting_document) =
                             conflicting_documents.rows.into_iter().next()
                         {
@@ -163,14 +200,19 @@ impl HackClient {
                             let mut conflicts = Vec::new();
                             swap(&mut conflicts, conflicting_document.get_conflicts_mut());
                             for mut conflict_doc in conflicts {
+                                logged_conflicts.push(conflict_doc.clone());
                                 document.merge(&conflict_doc);
                                 conflict_doc.mark_as_deleted();
                                 raw_docs.push(conflict_doc);
                             }
+                            logged_conflicts.push(conflicting_document.clone());
                             document.merge(&conflicting_document);
                             document.set_rev(conflicting_document.get_rev().as_ref());
                         }
                         raw_docs.push(document.clone());
+
+                        self.log_handled_conflict(database.name(), &raw_docs, logged_conflicts)
+                            .await?;
 
                         let mut have_problem = false;
                         for result in database.bulk_docs(&mut raw_docs).await? {
