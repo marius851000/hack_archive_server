@@ -1,8 +1,13 @@
-use std::sync::Arc;
+use std::{collections::BTreeSet, sync::Arc};
 
 use actix_web::{get, web::Data, HttpResponse};
-use database::get_timestamp;
+use database::{
+    get_timestamp,
+    model::{MajorityToken, MajorityTokenAdminFlags},
+    FieldWithTime, HackClient, HackClientError,
+};
 use maud::html;
+use rand::{distributions::Alphanumeric, Rng};
 
 use crate::{extractor::UserData, wrap_page, AppData, PageInfo};
 
@@ -11,7 +16,8 @@ const TITLE: &str = "new majority token";
 #[get("/create_majority_token")]
 pub async fn create_majority_token(
     app_data: Data<Arc<AppData>>,
-    user_data: UserData,
+    hack_client: Data<HackClient>,
+    mut user_data: UserData,
 ) -> HttpResponse {
     fn get_error_response(
         message: &str,
@@ -33,13 +39,105 @@ pub async fn create_majority_token(
         )
     }
 
-    if let Some(token) = &user_data.majority {
+    fn get_hack_client_error_response_and_log_error(
+        error: HackClientError,
+        app_data: &AppData,
+        user_data: UserData,
+    ) -> HttpResponse {
+        //TODO: pretty print of error
+        log::error!(
+            "An error occured communicating with the database while adding a new token : {:?}",
+            error
+        );
+        get_error_response(
+            "An error occured while communicating with the database. Something is wrong with this server.",
+            false,
+            app_data,
+            user_data
+        )
+    }
+
+    if let Some(majority_token) = &mut user_data.majority {
         if user_data.can_certify {
-            if get_timestamp() > token.latest_certification_timestamp + 10 {
+            if get_timestamp() > majority_token.latest_certification_timestamp + 10 {
+                let mut remaining_max_loop: u8 = 100;
+                let new_token_id = loop {
+                    remaining_max_loop = remaining_max_loop.saturating_sub(1);
+                    if remaining_max_loop == 0 {
+                        log::error!("Not able to generate a majority token in less than 100 iteration. Something is certainly wrong !");
+                        return get_error_response(
+                            "Unable to generate a unused token. Somethin on the server is certainly horrible wrong",
+                            false,
+                            &app_data, user_data);
+                    };
+                    let token: String = rand::thread_rng()
+                        .sample_iter(&Alphanumeric)
+                        .take(16)
+                        .map(char::from)
+                        .collect();
+                    match hack_client.get_majority_token(&token).await {
+                        Ok(Some(_)) => continue,
+                        Ok(None) => break token,
+                        Err(e) => {
+                            return get_hack_client_error_response_and_log_error(
+                                e, &app_data, user_data,
+                            )
+                        }
+                    };
+                };
+
+                // 1. add the token to the list of certified token by the current user
+                majority_token.certify.insert(new_token_id.clone());
+                majority_token.latest_certification_timestamp = get_timestamp();
+                match hack_client
+                    .save_majority_token(majority_token.clone())
+                    .await
+                {
+                    Ok(_) => (),
+                    Err(e) => {
+                        return get_hack_client_error_response_and_log_error(
+                            e, &app_data, user_data,
+                        )
+                    }
+                };
+                // 2. Create the certified
+                let new_token = MajorityToken {
+                    _id: new_token_id.clone(),
+                    _rev: String::new(),
+                    _deleted: None,
+                    certify: BTreeSet::new(),
+                    admin_flags: FieldWithTime::new(MajorityTokenAdminFlags {
+                        can_certify: true,
+                        need_certification: true,
+                        revoked: false,
+                    }),
+                    latest_certification_timestamp: 0,
+                    _conflicts: Vec::new(),
+                };
+                match hack_client.save_majority_token(new_token).await {
+                    Ok(_) => (),
+                    Err(e) => {
+                        return get_hack_client_error_response_and_log_error(
+                            e, &app_data, user_data,
+                        )
+                    }
+                }
+
+                log::info!(
+                    "new majority token created by {} : {}",
+                    majority_token._id,
+                    new_token_id
+                );
+
                 wrap_page(
                     html!(
                         h1 { (TITLE) }
-                        p { "you can certify a user. TODO" }
+                        p { "New majority token created. Share it with the user you certified have more than 18 years, and keep using your own token." }
+
+                        p { "The other person will be able to use it to accept hacks restricting to major user." }
+                        p { "The token is "
+                            b { (new_token_id) }
+                        }
                     ),
                     PageInfo {
                         name: TITLE.to_string(),
@@ -52,7 +150,10 @@ pub async fn create_majority_token(
                 get_error_response(
                     &format!(
                         "Too soon. You will be able to create a new token in {} seconds",
-                        get_timestamp() - token.latest_certification_timestamp + 10
+                        majority_token
+                            .latest_certification_timestamp
+                            .saturating_add(10)
+                            .saturating_sub(get_timestamp())
                     ),
                     true,
                     &app_data,

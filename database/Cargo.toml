@@ -9,4 +9,5 @@ edition = "2021"
 couch_rs = "0.8.36"
 tokio = { version = "1.16.1", features = ["full"] }
 http = "0.2.6"
-serde = { version = "1.0", features = ["derive"] }  
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4.16"

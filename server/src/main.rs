@@ -28,6 +28,8 @@ pub struct Opts {
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
+
     let opts = Opts::parse();
 
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();

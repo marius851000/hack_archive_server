@@ -71,7 +71,7 @@ pub fn wrap_page(
                             @if user_data.can_certify {
                                 p {
                                     "You can create a token for another user on the "
-                                    a href=(format!("{}/majority, app_data.root_url", app_data.root_url)) { "information page" }
+                                    a href=(format!("{}/majority", app_data.root_url)) { "information page" }
                                     "."
                                 }
                             }

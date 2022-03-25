@@ -12,6 +12,7 @@ pub struct MajorityToken {
     pub _id: DocumentId,
     #[serde(skip_serializing_if = "String::is_empty")]
     pub _rev: String,
+    //TODO: user just bool instead of Option. false do nothing and is skipped
     #[serde(skip_serializing_if = "Option::is_none")]
     pub _deleted: Option<bool>,
     /// The list of user this majority token has certified
