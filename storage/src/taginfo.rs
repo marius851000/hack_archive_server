@@ -48,6 +48,7 @@ impl TagInfo {
         tag_id: &Tag,
     ) -> Option<&CategoryInfo> {
         if let Some(category_id) = &tag.category {
+            #[allow(clippy::needless_match)]
             if let Some(category) = self.categories.get(category_id) {
                 Some(category)
             } else {

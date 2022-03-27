@@ -190,8 +190,7 @@ impl HackClient {
                             .await?;
 
                         let mut raw_docs = Vec::new();
-                        let mut logged_conflicts = Vec::new();
-                        logged_conflicts.push(document.clone());
+                        let mut logged_conflicts = vec![document.clone()];
 
                         if let Some(mut conflicting_document) =
                             conflicting_documents.rows.into_iter().next()
