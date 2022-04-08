@@ -49,7 +49,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
 
                 br {}
 
-                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these hacks. If you live somewhere it's allowed, feel free to archive them and make them avalaible to the extend permitted by your laws." }
+                i { "Also, French laws outlaw child pornography (including representation of this. I'm happy JCATQFTUO didn't did that), so I won't archive these hacks." }
 
                 br {}
 
