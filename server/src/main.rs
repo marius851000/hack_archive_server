@@ -36,18 +36,22 @@ async fn main() {
     println!("hacks loaded");
 
     let hidden_by_default = vec![
-    (
-        "Hacks marked being considered as being likely to be perceived as offensive".into(),
-        Query::AtLeastOneOfTag(vec![Tag("likely-offensive".into())])
-    ),
-    (
-        "Hacks marked as being explicitly refused in the SkyTemple hack list for moderation reason".into(),
-        Query::AtLeastOneOfTag(vec![Tag("refused-skytemple".into())]),
-    ),
-    (
-        "Merged hack".into(),
-        Query::AtLeastOneOfTag(vec![Tag("deprecated".into())]),
-    )
+        (
+            "Hacks marked being considered as being likely to be perceived as offensive".into(),
+            Query::AtLeastOneOfTag(vec![Tag("likely-offensive".into())])
+        ),
+        (
+            "Hacks marked as being explicitly refused in the SkyTemple hack list for moderation reason".into(),
+            Query::AtLeastOneOfTag(vec![Tag("refused-skytemple".into())]),
+        ),
+        (
+            "Merged hack".into(),
+            Query::AtLeastOneOfTag(vec![Tag("deprecated".into())]),
+        ),
+        (
+            "Hacks marked as being reserved to major person (contain pornography)".into(),
+            Query::AtLeastOneOfTag(vec![Tag("majoronly".into())]),
+        )
     ];
 
     let app_data = Arc::new(AppData {

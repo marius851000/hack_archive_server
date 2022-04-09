@@ -16,7 +16,7 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
             p {
                 "This website contain some content that enter in the definition given by the French penal code 227-14 (just pornographic content, but that will change when the need happen) ("
                 a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044394218" { "read in french" }
-                "). The law also include \"message with a violent character, incitation to terrorism, pornographic, including those involving one or many animals, the hability to deeply infringe human dignity or inciting minor to commit physically dangerous games".
+                "). The law also include \"message with a violent character, incitation to terrorism, pornographic, including those involving one or many animals, the ability to deeply infringe human dignity or inciting minor to commit physically dangerous games".
 
                 "These content shouldn't be able to be seen by minor. That is why I included a (rather) complicated method to check the majority of the user (note that it only check the majority of the user with a good enought precision, not the maturity of them)."
 
