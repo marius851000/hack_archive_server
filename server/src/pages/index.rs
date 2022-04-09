@@ -4,10 +4,10 @@ use actix_web::{get, web::Data, HttpResponse};
 use maud::html;
 use pmd_hack_storage::Query;
 
-use crate::{extractor::UserData, make_hack_list, wrap_page, AppData, PageInfo};
+use crate::{extractor::RequestData, make_hack_list, wrap_page, AppData, PageInfo};
 
 #[get("/")]
-pub async fn index(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpResponse {
+pub async fn index(app_data: Data<Arc<AppData>>, request_data: RequestData) -> HttpResponse {
     let unfiltered_hacks = (Query::Difference(
         Box::new(Query::All),
         Box::new(Query::Or(
@@ -51,6 +51,6 @@ pub async fn index(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpRes
             discourage_reload: false,
         },
         &app_data,
-        user_data,
+        request_data,
     )
 }

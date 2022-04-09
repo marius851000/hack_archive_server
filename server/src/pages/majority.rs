@@ -3,10 +3,10 @@ use std::sync::Arc;
 use actix_web::{get, http::StatusCode, web::Data, HttpResponse};
 use maud::html;
 
-use crate::{extractor::UserData, wrap_page, AppData, PageInfo};
+use crate::{extractor::RequestData, wrap_page, AppData, PageInfo};
 
 #[get("/majority")]
-pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> HttpResponse {
+pub async fn majority(app_data: Data<Arc<AppData>>, request_data: RequestData) -> HttpResponse {
     if !app_data.use_majority_token {
         return HttpResponse::new(StatusCode::NOT_IMPLEMENTED);
     }
@@ -56,10 +56,10 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
                 i { "Oh ! And if you know a better solution, I'll be happy to know it too !" }
             }
 
-            @if user_data.majority.is_some() {
+            @if request_data.majority.is_some() {
                 hr {}
                 p { "You currently have a majority token loaded. More information about it can be found at the bottom of the page." }
-                @if user_data.can_certify {
+                @if request_data.can_certify {
                     p { "You can create for another user. You should make sure, in your own way, that they are actually major as in the legal definition in France (more than 18 year). They will themselves be able to create other majority tokens." }
 
                     a href=(format!("{}/create_majority_token", app_data.root_url)) { "Create a new majority token" }
@@ -71,6 +71,6 @@ pub async fn majority(app_data: Data<Arc<AppData>>, user_data: UserData) -> Http
             discourage_reload: false,
         },
         &app_data,
-        user_data,
+        request_data,
     )
 }

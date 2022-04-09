@@ -9,7 +9,7 @@ use actix_web::{
 use maud::html;
 
 use crate::{
-    extractor::UserData, render_many_tags, render_markdown, render_tag, wrap_page, AppData,
+    extractor::RequestData, render_many_tags, render_markdown, render_tag, wrap_page, AppData,
     PageInfo,
 };
 
@@ -17,7 +17,7 @@ use crate::{
 pub async fn hack(
     app_data: Data<Arc<AppData>>,
     path: Path<String>,
-    user_data: UserData,
+    request_data: RequestData,
 ) -> Result<HttpResponse> {
     let hack_id = path.into_inner();
     let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
@@ -30,7 +30,7 @@ pub async fn hack(
 
     let major_only_tags = hack.get_major_only_tags(&app_data.storage.taginfo);
     let major_only_hack = !major_only_tags.is_empty();
-    if !major_only_hack || user_data.have_access_to_major_only_content {
+    if !major_only_hack || request_data.have_access_to_major_only_content {
         Ok(wrap_page(
             html!(
                 h1 { (hack.data.name) }
@@ -139,7 +139,7 @@ pub async fn hack(
                 discourage_reload: false,
             },
             &app_data,
-            user_data,
+            request_data,
         ))
     } else {
         Ok(wrap_page(
@@ -166,7 +166,7 @@ pub async fn hack(
                 discourage_reload: false,
             },
             &app_data,
-            user_data,
+            request_data,
         ))
     }
 }

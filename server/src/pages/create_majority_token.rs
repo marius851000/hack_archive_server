@@ -9,7 +9,7 @@ use database::{
 use maud::html;
 use rand::{distributions::Alphanumeric, Rng};
 
-use crate::{extractor::UserData, wrap_page, AppData, PageInfo};
+use crate::{extractor::RequestData, wrap_page, AppData, PageInfo};
 
 const TITLE: &str = "new majority token";
 
@@ -17,13 +17,13 @@ const TITLE: &str = "new majority token";
 pub async fn create_majority_token(
     app_data: Data<Arc<AppData>>,
     hack_client: Data<HackClient>,
-    mut user_data: UserData,
+    mut request_data: RequestData,
 ) -> HttpResponse {
     fn get_error_response(
         message: &str,
         discourage_reload: bool,
         app_data: &AppData,
-        user_data: UserData,
+        request_data: RequestData,
     ) -> HttpResponse {
         wrap_page(
             html!(
@@ -35,14 +35,14 @@ pub async fn create_majority_token(
                 discourage_reload,
             },
             app_data,
-            user_data,
+            request_data,
         )
     }
 
     fn get_hack_client_error_response_and_log_error(
         error: HackClientError,
         app_data: &AppData,
-        user_data: UserData,
+        request_data: RequestData,
     ) -> HttpResponse {
         //TODO: pretty print of error
         log::error!(
@@ -53,12 +53,12 @@ pub async fn create_majority_token(
             "An error occured while communicating with the database. Something is wrong with this server.",
             false,
             app_data,
-            user_data
+            request_data
         )
     }
 
-    if let Some(majority_token) = &mut user_data.majority {
-        if user_data.can_certify {
+    if let Some(majority_token) = &mut request_data.majority {
+        if request_data.can_certify {
             if get_timestamp() > majority_token.latest_certification_timestamp + 10 {
                 let mut remaining_max_loop: u8 = 100;
                 let new_token_id = loop {
@@ -68,7 +68,7 @@ pub async fn create_majority_token(
                         return get_error_response(
                             "Unable to generate a unused token. Somethin on the server is certainly horrible wrong",
                             false,
-                            &app_data, user_data);
+                            &app_data, request_data);
                     };
                     let token: String = rand::thread_rng()
                         .sample_iter(&Alphanumeric)
@@ -80,7 +80,9 @@ pub async fn create_majority_token(
                         Ok(None) => break token,
                         Err(e) => {
                             return get_hack_client_error_response_and_log_error(
-                                e, &app_data, user_data,
+                                e,
+                                &app_data,
+                                request_data,
                             )
                         }
                     };
@@ -96,7 +98,9 @@ pub async fn create_majority_token(
                     Ok(_) => (),
                     Err(e) => {
                         return get_hack_client_error_response_and_log_error(
-                            e, &app_data, user_data,
+                            e,
+                            &app_data,
+                            request_data,
                         )
                     }
                 };
@@ -118,7 +122,9 @@ pub async fn create_majority_token(
                     Ok(_) => (),
                     Err(e) => {
                         return get_hack_client_error_response_and_log_error(
-                            e, &app_data, user_data,
+                            e,
+                            &app_data,
+                            request_data,
                         )
                     }
                 }
@@ -144,7 +150,7 @@ pub async fn create_majority_token(
                         discourage_reload: true,
                     },
                     &app_data,
-                    user_data,
+                    request_data,
                 )
             } else {
                 get_error_response(
@@ -157,7 +163,7 @@ pub async fn create_majority_token(
                     ),
                     true,
                     &app_data,
-                    user_data,
+                    request_data,
                 )
             }
         } else {
@@ -165,7 +171,7 @@ pub async fn create_majority_token(
                 "Your token doesn't allow to certify someone",
                 false,
                 &app_data,
-                user_data,
+                request_data,
             )
         }
     } else {
@@ -173,7 +179,7 @@ pub async fn create_majority_token(
             "You haven't entered a majority token",
             false,
             &app_data,
-            user_data,
+            request_data,
         )
     }
 }

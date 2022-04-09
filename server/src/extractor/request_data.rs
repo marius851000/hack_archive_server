@@ -9,7 +9,7 @@ use crate::{
     AppData,
 };
 
-pub struct UserData {
+pub struct RequestData {
     pub majority: Option<MajorityToken>,
     pub have_access_to_major_only_content: bool,
     pub can_certify: bool,
@@ -17,7 +17,7 @@ pub struct UserData {
     pub majority_cookie_to_set: Option<String>,
 }
 
-impl FromRequest for UserData {
+impl FromRequest for RequestData {
     type Error = Infallible;
 
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
@@ -29,7 +29,7 @@ impl FromRequest for UserData {
         let app_data = req.app_data::<Data<Arc<AppData>>>().unwrap().clone();
         if !app_data.use_majority_token {
             return Box::pin(async move {
-                Ok(UserData {
+                Ok(RequestData {
                     majority: None,
                     have_access_to_major_only_content: false,
                     can_certify: false,

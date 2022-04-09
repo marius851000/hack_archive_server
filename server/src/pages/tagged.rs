@@ -8,13 +8,13 @@ use actix_web::{
 use maud::html;
 use pmd_hack_storage::{Query, Tag};
 
-use crate::{extractor::UserData, make_hack_list, wrap_page, AppData, PageInfo};
+use crate::{extractor::RequestData, make_hack_list, wrap_page, AppData, PageInfo};
 
 #[get("/tagged/{tag_id}")]
 pub async fn tagged(
     app_data: Data<Arc<AppData>>,
     path: Path<String>,
-    user_data: UserData,
+    request_data: RequestData,
 ) -> HttpResponse {
     let tag_id = path.into_inner();
 
@@ -69,6 +69,6 @@ pub async fn tagged(
             discourage_reload: false,
         },
         &app_data,
-        user_data,
+        request_data,
     )
 }

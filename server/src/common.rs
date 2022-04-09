@@ -1,4 +1,4 @@
-use crate::{extractor::UserData, AppData};
+use crate::{extractor::RequestData, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use maud::{html, Markup, PreEscaped};
@@ -13,7 +13,7 @@ pub fn wrap_page(
     markup: Markup,
     page_info: PageInfo,
     app_data: &AppData,
-    user_data: UserData,
+    request_data: RequestData,
 ) -> HttpResponse {
     let markup = html!(
         html {
@@ -29,14 +29,14 @@ pub fn wrap_page(
                 }
                 main {
                     //TODO: better error message displaying. In particular, separate error from other more generic message
-                    @if !user_data.messages.is_empty() {
+                    @if !request_data.messages.is_empty() {
                         div class="errorcontainer" {
-                            @if user_data.messages.have_error() {
+                            @if request_data.messages.have_error() {
                                 p {
                                     "Error occured while generating this page :"
                                 }
                             }
-                            @for error_message in user_data.messages.messages() {
+                            @for error_message in request_data.messages.messages() {
                                 div class="errormessage" {
                                     p {
                                         (error_message.value().clone())
@@ -56,10 +56,10 @@ pub fn wrap_page(
                         a href="https://hacks.skytemple.org" { span class="skytemple" {"SkyTemple"} " hack list" } "."
                     }
                     @if app_data.use_majority_token {
-                        @if let Some(majority_check) = user_data.majority.as_ref() {
+                        @if let Some(majority_check) = request_data.majority.as_ref() {
                             form {
                                 label for="disconnect_majority_token" {
-                                    @if user_data.have_access_to_major_only_content {
+                                    @if request_data.have_access_to_major_only_content {
                                         (format!("You are connected with the valid majority token {}. ", majority_check._id))
                                     } @else {
                                         "You are connected with the "
@@ -72,7 +72,7 @@ pub fn wrap_page(
                                 input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
                                 input type="submit" value="Disconnect" {}
                             }
-                            @if user_data.can_certify {
+                            @if request_data.can_certify {
                                 p {
                                     "You can create a token for another user on the "
                                     a href=(format!("{}/majority", app_data.root_url)) { "information page" }
@@ -112,7 +112,7 @@ pub fn wrap_page(
     let mut response_builder = HttpResponse::build(StatusCode::OK);
     response_builder.content_type(mime::TEXT_HTML_UTF_8);
 
-    if let Some(token) = user_data.majority_cookie_to_set.as_ref() {
+    if let Some(token) = request_data.majority_cookie_to_set.as_ref() {
         response_builder.cookie(Cookie::build("majority_token", token).finish());
     };
 
