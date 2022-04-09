@@ -124,7 +124,7 @@ impl TagInfo {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct SingleTagInfo {
     #[serde(default)]
     pub category: Option<String>,

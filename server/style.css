@@ -147,5 +147,14 @@ h1 {
 }
 
 .errormessage {
-    background-color: rgb(184, 129, 129);
+    background-color: rgb(255, 216, 216);
+    border-color: red;
+    border-width: 1px;
+    border-style: solid;
+    margin-bottom: 0.5em;
+}
+
+.errormessage p {
+    margin-top: 0px;
+    margin-bottom: 0px;
 }

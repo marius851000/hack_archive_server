@@ -4,7 +4,7 @@ use std::{
     fmt::Display,
 };
 
-#[derive(Deserialize, Hash, PartialEq, Eq, Clone, Debug)]
+#[derive(Deserialize, Hash, PartialEq, Eq, Clone, Debug, PartialOrd, Ord)]
 pub struct Tag(pub String);
 
 impl Display for Tag {

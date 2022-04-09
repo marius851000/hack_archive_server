@@ -1,14 +1,14 @@
 use serde::Deserialize;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeMap, HashMap, HashSet},
     fs::{metadata, read_dir, File},
     io,
     path::PathBuf,
 };
 use thiserror::Error;
 
-use crate::TagInfo;
+use crate::{taginfo::SingleTagInfo, TagInfo};
 
 use super::Tag;
 
@@ -125,6 +125,21 @@ impl Hack {
         r.extend(self.implied_tags.clone());
         for files in &self.data.files {
             r.extend(files.implied_tags.clone());
+        }
+        r
+    }
+
+    pub fn get_major_only_tags<'a>(
+        &self,
+        taginfo: &'a TagInfo,
+    ) -> BTreeMap<Tag, &'a SingleTagInfo> {
+        let mut r = BTreeMap::new();
+        for tag_id in &self.all_tags() {
+            if let Some(tag) = taginfo.get_tag(tag_id) {
+                if tag.category.as_ref().map(|x| x.as_str()) == Some("majoronly") {
+                    r.insert(tag_id.clone(), tag);
+                }
+            }
         }
         r
     }
