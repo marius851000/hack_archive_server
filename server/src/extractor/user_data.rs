@@ -39,18 +39,32 @@ impl FromRequest for UserData {
             });
         }
 
-        //TODO: maybe put the majority token in post
-        //TODO: button to remove the token
+        //TODO: put the majority token in post
         let cookie = req.cookie("majority_token");
         let hackclient = req.app_data::<Data<HackClient>>().unwrap().clone();
 
         let query_string = QString::from(req.query_string());
-        let parameter_majority_token = query_string
+        let mut parameter_majority_token = query_string
             .get("majority_token")
             .map(|code| code.to_string());
 
+        if parameter_majority_token.as_ref().map(|x| x.as_str()) == Some("") {
+            parameter_majority_token = None;
+        }
+
+        let should_disconnect = query_string.get("disconnect_majority_token").is_some();
+
         Box::pin(async move {
             let mut messages = Messages::default();
+            if should_disconnect {
+                return Ok(Self {
+                    majority: None,
+                    have_access_to_major_only_content: false,
+                    can_certify: false,
+                    messages,
+                    majority_cookie_to_set: Some(String::new()),
+                });
+            };
             let parameter_majority_token: Option<String> = parameter_majority_token;
             let majority_token: Option<String> =
                 if let Some(token) = parameter_majority_token.as_ref() {

@@ -57,16 +57,20 @@ pub fn wrap_page(
                     }
                     @if app_data.use_majority_token {
                         @if let Some(majority_check) = user_data.majority.as_ref() {
-                            p {
-                                @if user_data.have_access_to_major_only_content {
-                                    (format!("You are connected with the valid majority token {}.", majority_check._id))
-                                } @else {
-                                    "You are connected with the "
-                                    b { "invalid" }
-                                    " majority token "
-                                    (majority_check._id)
-                                    "."
+                            form {
+                                label for="disconnect_majority_token" {
+                                    @if user_data.have_access_to_major_only_content {
+                                        (format!("You are connected with the valid majority token {}. ", majority_check._id))
+                                    } @else {
+                                        "You are connected with the "
+                                        b { "invalid" }
+                                        " majority token "
+                                        (majority_check._id)
+                                        "."
+                                    }
                                 }
+                                input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
+                                input type="submit" value="Disconnect" {}
                             }
                             @if user_data.can_certify {
                                 p {
