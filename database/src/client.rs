@@ -93,6 +93,80 @@ impl HackClient {
             .await?)
     }
 
+    /// Resolve a conflict.
+    /// if to_write is None, solve the conflict in the database, and return the result
+    /// if to_write is Some(object), it will insert the object in the database, handling potential conflict, and return the inserted
+    /// (may also return None if it actually didn't existed)
+    async fn handle_conflict<T: TypedCouchDocument + Mergeable>(
+        &self,
+        database: &Database,
+        document_id: DocumentId,
+        to_write: Option<T>,
+    ) -> Result<Option<T>, HackClientError> {
+        //TODO: actually, include a loop counter to print warning after too much iteration
+        loop {
+            //1. get conflicting documents
+            let new_potentially_conflicting = database
+                .get_bulk_params::<T>(
+                    vec![document_id.clone()],
+                    Some(QueryParams::default().conflicts(true)),
+                )
+                .await?;
+
+            //2. get the document if it exist
+            let mut base_document =
+                if let Some(d) = new_potentially_conflicting.rows.into_iter().next() {
+                    d
+                } else {
+                    return Ok(None);
+                };
+
+            //3. get the list of conflicts
+            let mut conflicts = Vec::new();
+            swap(&mut conflicts, base_document.get_conflicts_mut());
+            if conflicts.is_empty() && to_write.is_none() {
+                return Ok(Some(base_document));
+            }
+
+            if let Some(to_write) = to_write {
+                conflicts.push(base_document);
+                base_document = to_write;
+            }
+
+            let mut logged_conflicts = vec![base_document.clone()];
+
+            let mut raw_docs: Vec<T> = Vec::new();
+            //TODO: the different part with write and read will be here
+            //4. merge the conflicting documents
+            for mut other_document in conflicts.into_iter() {
+                logged_conflicts.push(other_document.clone());
+                base_document.merge(&other_document);
+                other_document.mark_as_deleted();
+                raw_docs.push(other_document);
+            }
+
+            //Write specific section
+
+            raw_docs.push(base_document.clone());
+            logged_conflicts.push(base_document.clone());
+
+            self.log_handled_conflict(database.name(), &raw_docs, logged_conflicts)
+                .await?;
+
+            for result in database.bulk_docs(&mut raw_docs).await? {
+                if let Err(e) = result {
+                    if !matches!(e.status, StatusCode::CONFLICT | StatusCode::NOT_FOUND) {
+                        return Err(HackClientError::InternalDBError(e));
+                    } else if e.status == StatusCode::CONFLICT {
+                        continue;
+                    }
+                }
+            }
+
+            return Ok(Some(base_document));
+        }
+    }
+
     async fn get_and_resolve_conflict_one<T: TypedCouchDocument + std::fmt::Debug + Mergeable>(
         &self,
         database: &Database,
@@ -115,54 +189,18 @@ impl HackClient {
             .await?;
 
         let mut resolved_document: Vec<T> = Vec::new();
-        'main: for mut document in &mut potentially_conflicting.rows.into_iter() {
-            let mut conflicts = document.get_conflicts_mut();
-            //TODO: try to put some of this in common with the save conflict resolution
-            while !conflicts.is_empty() {
-                // conflict. Let's resolve it before answering
-                let mut empty_conflicts = Vec::new();
-                swap(&mut empty_conflicts, conflicts);
-                let conflict_owned = empty_conflicts;
-
-                let document_id = document.get_id().to_string();
-                let mut logged_conflicts = Vec::new();
-
-                let mut raw_docs: Vec<T> = Vec::new();
-                for mut other_document in conflict_owned.into_iter() {
-                    logged_conflicts.push(other_document.clone());
-                    document.merge(&other_document);
-                    other_document.mark_as_deleted();
-                    raw_docs.push(other_document);
+        for mut document in &mut potentially_conflicting.rows.into_iter() {
+            let conflicts = document.get_conflicts_mut();
+            if !conflicts.is_empty() {
+                if let Some(r) = self
+                    .handle_conflict(database, document.get_id().into(), None)
+                    .await?
+                {
+                    resolved_document.push(r);
                 }
-                logged_conflicts.push(document.clone());
-                raw_docs.push(document);
-
-                self.log_handled_conflict(database.name(), &raw_docs, logged_conflicts)
-                    .await?;
-
-                for result in database.bulk_docs(&mut raw_docs).await? {
-                    if let Err(e) = result {
-                        if !matches!(e.status, StatusCode::CONFLICT | StatusCode::NOT_FOUND) {
-                            return Err(HackClientError::InternalDBError(e));
-                        }
-                    }
-                }
-                let new_potentially_conflicting = database
-                    .get_bulk_params::<T>(
-                        vec![document_id],
-                        Some(QueryParams::default().conflicts(true)),
-                    )
-                    .await?;
-
-                document = match new_potentially_conflicting.total_rows {
-                    0 => break 'main,
-                    1 => new_potentially_conflicting.rows.get(0).unwrap().clone(),
-                    _ => unreachable!(), //TODO:
-                };
-
-                conflicts = document.get_conflicts_mut();
+            } else {
+                resolved_document.push(document);
             }
-            resolved_document.push(document)
         }
         Ok(resolved_document)
     }
@@ -177,57 +215,9 @@ impl HackClient {
             Err(e) => {
                 if e.status == http::StatusCode::CONFLICT {
                     //Damn ! A conflict
-                    //Time for an infinite loop
-                    //TODO: actually, include a loop counter to print warning after too much iteration
                     let id: DocumentId = document.get_id().into();
-                    loop {
-                        //1. get the conflicting document
-                        let conflicting_documents = database
-                            .get_bulk_params::<T>(
-                                vec![id.clone()],
-                                Some(QueryParams::default().conflicts(true)),
-                            )
-                            .await?;
-
-                        let mut raw_docs = Vec::new();
-                        let mut logged_conflicts = vec![document.clone()];
-
-                        if let Some(mut conflicting_document) =
-                            conflicting_documents.rows.into_iter().next()
-                        {
-                            //merge conflicting documents
-                            let mut conflicts = Vec::new();
-                            swap(&mut conflicts, conflicting_document.get_conflicts_mut());
-                            for mut conflict_doc in conflicts {
-                                logged_conflicts.push(conflict_doc.clone());
-                                document.merge(&conflict_doc);
-                                conflict_doc.mark_as_deleted();
-                                raw_docs.push(conflict_doc);
-                            }
-                            logged_conflicts.push(conflicting_document.clone());
-                            document.merge(&conflicting_document);
-                            document.set_rev(conflicting_document.get_rev().as_ref());
-                        }
-                        raw_docs.push(document.clone());
-
-                        self.log_handled_conflict(database.name(), &raw_docs, logged_conflicts)
-                            .await?;
-
-                        let mut have_problem = false;
-                        for result in database.bulk_docs(&mut raw_docs).await? {
-                            if let Err(e) = result {
-                                if e.status == http::StatusCode::CONFLICT {
-                                    have_problem = true;
-                                    break;
-                                } else {
-                                    return Err(HackClientError::InternalDBError(e));
-                                }
-                            }
-                        }
-                        if !have_problem {
-                            return Ok(());
-                        }
-                    }
+                    self.handle_conflict(database, id, Some(document)).await?;
+                    Ok(())
                 } else {
                     //Well, an error. Guess that happen sometimes...
                     Err(HackClientError::InternalDBError(e))

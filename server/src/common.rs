@@ -78,13 +78,14 @@ pub fn wrap_page(
                         }
                         form {
                             @if page_info.discourage_reload {
-                                p { "Go to a non-interactive page to enter a majority token (it would reload the page)."}
+                                p { "Go to a non-interactive page to enter a majority token or disconnect it (it would reload the page)."}
                             } @else {
                                 label for="majority_token" {
                                     "Majority code ("
                                     a href=(format!("{}/majority", app_data.root_url)) { "more info" }
                                     ") "
                                 }
+                                //TODO: use a form
                                 input type="text" id="majority_token" name="majority_token" {}
                                 input type="submit" value="Submit" {}
                             }
