@@ -35,12 +35,6 @@ pub async fn hack(
             html!(
                 h1 { (hack.data.name) }
 
-                @if let Some(description) = &hack.data.description {
-                    div class="hackdescription" {
-                        (render_markdown(description))
-                    }
-                }
-
                 @if !hack.data.authors.is_empty() {
                     p id="authorlist" {
                         "made by : "
@@ -59,6 +53,12 @@ pub async fn hack(
 
                 @if !all_tags.is_empty() {
                     (render_many_tags(all_tags.iter().cloned().collect(), &app_data))
+                }
+
+                @if let Some(description) = &hack.data.description {
+                    div class="hackdescription" {
+                        (render_markdown(description))
+                    }
                 }
 
                 @if let Some(source) = &hack.data.source {
