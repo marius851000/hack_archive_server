@@ -510,9 +510,9 @@ checksum = "5827cebf4670468b8772dd191856768aedcb1b0278a04f989f7766351917b9dc"
 
 [[package]]
 name = "couch_rs"
-version = "0.8.36"
+version = "0.8.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45dfb83c1ee49af2725db12ff5c50ff41f402167fbed3196f0d10015fa23a4f3"
+checksum = "0a5d3159e2251973670ed2f8b6fbbd54280b4e913d2ac2ba947a39c9bc008bee"
 dependencies = [
  "base64",
  "bytes",
@@ -524,15 +524,15 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-stream",
- "tokio-util 0.6.9",
+ "tokio-util 0.7.0",
  "url",
 ]
 
 [[package]]
 name = "couch_rs_derive"
-version = "0.8.36"
+version = "0.8.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5527508978a74ff5aac324f81dd32094f8fe74ceed4048bd2adea8b69f0eac08"
+checksum = "fc303d97f02bb00f8bb2ac449178dee10549576ebd9eec2f9511ccd51be01c5a"
 dependencies = [
  "proc-macro2",
  "quote",
