@@ -104,7 +104,7 @@ impl HackClient {
         to_write: Option<T>,
     ) -> Result<Option<T>, HackClientError> {
         //TODO: actually, include a loop counter to print warning after too much iteration
-        loop {
+        'main: loop {
             //1. get conflicting documents
             let new_potentially_conflicting = database
                 .get_bulk_params::<T>(
@@ -128,9 +128,9 @@ impl HackClient {
                 return Ok(Some(base_document));
             }
 
-            if let Some(to_write) = to_write {
+            if let Some(to_write) = &to_write {
                 conflicts.push(base_document);
-                base_document = to_write;
+                base_document = to_write.clone();
             }
 
             let mut logged_conflicts = vec![base_document.clone()];
@@ -158,7 +158,7 @@ impl HackClient {
                     if !matches!(e.status, StatusCode::CONFLICT | StatusCode::NOT_FOUND) {
                         return Err(HackClientError::InternalDBError(e));
                     } else if e.status == StatusCode::CONFLICT {
-                        continue;
+                        continue 'main;
                     }
                 }
             }
