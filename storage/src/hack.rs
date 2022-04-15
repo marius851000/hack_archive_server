@@ -79,13 +79,16 @@ impl Hack {
             file.implied_tags = taginfo.get_implied_tags(&file.tags);
         }
 
-        Ok(Self {
+        let result = Self {
             data,
             folder,
             implied_tags,
-        })
+        };
+        result.check_files();
+        Ok(result)
     }
 
+    /// Check for missing files. Panic if one is found
     pub fn check_files(&self) {
         let mut referenced_files = HashSet::new();
         for screenshot in &self.data.screenshots {
