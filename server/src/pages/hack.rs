@@ -153,9 +153,9 @@ pub async fn hack(
                     @for (tag_id, tag_info) in &major_only_tags {
                         li {
                             @if let Some(description) = tag_info.description.as_ref() {
-                                (render_tag(&tag_id, &app_data)) " : " (description)
+                                (render_tag(tag_id, &app_data)) " : " (description)
                             } @else {
-                                "Undescripted tag " (render_tag(&tag_id, &app_data))
+                                "Undescripted tag " (render_tag(tag_id, &app_data))
                             }
                         }
                     }

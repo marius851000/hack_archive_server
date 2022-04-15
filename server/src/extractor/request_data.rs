@@ -48,7 +48,7 @@ impl FromRequest for RequestData {
             .get("majority_token")
             .map(|code| code.to_string());
 
-        if parameter_majority_token.as_ref().map(|x| x.as_str()) == Some("") {
+        if parameter_majority_token.as_deref() == Some("") {
             parameter_majority_token = None;
         }
 

@@ -70,15 +70,15 @@
           };*/
         };
 
-        defaultPackage = pmd_hack_archive_server;
         packages.pmd_hack_archive_server = pmd_hack_archive_server;
+        packages.default = pmd_hack_archive_server;
 
         apps.my-app = flake-utils.lib.mkApp {
           drv = pmd_hack_archive_server;
         };
         defaultApp = self.apps.${system}.my-app;
 
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           inputsFrom = builtins.attrValues self.checks;
 
           # Extra inputs can be added here

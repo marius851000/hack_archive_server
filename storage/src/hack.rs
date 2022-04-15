@@ -139,7 +139,7 @@ impl Hack {
         let mut r = BTreeMap::new();
         for tag_id in &self.all_tags() {
             if let Some(tag) = taginfo.get_tag(tag_id) {
-                if tag.category.as_ref().map(|x| x.as_str()) == Some("majoronly") {
+                if tag.category.as_deref() == Some("majoronly") {
                     r.insert(tag_id.clone(), tag);
                 }
             }
