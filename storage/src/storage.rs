@@ -1,6 +1,5 @@
-use crate::TagInfo;
-
 use super::{Hack, HackLoadError, TagInfoLoadError, Tags};
+use crate::TagInfo;
 use std::{
     collections::HashMap,
     fs::metadata,
@@ -96,6 +95,28 @@ impl Storage {
         for tag in hack.all_tags() {
             self.tags.add_hack_with_tag(&tag, name.clone());
         }
+        // check
+        for (category_tag, category_info) in &self.taginfo.categories {
+            if category_info.required_for_file {
+                for file in &hack.data.files {
+                    let mut contain_appropriate_tag = false;
+                    for tag in &file.tags {
+                        if let Some(file_tag) = self.taginfo.get_tag(tag) {
+                            if file_tag.category.as_ref() == Some(category_tag) {
+                                contain_appropriate_tag = true;
+                                break;
+                            }
+                        }
+                    }
+                    if !contain_appropriate_tag {
+                        println!("should warn");
+                        log::warn!("The file {} for the hack {} doesn't contain a tag with the category {}, as it is required by the category", file.filename, name, category_tag);
+                    }
+                }
+            }
+        }
+
+        // actually insert the hack
         self.hacks.insert(name, hack);
         Ok(())
     }

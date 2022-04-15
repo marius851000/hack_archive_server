@@ -138,11 +138,13 @@ pub struct SingleTagInfo {
     pub label: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all(deserialize = "kebab-case"))]
 pub struct CategoryInfo {
     pub background_color: String,
     pub border_color: String,
+    #[serde(default)]
+    pub required_for_file: bool,
     #[serde(default)]
     pub priority: u32,
 }
