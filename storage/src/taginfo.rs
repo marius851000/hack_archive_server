@@ -1,3 +1,4 @@
+use log::{info, warn};
 use serde::Deserialize;
 use std::{
     cmp::Ordering,
@@ -48,15 +49,16 @@ impl TagInfo {
         tag_id: &Tag,
     ) -> Option<&CategoryInfo> {
         if let Some(category_id) = &tag.category {
-            self.categories.get(category_id).map(|x| {
-                println!(
+            let result = self.categories.get(category_id);
+            if result.is_none() {
+                warn!(
                     "category {:?} for tag {:?} not found",
                     &tag.category, tag_id
                 );
-                x
-            })
+            };
+            return result;
         } else {
-            println!("tag info for {:?} doesn't have a category entry", tag_id);
+            info!("tag info for {:?} doesn't have a category entry", tag_id);
             None
         }
     }
