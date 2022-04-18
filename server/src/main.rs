@@ -5,7 +5,10 @@ use database::HackClient;
 //use database::MongoDriver;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
-use server::pages::{create_majority_token, css, file, hack, index, majority, oswald, tagged};
+use server::pages::{
+    create_majority_token, css, disconnect_majority_token, file, hack, index, majority, oswald,
+    tagged,
+};
 use server::AppData;
 use std::{path::PathBuf, sync::Arc};
 
@@ -84,7 +87,8 @@ async fn main() {
                     .service(create_majority_token::create_majority_token)
                     .service(tagged::tagged)
                     .service(hack::hack)
-                    .service(file::file),
+                    .service(file::file)
+                    .service(disconnect_majority_token::disconnect_majority_token),
             )
     })
     .bind(&opts.bind_address)
@@ -93,6 +97,3 @@ async fn main() {
     .await
     .unwrap();
 }
-
-//TODO: consider making language hack-wide, and do not tag these in the file
-//TODO: sort tags

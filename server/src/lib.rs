@@ -31,6 +31,8 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
             "majority" => true,
             "tagged" => true,
             "create_majority_token" => true,
+            "disconnect_majority_token" => true,
+            "connect_majority_token" => true,
 
             //likely to be used
             "faq" => true,

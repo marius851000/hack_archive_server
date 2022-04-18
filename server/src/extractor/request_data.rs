@@ -15,6 +15,8 @@ pub struct RequestData {
     pub can_certify: bool,
     pub messages: Messages,
     pub majority_cookie_to_set: Option<String>,
+
+    pub path: String,
 }
 
 impl FromRequest for RequestData {
@@ -26,6 +28,7 @@ impl FromRequest for RequestData {
         req: &actix_web::HttpRequest,
         _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
+        let path = req.path().to_string();
         let app_data = req.app_data::<Data<Arc<AppData>>>().unwrap().clone();
         if !app_data.use_majority_token {
             return Box::pin(async move {
@@ -35,6 +38,7 @@ impl FromRequest for RequestData {
                     can_certify: false,
                     messages: Messages::default(),
                     majority_cookie_to_set: None,
+                    path,
                 })
             });
         }
@@ -52,26 +56,19 @@ impl FromRequest for RequestData {
             parameter_majority_token = None;
         }
 
-        let should_disconnect = query_string.get("disconnect_majority_token").is_some();
-
         Box::pin(async move {
             let mut messages = Messages::default();
-            if should_disconnect {
-                return Ok(Self {
-                    majority: None,
-                    have_access_to_major_only_content: false,
-                    can_certify: false,
-                    messages,
-                    majority_cookie_to_set: Some(String::new()),
-                });
-            };
             let parameter_majority_token: Option<String> = parameter_majority_token;
-            let majority_token: Option<String> =
+            let mut majority_token: Option<String> =
                 if let Some(token) = parameter_majority_token.as_ref() {
                     Some(token.to_string())
                 } else {
                     cookie.map(|cookie| cookie.value().to_string())
                 };
+
+            if majority_token.as_deref() == Some("") {
+                majority_token = None;
+            };
 
             let (majority, have_access_to_major_only_content, can_certify) = if let Some(
                 majority_token,
@@ -124,6 +121,7 @@ impl FromRequest for RequestData {
                 } else {
                     None
                 },
+                path,
             })
         })
     }

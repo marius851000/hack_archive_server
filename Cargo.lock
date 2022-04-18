@@ -1716,7 +1716,9 @@ dependencies = [
  "qstring",
  "rand",
  "safe_join",
+ "serde",
  "tokio",
+ "url",
 ]
 
 [[package]]

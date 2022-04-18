@@ -4,6 +4,7 @@ pub mod majority;
 
 pub mod create_majority_token;
 pub mod css;
+pub mod disconnect_majority_token;
 pub mod file;
 pub mod hack;
 pub mod index;

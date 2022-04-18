@@ -16,6 +16,10 @@
 ** DONE Make the majority stuff hideable
 ** TODO hide them in tag search page
 ** TODO Use post parameter instead of Get parameter if possible
+*** DONE disconnect
+**** TODO Display a success message on the redirected route
+*** TODO connection
+**** TODO Display a message
 *** TODO should definitively use post to prevent CSRF
 * TODO create an appropriate 404 page (and sent it also for hack, tag and filename not found -- maybe with some customisation)
 * TODO CONSIDER moving the hack data to couchdb too

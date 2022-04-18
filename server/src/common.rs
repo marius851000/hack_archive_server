@@ -57,7 +57,7 @@ pub fn wrap_page(
                     }
                     @if app_data.use_majority_token {
                         @if let Some(majority_check) = request_data.majority.as_ref() {
-                            form {
+                            form action=(format!("{}/disconnect_majority_token", app_data.root_url)) method="post" {
                                 label for="disconnect_majority_token" {
                                     @if request_data.have_access_to_major_only_content {
                                         (format!("You are connected with the valid majority token {}. ", majority_check._id))
@@ -69,6 +69,7 @@ pub fn wrap_page(
                                         "."
                                     }
                                 }
+                                input type="hidden" id="redirect_url" name="redirect_url" value=(format!("{}/{}", app_data.root_url, request_data.path.clone())) {}
                                 input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
                                 input type="submit" value="Disconnect" {}
                             }
