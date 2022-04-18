@@ -36,6 +36,7 @@ async fn main() {
     let opts = Opts::parse();
 
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
+    storage.warn_missing_tags();
     println!("hacks loaded");
 
     let hidden_by_default = vec![

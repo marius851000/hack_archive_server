@@ -15,7 +15,7 @@ impl Display for Tag {
 
 #[derive(Default)]
 pub struct Tags {
-    tag_list: HashMap<Tag, HashSet<String>>,
+    pub tag_list: HashMap<Tag, HashSet<String>>,
 }
 
 impl Tags {

@@ -56,7 +56,7 @@ impl TagInfo {
                     &tag.category, tag_id
                 );
             };
-            return result;
+            result
         } else {
             info!("tag info for {:?} doesn't have a category entry", tag_id);
             None
