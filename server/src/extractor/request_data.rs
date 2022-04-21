@@ -19,6 +19,7 @@ pub struct RequestData {
     pub majority_cookie_to_set: Option<String>,
     pub language: LanguageIdentifier,
     pub path: String,
+    pub app_data: Arc<AppData>
 }
 
 impl FromRequest for RequestData {
@@ -31,7 +32,7 @@ impl FromRequest for RequestData {
         _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
         let path = req.path().to_string();
-        let app_data = req.app_data::<Data<Arc<AppData>>>().unwrap().clone();
+        let app_data = req.app_data::<Data<AppData>>().unwrap().clone();
 
         let query_string = QString::from(req.query_string());
         let language = query_string
@@ -49,6 +50,7 @@ impl FromRequest for RequestData {
                     majority_cookie_to_set: None,
                     language,
                     path,
+                    app_data: app_data.into_inner(),
                 })
             });
         }
@@ -132,6 +134,7 @@ impl FromRequest for RequestData {
                 },
                 language,
                 path,
+                app_data: app_data.into_inner(),
             })
         })
     }

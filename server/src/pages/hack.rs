@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use actix_web::{
     error::ErrorNotFound,
     get,
@@ -15,7 +13,7 @@ use crate::{
 
 #[get("/{hack_id}")]
 pub async fn hack(
-    app_data: Data<Arc<AppData>>,
+    app_data: Data<AppData>,
     path: Path<String>,
     request_data: RequestData,
 ) -> Result<HttpResponse> {

@@ -1,4 +1,4 @@
-use std::{collections::BTreeSet, sync::Arc};
+use std::collections::BTreeSet;
 
 use actix_web::{get, web::Data, HttpResponse};
 use database::{
@@ -15,7 +15,7 @@ const TITLE: &str = "new majority token";
 
 #[get("/create_majority_token")]
 pub async fn create_majority_token(
-    app_data: Data<Arc<AppData>>,
+    app_data: Data<AppData>,
     hack_client: Data<HackClient>,
     mut request_data: RequestData,
 ) -> HttpResponse {

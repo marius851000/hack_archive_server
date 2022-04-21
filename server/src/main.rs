@@ -11,7 +11,7 @@ use server::pages::{
     tagged,
 };
 use server::AppData;
-use std::{path::PathBuf, sync::Arc};
+use std::path::PathBuf;
 use unic_langid::langid;
 
 #[derive(Parser, Debug)]
@@ -66,7 +66,7 @@ async fn main() {
         )
     ];
 
-    let app_data = Arc::new(AppData {
+    let app_data = Data::new(AppData {
         root_url: opts.root_url,
         storage,
         hidden_by_default,
@@ -86,7 +86,7 @@ async fn main() {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(app_data.clone()))
+            .app_data(app_data.clone())
             .app_data(Data::new(hackclient.clone()))
             .service(
                 web::scope(&opts.scope)

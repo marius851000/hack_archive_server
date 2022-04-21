@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use actix_web::{
     get,
     web::{Data, Path},
@@ -12,7 +10,7 @@ use crate::{extractor::RequestData, make_hack_list, wrap_page, AppData, PageInfo
 
 #[get("/tagged/{tag_id}")]
 pub async fn tagged(
-    app_data: Data<Arc<AppData>>,
+    app_data: Data<AppData>,
     path: Path<String>,
     request_data: RequestData,
 ) -> HttpResponse {
