@@ -19,7 +19,7 @@ pub enum TagInfoLoadError {
     CantParseReadFile(#[source] serde_json::Error, PathBuf),
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 pub struct TagInfo {
     pub tags: HashMap<Tag, SingleTagInfo>,
     pub categories: HashMap<String, CategoryInfo>,

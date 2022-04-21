@@ -20,7 +20,7 @@ pub fn wrap_page(
             head {
                 meta charset="utf-8" {}
                 title { (page_info.name) }
-                link rel="stylesheet" href=(format!("{}/style.css", app_data.root_url)) {}
+                link rel="stylesheet" href=(app_data.route_static("style.css")) {}
             }
             body {
                 header {
@@ -57,7 +57,7 @@ pub fn wrap_page(
                     }
                     @if app_data.use_majority_token {
                         @if let Some(majority_check) = request_data.majority.as_ref() {
-                            form action=(format!("{}/disconnect_majority_token", app_data.root_url)) method="post" {
+                            form action=(app_data.route(&request_data, "disconnect_majority_token")) method="post" {
                                 label for="disconnect_majority_token" {
                                     @if request_data.have_access_to_major_only_content {
                                         (format!("You are connected with the valid majority token {}. ", majority_check._id))
@@ -69,14 +69,14 @@ pub fn wrap_page(
                                         "."
                                     }
                                 }
-                                input type="hidden" id="redirect_url" name="redirect_url" value=(format!("{}/{}", app_data.root_url, request_data.path.clone())) {}
+                                input type="hidden" id="redirect_url" name="redirect_url" value=(app_data.route(&request_data, &request_data.path)) {}
                                 input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
                                 input type="submit" value="Disconnect" {}
                             }
                             @if request_data.can_certify {
                                 p {
                                     "You can create a token for another user on the "
-                                    a href=(format!("{}/majority", app_data.root_url)) { "information page" }
+                                    a href=(app_data.route(&request_data, "majority")) { "information page" }
                                     "."
                                 }
                             }
@@ -87,7 +87,7 @@ pub fn wrap_page(
                             } @else {
                                 label for="majority_token" {
                                     "Majority code ("
-                                    a href=(format!("{}/majority", app_data.root_url)) { "more info" }
+                                    a href=(app_data.route(&request_data, "majority")) { "more info" }
                                     ") "
                                 }
                                 //TODO: use a form
@@ -120,12 +120,16 @@ pub fn wrap_page(
     response_builder.body(markup.into_boxed_str().into_string())
 }
 
-pub fn make_hack_list(hacks: &[(String, &Hack)], app_data: &AppData) -> Markup {
+pub fn make_hack_list(
+    hacks: &[(String, &Hack)],
+    request_data: &RequestData,
+    app_data: &AppData,
+) -> Markup {
     html! {
         ul {
             @for (hack_id, hack) in hacks {
                 li {
-                    a href=(format!("{}/{}", app_data.root_url, hack_id)) {
+                    a href=(app_data.route_hack(request_data, hack_id)) {
                         (hack.data.name)
                     }
                 }
@@ -138,9 +142,9 @@ pub fn render_markdown(text: &str) -> PreEscaped<String> {
     PreEscaped(markdown_to_html(text, &ComrakOptions::default()))
 }
 
-pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
+pub fn render_tag(tag: &Tag, request_data: &RequestData, app_data: &AppData) -> Markup {
     html! {
-        a href=(format!("{}/tagged/{}", app_data.root_url, tag.0)) {
+        a href=(app_data.route_hack_list_by_tag(request_data, tag)) {
             @if let Some(single_tag_info) = app_data.storage.taginfo.get_tag(tag) {
                 @let label = single_tag_info.label.as_ref().unwrap_or(&tag.0);
                 @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(single_tag_info, tag) {
@@ -155,14 +159,14 @@ pub fn render_tag(tag: &Tag, app_data: &AppData) -> Markup {
     }
 }
 
-pub fn render_many_tags(tags: Vec<Tag>, app_data: &AppData) -> Markup {
+pub fn render_many_tags(tags: Vec<Tag>, request_data: &RequestData, app_data: &AppData) -> Markup {
     let tags = app_data.storage.taginfo.orders_tags(tags);
     html! {
         p class="tagslist" {
             "tags : "
             @for (count, tag) in tags.iter().enumerate() {
                 @let remaining = tags.len() - count - 1;
-                (render_tag(tag, app_data));
+                (render_tag(tag, request_data, app_data));
                 @match remaining {
                     1 => ", and",
                     2.. => ", ",

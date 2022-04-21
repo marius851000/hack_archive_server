@@ -48,7 +48,7 @@ pub async fn tagged(
                     }
                 }
             }
-            (make_hack_list(&unfiltered_hacks, &app_data))
+            (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
             @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
                 @let hidden_hacks = (Query::Intersection (
                     Box::new(hidden_query.clone()),
@@ -59,7 +59,7 @@ pub async fn tagged(
                         summary {
                             (hidden_string) " (click to reveal)"
                         }
-                        (make_hack_list(&hidden_hacks, &app_data))
+                        (make_hack_list(&hidden_hacks, &request_data, &app_data))
                     }
                 }
             }

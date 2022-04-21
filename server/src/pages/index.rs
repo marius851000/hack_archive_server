@@ -33,7 +33,7 @@ pub async fn index(app_data: Data<Arc<AppData>>, request_data: RequestData) -> H
                 "If you see there is an hack or a version that is missing, don't hesitate to contact me on Discord at marius851000#2522 (or any other one)."
             }
             h2 { "List of hacks" }
-            (make_hack_list(&unfiltered_hacks, &app_data))
+            (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
             @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
                 @let hidden_hacks = hidden_query.get_matching(&app_data.storage).0;
                 @if !hidden_hacks.is_empty() {
@@ -41,7 +41,7 @@ pub async fn index(app_data: Data<Arc<AppData>>, request_data: RequestData) -> H
                         summary {
                             (hidden_string) " (click to reveal)"
                         }
-                        (make_hack_list(&hidden_hacks, &app_data))
+                        (make_hack_list(&hidden_hacks, &request_data, &app_data))
                     }
                 }
             }

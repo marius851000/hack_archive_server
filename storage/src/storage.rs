@@ -25,6 +25,7 @@ pub enum StorageLoadError {
     CantLoadTagInfo(#[source] TagInfoLoadError, PathBuf),
 }
 
+#[derive(Default)]
 pub struct Storage {
     pub hacks: HashMap<String, Hack>,
     pub tags: Tags,

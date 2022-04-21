@@ -52,7 +52,7 @@ pub async fn hack(
                 @let all_tags = hack.all_tags();
 
                 @if !all_tags.is_empty() {
-                    (render_many_tags(all_tags.iter().cloned().collect(), &app_data))
+                    (render_many_tags(all_tags.iter().cloned().collect(), &request_data, &app_data))
                 }
 
                 @if let Some(description) = &hack.data.description {
@@ -78,7 +78,7 @@ pub async fn hack(
                     p { "screenshots" }
                     div class="screenshots" {
                         @for screenshot in &hack.data.screenshots {
-                            img src=(format!("{}/{}/{}", app_data.root_url, hack_id, screenshot)) { }
+                            img src=(app_data.route_hack_file(&hack_id, screenshot)) { }
                         }
                     }
                 }
@@ -103,7 +103,7 @@ pub async fn hack(
                             div class="hack" {
                                 h4 { (file.label) }
                                 p {
-                                    a href=(format!("{}/{}/{}", app_data.root_url, hack_id, file.filename)) { "download" }
+                                    a href=(app_data.route_hack_file(&hack_id, &file.filename)) { "download" }
                                 }
                                 /*@if let Some(description) = &file.description {
                                     @let rendered = render_markdown(description);
@@ -125,7 +125,7 @@ pub async fn hack(
                                 //TODO: find a good way to present this
                                 @let file_tags = &file.get_all_tags();
                                 @if !file_tags.is_empty() {
-                                    (render_many_tags(file_tags.iter().cloned().collect(), &app_data))
+                                    (render_many_tags(file_tags.iter().cloned().collect(), &request_data, &app_data))
                                 }
                             }
                         }
@@ -146,16 +146,16 @@ pub async fn hack(
             html!(
                 h1 { (format!("Major-only hack ({})", hack.data.name)) }
                 p { "This hack is only available for major users. More information can be found on the "
-                    a href=(format!("{}/majority", app_data.root_url)) { "dedicated page" } "."
+                    a href=(app_data.route(&request_data, "majority")) { "dedicated page" } "."
                 }
                 p { "Reason of blocking :"}
                 ul {
                     @for (tag_id, tag_info) in &major_only_tags {
                         li {
                             @if let Some(description) = tag_info.description.as_ref() {
-                                (render_tag(tag_id, &app_data)) " : " (description)
+                                (render_tag(tag_id, &request_data, &app_data)) " : " (description)
                             } @else {
-                                "Undescripted tag " (render_tag(tag_id, &app_data))
+                                "Undescripted tag " (render_tag(tag_id, &request_data, &app_data))
                             }
                         }
                     }
