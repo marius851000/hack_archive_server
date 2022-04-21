@@ -2,7 +2,7 @@ use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use clap::Parser;
 use database::HackClient;
-use fluent_templates::{ArcLoader, Loader};
+use fluent_templates::ArcLoader;
 //use database::MongoDriver;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
@@ -41,7 +41,6 @@ async fn main() {
     let locales = ArcLoader::builder(&opts.locales_folder, langid!("en"))
         .build()
         .unwrap();
-    println!("{:?}", locales.lookup(&langid!("fr"), "hello-text"));
 
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
     storage.warn_missing_tags();
@@ -72,6 +71,7 @@ async fn main() {
         storage,
         hidden_by_default,
         use_majority_token: opts.use_majority_token,
+        locales,
     });
 
     let hackclient = HackClient::new_from_connection_info(

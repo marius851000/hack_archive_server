@@ -24,7 +24,7 @@ pub fn wrap_page(
             }
             body {
                 header {
-                    a id="archivedlink" href=(app_data.root_url) { "Archived hacks list" }
+                    a id="archivedlink" href=(app_data.route(&request_data, "")) { "Archived hacks list" }
                     a id="newslink" href="https://hacknews.pmdcollab.org/" { "Return to the news site" }
                 }
                 main {

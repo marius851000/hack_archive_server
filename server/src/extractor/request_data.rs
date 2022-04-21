@@ -2,7 +2,9 @@ use std::{convert::Infallible, future::Future, pin::Pin, sync::Arc};
 
 use actix_web::{web::Data, FromRequest};
 use database::{model::MajorityToken, HackClient};
+use fluent_templates::LanguageIdentifier;
 use qstring::QString;
+use unic_langid::langid;
 
 use crate::{
     message::{MessageKind, Messages},
@@ -15,7 +17,7 @@ pub struct RequestData {
     pub can_certify: bool,
     pub messages: Messages,
     pub majority_cookie_to_set: Option<String>,
-
+    pub language: LanguageIdentifier,
     pub path: String,
 }
 
@@ -30,6 +32,13 @@ impl FromRequest for RequestData {
     ) -> Self::Future {
         let path = req.path().to_string();
         let app_data = req.app_data::<Data<Arc<AppData>>>().unwrap().clone();
+
+        let query_string = QString::from(req.query_string());
+        let language = query_string
+            .get("lang")
+            .unwrap_or("en")
+            .parse()
+            .unwrap_or(langid!("en"));
         if !app_data.use_majority_token {
             return Box::pin(async move {
                 Ok(RequestData {
@@ -38,6 +47,7 @@ impl FromRequest for RequestData {
                     can_certify: false,
                     messages: Messages::default(),
                     majority_cookie_to_set: None,
+                    language,
                     path,
                 })
             });
@@ -47,7 +57,6 @@ impl FromRequest for RequestData {
         let cookie = req.cookie("majority_token");
         let hackclient = req.app_data::<Data<HackClient>>().unwrap().clone();
 
-        let query_string = QString::from(req.query_string());
         let mut parameter_majority_token = query_string
             .get("majority_token")
             .map(|code| code.to_string());
@@ -121,6 +130,7 @@ impl FromRequest for RequestData {
                 } else {
                     None
                 },
+                language,
                 path,
             })
         })

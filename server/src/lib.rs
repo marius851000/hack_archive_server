@@ -8,7 +8,9 @@ pub mod pages;
 pub mod message;
 
 use extractor::RequestData;
+use fluent_templates::ArcLoader;
 use pmd_hack_storage::{Query, Storage, Tag};
+use qstring::QString;
 
 pub struct AppData {
     pub root_url: String,
@@ -17,11 +19,16 @@ pub struct AppData {
     /// Query: when does it match
     pub hidden_by_default: Vec<(String, Query)>,
     pub use_majority_token: bool,
+    pub locales: ArcLoader,
 }
 
 impl AppData {
-    pub fn route(&self, _request_data: &RequestData, path: &str) -> String {
-        format!("{}/{}", self.root_url, path)
+    pub fn route(&self, request_data: &RequestData, path: &str) -> String {
+        let qs = QString::new(vec![(
+            "lang".to_string(),
+            request_data.language.to_string(),
+        )]);
+        format!("{}/{}?{}", self.root_url, path, qs)
     }
 
     pub fn route_static(&self, path: &str) -> String {
@@ -78,19 +85,7 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::{is_illegal_hack_slug, AppData};
-    use pmd_hack_storage::Storage;
-
-    #[test]
-    pub fn test_app_data() {
-        let app_data = AppData {
-            root_url: "https://example.com".to_string(),
-            storage: Storage::default(),
-            hidden_by_default: vec![],
-            use_majority_token: false,
-        };
-        assert_eq!(app_data.route_static("hello"), "https://example.com/hello");
-    }
+    use crate::is_illegal_hack_slug;
 
     #[test]
     pub fn test_illegal_hack_slug() {
