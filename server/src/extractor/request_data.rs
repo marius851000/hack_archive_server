@@ -1,8 +1,8 @@
-use std::{convert::Infallible, future::Future, pin::Pin, sync::Arc};
+use std::{convert::Infallible, future::Future, pin::Pin, sync::Arc, collections::HashMap};
 
 use actix_web::{web::Data, FromRequest};
 use database::{model::MajorityToken, HackClient};
-use fluent_templates::LanguageIdentifier;
+use fluent_templates::{LanguageIdentifier, Loader, fluent_bundle::FluentValue};
 use qstring::QString;
 use unic_langid::langid;
 
@@ -137,5 +137,15 @@ impl FromRequest for RequestData {
                 app_data: app_data.into_inner(),
             })
         })
+    }
+}
+
+impl RequestData {
+    pub fn lookup(&self, text_id: &str) -> String {
+        self.app_data.locales.lookup(&self.language, text_id)
+    }
+
+    pub fn lookup_with_args(&self, text_id: &str, args: &HashMap<&str, FluentValue>) -> String {
+        self.app_data.locales.lookup_with_args(&self.language, text_id, args)
     }
 }
