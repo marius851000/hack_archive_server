@@ -2,6 +2,7 @@ use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use clap::Parser;
 use database::HackClient;
+use fluent_templates::{ArcLoader, Loader};
 //use database::MongoDriver;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
@@ -11,12 +12,14 @@ use server::pages::{
 };
 use server::AppData;
 use std::{path::PathBuf, sync::Arc};
+use unic_langid::langid;
 
 #[derive(Parser, Debug)]
 #[clap()]
 pub struct Opts {
     /// Path to the archive, should contain a hacks subfolder
     archive_folder: PathBuf,
+    locales_folder: PathBuf,
     bind_address: String,
     /// base url, shouldn't end with /
     root_url: String,
@@ -35,8 +38,14 @@ async fn main() {
 
     let opts = Opts::parse();
 
+    let locales = ArcLoader::builder(&opts.locales_folder, langid!("en"))
+        .build()
+        .unwrap();
+    println!("{:?}", locales.lookup(&langid!("fr"), "hello-text"));
+
     let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
     storage.warn_missing_tags();
+
     println!("hacks loaded");
 
     let hidden_by_default = vec![

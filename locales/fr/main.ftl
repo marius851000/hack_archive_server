@@ -1,0 +1,1 @@
+hello-text = Bonjour le monde !
