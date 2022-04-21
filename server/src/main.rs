@@ -39,6 +39,7 @@ async fn main() {
     let opts = Opts::parse();
 
     let locales = ArcLoader::builder(&opts.locales_folder, langid!("en"))
+        .shared_resources(Some(&[opts.locales_folder.join("core.ftl")]))
         .build()
         .unwrap();
 

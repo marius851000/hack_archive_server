@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use actix_web::{
     get,
     web::{Data, Path},
     HttpResponse,
 };
-use maud::html;
+use maud::{html, PreEscaped};
 use pmd_hack_storage::{Query, Tag};
 
 use crate::{extractor::RequestData, make_hack_list, wrap_page, AppData, PageInfo};
@@ -35,10 +37,12 @@ pub async fn tagged(
     let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id.clone()));
 
     // create the main page
+    let mut translation_args = HashMap::new();
+    translation_args.insert("tag", tag_id.clone().into());
     wrap_page(
         html!(
-            h1 { "List of hacks with the tag " code { (tag_id) } }
-            i { "Please note that this list may not be exaustive. Send me a message if an hack is missing in it." }
+            h1 { (PreEscaped(request_data.lookup_with_args("hack-list-by-tag-header", &translation_args))) }
+            i { (request_data.lookup("hack-list-by-tag-non-exaustive-note")) }
             @if let Some(tag_info_single) = tag_info_single {
                 @if let Some(tag_description) = &tag_info_single.description {
                     p class="tagdescription" {
@@ -55,7 +59,7 @@ pub async fn tagged(
                 @if !hidden_hacks.is_empty() {
                     details {
                         summary {
-                            (hidden_string) " (click to reveal)"
+                            (hidden_string) " " (request_data.lookup("click-to-reveal-button"))
                         }
                         (make_hack_list(&hidden_hacks, &request_data, &app_data))
                     }
@@ -63,7 +67,7 @@ pub async fn tagged(
             }
         ),
         PageInfo {
-            name: format!("Hack tagged {}", tag_id),
+            name: (request_data.lookup_with_args("hack-list-by-tag-title", &translation_args)),
             discourage_reload: false,
         },
         &app_data,

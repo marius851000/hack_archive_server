@@ -1,8 +1,8 @@
-use std::{convert::Infallible, future::Future, pin::Pin, sync::Arc, collections::HashMap};
+use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, sync::Arc};
 
 use actix_web::{web::Data, FromRequest};
 use database::{model::MajorityToken, HackClient};
-use fluent_templates::{LanguageIdentifier, Loader, fluent_bundle::FluentValue};
+use fluent_templates::{fluent_bundle::FluentValue, LanguageIdentifier, Loader};
 use qstring::QString;
 use unic_langid::langid;
 
@@ -19,7 +19,7 @@ pub struct RequestData {
     pub majority_cookie_to_set: Option<String>,
     pub language: LanguageIdentifier,
     pub path: String,
-    pub app_data: Arc<AppData>
+    pub app_data: Arc<AppData>,
 }
 
 impl FromRequest for RequestData {
@@ -146,6 +146,8 @@ impl RequestData {
     }
 
     pub fn lookup_with_args(&self, text_id: &str, args: &HashMap<&str, FluentValue>) -> String {
-        self.app_data.locales.lookup_with_args(&self.language, text_id, args)
+        self.app_data
+            .locales
+            .lookup_with_args(&self.language, text_id, args)
     }
 }

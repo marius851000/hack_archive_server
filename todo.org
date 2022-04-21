@@ -25,3 +25,9 @@
 * TODO CONSIDER moving the hack data to couchdb too
 ** TODO maybe add a new /h/{id} path to get hacks data exclusively for newly added hacks, but still allowing the old path scheme for older hacks (hack data need a version identifier)
 * TODO CONSIDER using a common prefix for "pokemon-mystery-dungeon" and "pmd" prefixed hacks (or just get rid of it)
+* TODO good localisation support, at least french and english
+** DONE good fluent integration
+** TODO finish the French translation
+** TODO include a language switcher
+** TODO include some check about localisation in CI
+** TODO consider how to translate hack and tag text

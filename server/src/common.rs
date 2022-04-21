@@ -1,7 +1,8 @@
+use std::collections::HashMap;
+
 use crate::{extractor::RequestData, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
-use fluent_templates::Loader;
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Tag};
 
@@ -16,6 +17,12 @@ pub fn wrap_page(
     app_data: &AppData,
     request_data: RequestData,
 ) -> HttpResponse {
+    let mut credit_args = HashMap::new();
+    credit_args.insert(
+        "skytemple_hack_link_start",
+        "<a href=\"https://hacks.skytemple.org\">".into(),
+    );
+    credit_args.insert("skytemple_hack_link_end", "</a>".into());
     let markup = html!(
         html {
             head {
@@ -25,8 +32,8 @@ pub fn wrap_page(
             }
             body {
                 header {
-                    a id="archivedlink" href=(app_data.route(&request_data, "")) { (app_data.locales.lookup(&request_data.language, "return-to-main-page")) }
-                    a id="newslink" href="https://hacknews.pmdcollab.org/" { "Return to the news site" }
+                    a id="archivedlink" href=(app_data.route(&request_data, "")) { (request_data.lookup("return-to-main-page-link")) }
+                    a id="newslink" href="https://hacknews.pmdcollab.org/" { (request_data.lookup("return-to-news-site-link")) }
                 }
                 main {
                     //TODO: better error message displaying. In particular, separate error from other more generic message
@@ -34,7 +41,7 @@ pub fn wrap_page(
                         div class="errorcontainer" {
                             @if request_data.messages.have_error() {
                                 p {
-                                    "Error occured while generating this page :"
+                                    (request_data.lookup("error-occured-section"))
                                 }
                             }
                             @for error_message in request_data.messages.messages() {
@@ -51,10 +58,7 @@ pub fn wrap_page(
                 }
                 footer {
                     p {
-                        "Archive created and maintained by marius851000 ("
-                        code { "marius851000#2522" }
-                        " on Discord). This site is not directly affiliated, and not to be confused with the "
-                        a href="https://hacks.skytemple.org" { span class="skytemple" {"SkyTemple"} " hack list" } "."
+                        (PreEscaped(request_data.lookup_with_args("footer-credit", &credit_args)))
                     }
                     @if app_data.use_majority_token {
                         @if let Some(majority_check) = request_data.majority.as_ref() {
