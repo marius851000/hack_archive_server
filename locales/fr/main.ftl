@@ -1,1 +1,1 @@
-hello-text = Bonjour le monde !
+return-to-main-page = Liste des hacks archivé

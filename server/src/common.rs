@@ -1,6 +1,7 @@
 use crate::{extractor::RequestData, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
+use fluent_templates::Loader;
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Tag};
 
@@ -24,7 +25,7 @@ pub fn wrap_page(
             }
             body {
                 header {
-                    a id="archivedlink" href=(app_data.route(&request_data, "")) { "Archived hacks list" }
+                    a id="archivedlink" href=(app_data.route(&request_data, "")) { (app_data.locales.lookup(&request_data.language, "return-to-main-page")) }
                     a id="newslink" href="https://hacknews.pmdcollab.org/" { "Return to the news site" }
                 }
                 main {
