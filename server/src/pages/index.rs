@@ -1,5 +1,5 @@
 use actix_web::{get, web::Data, HttpResponse};
-use maud::html;
+use maud::{html, PreEscaped};
 use pmd_hack_storage::Query;
 
 use crate::{extractor::RequestData, make_hack_list, wrap_page, AppData, PageInfo};
@@ -22,13 +22,12 @@ pub async fn index(app_data: Data<AppData>, request_data: RequestData) -> HttpRe
     // create the main page
     wrap_page(
         html!(
-            h1 { "Marius's archive of PMD hack-rom" }
+            h1 { (request_data.lookup("website-title")) }
             p {
-                "This is the part of my archive that store rom-hacks patches. "
-                "The goal of this archive is to save every version of every hacks. "
+                (request_data.lookup("landpage-presentation"))
             }
             p {
-                "If you see there is an hack or a version that is missing, don't hesitate to contact me on Discord at marius851000#2522 (or any other one)."
+                (PreEscaped(request_data.lookup("landpage-missing")))
             }
             h2 { "List of hacks" }
             (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
