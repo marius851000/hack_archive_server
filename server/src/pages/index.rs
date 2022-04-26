@@ -29,14 +29,14 @@ pub async fn index(app_data: Data<AppData>, request_data: RequestData) -> HttpRe
             p {
                 (PreEscaped(request_data.lookup("landpage-missing")))
             }
-            h2 { "List of hacks" }
+            h2 { (request_data.lookup("landpage-list-of-hacks")) }
             (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
             @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
                 @let hidden_hacks = hidden_query.get_matching(&app_data.storage).0;
                 @if !hidden_hacks.is_empty() {
                     details {
                         summary {
-                            (hidden_string) " (click to reveal)"
+                            (hidden_string) " (" (request_data.lookup("hidden-click-to-reveal")) ")"
                         }
                         (make_hack_list(&hidden_hacks, &request_data, &app_data))
                     }
@@ -44,7 +44,7 @@ pub async fn index(app_data: Data<AppData>, request_data: RequestData) -> HttpRe
             }
         ),
         PageInfo {
-            name: "Archive of PMD hacks".into(),
+            name: request_data.lookup("landpage-title"),
             discourage_reload: false,
         },
         &app_data,
