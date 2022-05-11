@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 couch_rs = "0.8.37"
-tokio = { version = "1.18.1", features = ["full"] }
+tokio = { version = "1.18.2", features = ["full"] }
 http = "0.2.7"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4.17"
