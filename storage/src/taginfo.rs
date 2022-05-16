@@ -1,5 +1,6 @@
+use crate::Tag;
 use log::{info, warn};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
@@ -9,8 +10,6 @@ use std::{
 };
 use thiserror::Error;
 
-use crate::Tag;
-
 #[derive(Debug, Error)]
 pub enum TagInfoLoadError {
     #[error("Can't open the taginfo file at {1:?}")]
@@ -19,7 +18,7 @@ pub enum TagInfoLoadError {
     CantParseReadFile(#[source] serde_json::Error, PathBuf),
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize, Serialize, Default)]
 pub struct TagInfo {
     pub tags: HashMap<Tag, SingleTagInfo>,
     pub categories: HashMap<String, CategoryInfo>,
@@ -32,6 +31,10 @@ impl TagInfo {
         let result = serde_json::from_reader(json_file)
             .map_err(move |e| TagInfoLoadError::CantParseReadFile(e, path.to_path_buf()))?;
         Ok(result)
+    }
+
+    pub fn to_json(&self) -> serde_json::Result<String> {
+        serde_json::to_string_pretty(&self)
     }
 
     pub fn get_category_for_tag_id(&self, tag_id: &Tag) -> Option<&CategoryInfo> {
@@ -123,26 +126,35 @@ impl TagInfo {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SingleTagInfo {
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub category: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub implies: Vec<Tag>,
     #[serde(default)]
     pub priority: u32,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+fn is_false(b: &bool) -> bool {
+    !b
+}
+
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all(deserialize = "kebab-case"))]
 pub struct CategoryInfo {
     pub background_color: String,
     pub border_color: String,
     #[serde(default)]
+    #[serde(skip_serializing_if = "is_false")]
     pub required_for_file: bool,
     #[serde(default)]
     pub priority: u32,

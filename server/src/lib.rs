@@ -46,6 +46,22 @@ impl AppData {
     pub fn route_hack_list_by_tag(&self, request_data: &RequestData, tag: &Tag) -> String {
         self.route(request_data, &format!("tagged/{}", tag.0))
     }
+
+    pub fn route_index_root(&self) -> String {
+        self.route_static("index")
+    }
+
+    pub fn route_taginfo_file(&self) -> String {
+        self.route_static("index/taginfo.json")
+    }
+
+    pub fn route_index_hacks(&self) -> String {
+        self.route_static("index/hacks")
+    }
+
+    pub fn route_index_hack(&self, hack_slug: &str) -> String {
+        self.route_static(&format!("index/hacks/{}", hack_slug))
+    }
 }
 
 /// Return true if the hack id is illegal (due to being reserved/user for a page)
@@ -64,6 +80,7 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
             "create_majority_token"|
             "disconnect_majority_token"|
             "connect_majority_token"|
+            "index"|
 
             //likely to be used
             "faq"|

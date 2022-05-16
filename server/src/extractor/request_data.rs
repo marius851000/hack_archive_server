@@ -31,7 +31,10 @@ impl FromRequest for RequestData {
         req: &actix_web::HttpRequest,
         _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
-        let path = req.path().to_string();
+        let mut path = req.path().to_string();
+        if path.starts_with('/') {
+            path = path.chars().skip(1).collect();
+        }
         let app_data = req.app_data::<Data<AppData>>().unwrap().clone();
 
         let query_string = QString::from(req.query_string());

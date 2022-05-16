@@ -146,4 +146,8 @@ impl Hack {
         }
         r
     }
+
+    pub fn need_majority_token(&self, taginfo: &TagInfo) -> bool {
+        !self.get_major_only_tags(taginfo).is_empty()
+    }
 }

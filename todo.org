@@ -3,11 +3,12 @@
 ** TODO Handle token revokation
 *** TODO Make a webpage for it
 *** TODO Delete validity of child starting with the deepest one, in case this is somehow interrupted
-** TODO Also filter the online-exposed mirrorable archive
-*** TODO First make it generated via the server
-*** TODO Then force the use of a cookie to access major-only rom
+** DONE Also filter the online-exposed mirrorable archive
+*** DONE First make it generated via the server
+*** DONE Then force the use of a cookie to access major-only rom
 ** TODO Actually hide the hacks
 *** DONE Display error message when no token and major only hack (also display the reason of blocking)
+**** DONE Also prevent the download of those file by direct URL access
 **** TODO seems the tag in the hidding reason have invalid presentation
 *** DONE Should I display them on the search/main page without majority token ? (yes)
 *** TODO Also do per-version hidding ?
@@ -21,6 +22,7 @@
 *** TODO connection
 **** TODO Display a message
 *** TODO should definitively use post to prevent CSRF
+*** TODO Only display login/majority token stuff when on a page which contain such content (or /majority)
 * TODO create an appropriate 404 page (and sent it also for hack, tag and filename not found -- maybe with some customisation)
 * TODO CONSIDER moving the hack data to couchdb too
 ** TODO maybe add a new /h/{id} path to get hacks data exclusively for newly added hacks, but still allowing the old path scheme for older hacks (hack data need a version identifier)

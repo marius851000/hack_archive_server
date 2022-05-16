@@ -7,6 +7,7 @@ pub mod css;
 pub mod disconnect_majority_token;
 pub mod file;
 pub mod hack;
+pub mod hackindex;
 pub mod index;
 pub mod tagged;
 

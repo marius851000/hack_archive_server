@@ -7,8 +7,8 @@ use fluent_templates::ArcLoader;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{
-    create_majority_token, css, disconnect_majority_token, file, hack, index, majority, oswald,
-    tagged,
+    create_majority_token, css, disconnect_majority_token, file, hack, hackindex, index, majority,
+    oswald, tagged,
 };
 use server::AppData;
 use std::path::PathBuf;
@@ -27,7 +27,7 @@ pub struct Opts {
     couch_uri: String,
     couch_username: String,
     couch_password: String,
-    /// experimental feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it's just graphical)
+    /// experimental feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it just hide it)
     #[clap(short, long)]
     use_majority_token: bool,
 }
@@ -94,6 +94,10 @@ async fn main() {
                     .service(oswald)
                     .service(css::css)
                     .service(index::index)
+                    .service(hackindex::index_root::index_root)
+                    .service(hackindex::index_taginfo::index_taginfo)
+                    .service(hackindex::index_hacks::index_hacks)
+                    .service(hackindex::index_hack::index_hack)
                     .service(majority::majority)
                     .service(create_majority_token::create_majority_token)
                     .service(tagged::tagged)

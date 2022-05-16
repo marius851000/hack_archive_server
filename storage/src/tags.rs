@@ -1,10 +1,10 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, HashSet},
     fmt::Display,
 };
 
-#[derive(Deserialize, Hash, PartialEq, Eq, Clone, Debug, PartialOrd, Ord)]
+#[derive(Deserialize, Serialize, Hash, PartialEq, Eq, Clone, Debug, PartialOrd, Ord)]
 pub struct Tag(pub String);
 
 impl Display for Tag {
