@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use actix_web::{
-    error::{ErrorNotFound, ErrorUnauthorized},
+    error::{ErrorNotFound, ErrorForbidden},
     get,
     web::{Data, Path},
     Result,
@@ -29,7 +29,7 @@ pub async fn index_hack(
         if hack.need_majority_token(&app_data.storage.taginfo)
             && !request_data.have_access_to_major_only_content
         {
-            return Err(ErrorUnauthorized(
+            return Err(ErrorForbidden(
                 "A valid majority token is required to access this file",
             ));
         };

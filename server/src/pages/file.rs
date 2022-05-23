@@ -1,6 +1,6 @@
 use actix_files::NamedFile;
 use actix_web::{
-    error::{ErrorBadRequest, ErrorNotFound, ErrorUnauthorized},
+    error::{ErrorBadRequest, ErrorNotFound, ErrorForbidden},
     get,
     web::{Data, Path},
     Result,
@@ -24,7 +24,7 @@ pub async fn file(
     if hack.need_majority_token(&app_data.storage.taginfo)
         && !request_data.have_access_to_major_only_content
     {
-        return Err(ErrorUnauthorized(
+        return Err(ErrorForbidden(
             "A valid majority token is required to access this file",
         ));
     };
