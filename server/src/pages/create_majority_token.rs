@@ -33,6 +33,7 @@ pub async fn create_majority_token(
             PageInfo {
                 name: TITLE.to_string(),
                 discourage_reload,
+                display_majority_info: true
             },
             app_data,
             request_data,
@@ -148,6 +149,7 @@ pub async fn create_majority_token(
                     PageInfo {
                         name: TITLE.to_string(),
                         discourage_reload: true,
+                        display_majority_info: true
                     },
                     &app_data,
                     request_data,

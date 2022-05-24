@@ -2,7 +2,7 @@
 return-to-main-page-link = Liste des hacks archivé
 return-to-news-site-link = Retourner à la lettre d'actualité
 click-to-reveal-button = Cliquer pour afficher
-error-occured-section = Il y a eu une erreur :
+error-occured-section = Erreur :
 website-title = Archive de Marius des rom-hacks PDM
 hidden-click-to-reveal = cliquer pour montrer
 

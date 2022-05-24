@@ -46,6 +46,7 @@ pub async fn index(app_data: Data<AppData>, request_data: RequestData) -> HttpRe
         PageInfo {
             name: request_data.lookup("landpage-title"),
             discourage_reload: false,
+            display_majority_info: false
         },
         &app_data,
         request_data,

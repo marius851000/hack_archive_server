@@ -2,7 +2,7 @@
 return-to-main-page-link = Archived hacks list
 return-to-news-site-link = Return to the news site
 click-to-reveal-button = (click to reveal)
-error-occured-section = An error occured :
+error-occured-section = Error :
 website-title = Marius's archive of PMD hack-rom
 hidden-click-to-reveal = click to reveal
 

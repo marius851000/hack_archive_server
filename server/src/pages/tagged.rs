@@ -69,6 +69,7 @@ pub async fn tagged(
         PageInfo {
             name: (request_data.lookup_with_args("hack-list-by-tag-title", &translation_args)),
             discourage_reload: false,
+            display_majority_info: false, //TODO: enable if the tag is directly or indirectly major-only
         },
         &app_data,
         request_data,

@@ -67,6 +67,7 @@ pub async fn majority(app_data: Data<AppData>, request_data: RequestData) -> Htt
         PageInfo {
             name: "Info about the majority check".to_string(),
             discourage_reload: false,
+            display_majority_info: true,
         },
         &app_data,
         request_data,

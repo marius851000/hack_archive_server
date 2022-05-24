@@ -9,6 +9,7 @@ use pmd_hack_storage::{Hack, Tag};
 pub struct PageInfo {
     pub name: String,
     pub discourage_reload: bool,
+    pub display_majority_info: bool,
 }
 
 pub fn wrap_page(
@@ -60,7 +61,7 @@ pub fn wrap_page(
                     p {
                         (PreEscaped(request_data.lookup_with_args("footer-credit", &credit_args)))
                     }
-                    @if app_data.use_majority_token {
+                    @if app_data.use_majority_token && page_info.display_majority_info {
                         @if let Some(majority_check) = request_data.majority.as_ref() {
                             form action=(app_data.route(&request_data, "disconnect_majority_token")) method="post" {
                                 label for="disconnect_majority_token" {
