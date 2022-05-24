@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use actix_web::{
-    error::{ErrorNotFound, ErrorForbidden},
+    error::{ErrorForbidden, ErrorNotFound},
     get,
     web::{Data, Path},
     Result,

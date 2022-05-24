@@ -6,12 +6,12 @@
 ** DONE Also filter the online-exposed mirrorable archive
 *** DONE First make it generated via the server
 *** DONE Then force the use of a cookie to access major-only rom
-** TODO Actually hide the hacks
+** DONE Actually hide the hacks
 *** DONE Display error message when no token and major only hack (also display the reason of blocking)
 **** DONE Also prevent the download of those file by direct URL access
 **** TODO seems the tag in the hidding reason have invalid presentation
 *** DONE Should I display them on the search/main page without majority token ? (yes)
-*** TODO Also do per-version hidding ?
+*** NOPE Also do per-version hidding ?
 *** TODO Display a warning on top of the page, even with token.
 ** DONE ability to create a majority token
 ** DONE Make the majority stuff hideable

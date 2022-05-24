@@ -163,7 +163,7 @@ pub async fn hack(
             PageInfo {
                 name: format!("Major-only hack {}", hack.data.name),
                 discourage_reload: false,
-                display_majority_info: true
+                display_majority_info: true,
             },
             &app_data,
             request_data,

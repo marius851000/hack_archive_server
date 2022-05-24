@@ -48,6 +48,7 @@ async fn main() {
 
     println!("hacks loaded");
 
+    //TODO: rework how hacks are hidden
     let hidden_by_default = vec![
         (
             "Hacks marked being considered as being likely to be perceived as offensive".into(),
@@ -63,7 +64,7 @@ async fn main() {
         ),
         (
             "Hacks marked as being reserved to major person (contain pornography)".into(),
-            Query::AtLeastOneOfTag(vec![Tag("majoronly".into())]),
+            Query::AtLeastOneOfTag(vec![Tag("pornographic".into())]),
         )
     ];
 

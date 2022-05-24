@@ -1,6 +1,6 @@
 use actix_files::NamedFile;
 use actix_web::{
-    error::{ErrorBadRequest, ErrorNotFound, ErrorForbidden},
+    error::{ErrorBadRequest, ErrorForbidden, ErrorNotFound},
     get,
     web::{Data, Path},
     Result,

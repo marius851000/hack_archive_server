@@ -4,7 +4,7 @@ use crate::{extractor::RequestData, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use maud::{html, Markup, PreEscaped};
-use pmd_hack_storage::{Hack, Tag};
+use pmd_hack_storage::{Hack, Query, Tag};
 
 pub struct PageInfo {
     pub name: String,
@@ -138,6 +138,40 @@ pub fn make_hack_list(
                     a href=(app_data.route_hack(request_data, hack_id)) {
                         (hack.data.name)
                     }
+                }
+            }
+        }
+    }
+}
+
+pub fn make_hack_list_hidden(
+    query: Query,
+    request_data: &RequestData,
+    app_data: &AppData,
+) -> Markup {
+    let unfiltered_hacks = (Query::Difference(
+        Box::new(query.clone()),
+        Box::new(Query::Or(
+            app_data
+                .hidden_by_default
+                .iter()
+                .map(|(_t, q)| q.clone())
+                .collect(),
+        )),
+    ))
+    .get_matching(&app_data.storage)
+    .0;
+
+    html! {
+        (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
+        @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
+            @let hidden_hacks = Query::Intersection(Box::new(query.clone()), Box::new(hidden_query.clone())).get_matching(&app_data.storage).0;
+            @if !hidden_hacks.is_empty() {
+                details {
+                    summary {
+                        (hidden_string) " (" (request_data.lookup("hidden-click-to-reveal")) ")"
+                    }
+                    (make_hack_list(&hidden_hacks, &request_data, &app_data))
                 }
             }
         }
