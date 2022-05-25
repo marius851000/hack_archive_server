@@ -13,6 +13,7 @@ use server::pages::{
 use server::AppData;
 use std::path::PathBuf;
 use unic_langid::langid;
+use url::Url;
 
 #[derive(Parser, Debug)]
 #[clap()]
@@ -37,6 +38,11 @@ async fn main() {
     env_logger::init();
 
     let opts = Opts::parse();
+
+    let root_url = Url::parse(&opts.root_url).unwrap();
+    if root_url.cannot_be_a_base() {
+        panic!("The provided url ({:?}) cannot be use a base url", root_url);
+    }
 
     let locales = ArcLoader::builder(&opts.locales_folder, langid!("en"))
         .shared_resources(Some(&[opts.locales_folder.join("core.ftl")]))
@@ -69,7 +75,7 @@ async fn main() {
     ];
 
     let app_data = Data::new(AppData {
-        root_url: opts.root_url,
+        root_url,
         storage,
         hidden_by_default,
         use_majority_token: opts.use_majority_token,

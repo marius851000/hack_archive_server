@@ -15,7 +15,7 @@
 *** TODO Display a warning on top of the page, even with token.
 ** DONE ability to create a majority token
 ** DONE Make the majority stuff hideable
-** TODO hide them in tag search page
+** DONE hide them in tag search page
 ** TODO Use post parameter instead of Get parameter if possible
 *** DONE disconnect
 **** TODO Display a success message on the redirected route

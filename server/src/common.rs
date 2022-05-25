@@ -29,11 +29,11 @@ pub fn wrap_page(
             head {
                 meta charset="utf-8" {}
                 title { (page_info.name) }
-                link rel="stylesheet" href=(app_data.route_static("style.css")) {}
+                link rel="stylesheet" href=(app_data.route_style_css().as_str()) {}
             }
             body {
                 header {
-                    a id="archivedlink" href=(app_data.route(&request_data, "")) { (request_data.lookup("return-to-main-page-link")) }
+                    a id="archivedlink" href=(app_data.base_url(&request_data).as_str()) { (request_data.lookup("return-to-main-page-link")) }
                     a id="newslink" href="https://hacknews.pmdcollab.org/" { (request_data.lookup("return-to-news-site-link")) }
                 }
                 main {
@@ -61,9 +61,9 @@ pub fn wrap_page(
                     p {
                         (PreEscaped(request_data.lookup_with_args("footer-credit", &credit_args)))
                     }
-                    @if app_data.use_majority_token && page_info.display_majority_info {
+                    @if app_data.use_majority_token && (page_info.display_majority_info || request_data.majority.is_some()) {
                         @if let Some(majority_check) = request_data.majority.as_ref() {
-                            form action=(app_data.route(&request_data, "disconnect_majority_token")) method="post" {
+                            form action=(app_data.route_simple(&request_data, &["disconnect_majority_token"]).as_str()) method="post" {
                                 label for="disconnect_majority_token" {
                                     @if request_data.have_access_to_major_only_content {
                                         (format!("You are connected with the valid majority token {}. ", majority_check._id))
@@ -75,14 +75,14 @@ pub fn wrap_page(
                                         "."
                                     }
                                 }
-                                input type="hidden" id="redirect_url" name="redirect_url" value=(app_data.route(&request_data, &request_data.path)) {}
+                                input type="hidden" id="redirect_url" name="redirect_url" value=(app_data.route_this_page(&request_data).as_str()) {}
                                 input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
                                 input type="submit" value="Disconnect" {}
                             }
                             @if request_data.can_certify {
                                 p {
                                     "You can create a token for another user on the "
-                                    a href=(app_data.route(&request_data, "majority")) { "information page" }
+                                    a href=(app_data.route_simple(&request_data, &["majority"]).as_str()) { "information page" }
                                     "."
                                 }
                             }
@@ -93,7 +93,7 @@ pub fn wrap_page(
                             } @else {
                                 label for="majority_token" {
                                     "Majority code ("
-                                    a href=(app_data.route(&request_data, "majority")) { "more info" }
+                                    a href=(app_data.route_simple(&request_data, &["majority"]).as_str()) { "more info" }
                                     ") "
                                 }
                                 //TODO: use a form
@@ -135,7 +135,7 @@ pub fn make_hack_list(
         ul {
             @for (hack_id, hack) in hacks {
                 li {
-                    a href=(app_data.route_hack(request_data, hack_id)) {
+                    a href=(app_data.route_hack(request_data, hack_id).as_str()) {
                         (hack.data.name)
                     }
                 }
@@ -163,7 +163,7 @@ pub fn make_hack_list_hidden(
     .0;
 
     html! {
-        (make_hack_list(&unfiltered_hacks, &request_data, &app_data))
+        (make_hack_list(&unfiltered_hacks, request_data, app_data))
         @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
             @let hidden_hacks = Query::Intersection(Box::new(query.clone()), Box::new(hidden_query.clone())).get_matching(&app_data.storage).0;
             @if !hidden_hacks.is_empty() {
@@ -171,7 +171,7 @@ pub fn make_hack_list_hidden(
                     summary {
                         (hidden_string) " (" (request_data.lookup("hidden-click-to-reveal")) ")"
                     }
-                    (make_hack_list(&hidden_hacks, &request_data, &app_data))
+                    (make_hack_list(&hidden_hacks, request_data, app_data))
                 }
             }
         }
@@ -184,7 +184,7 @@ pub fn render_markdown(text: &str) -> PreEscaped<String> {
 
 pub fn render_tag(tag: &Tag, request_data: &RequestData, app_data: &AppData) -> Markup {
     html! {
-        a href=(app_data.route_hack_list_by_tag(request_data, tag)) {
+        a href=(app_data.route_hack_list_by_tag(request_data, tag).as_str()) {
             @if let Some(single_tag_info) = app_data.storage.taginfo.get_tag(tag) {
                 @let label = single_tag_info.label.as_ref().unwrap_or(&tag.0);
                 @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(single_tag_info, tag) {

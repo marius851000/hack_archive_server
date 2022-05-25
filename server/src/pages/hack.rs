@@ -76,7 +76,7 @@ pub async fn hack(
                     p { "screenshots" }
                     div class="screenshots" {
                         @for screenshot in &hack.data.screenshots {
-                            img src=(app_data.route_hack_file(&hack_id, screenshot)) { }
+                            img src=(app_data.route_hack_file(&hack_id, screenshot).as_str()) { }
                         }
                     }
                 }
@@ -101,7 +101,7 @@ pub async fn hack(
                             div class="hack" {
                                 h4 { (file.label) }
                                 p {
-                                    a href=(app_data.route_hack_file(&hack_id, &file.filename)) { "download" }
+                                    a href=(app_data.route_hack_file(&hack_id, &file.filename).as_str()) { "download" }
                                 }
                                 /*@if let Some(description) = &file.description {
                                     @let rendered = render_markdown(description);
@@ -145,7 +145,7 @@ pub async fn hack(
             html!(
                 h1 { (format!("Major-only hack ({})", hack.data.name)) }
                 p { "This hack is only available for major users. More information can be found on the "
-                    a href=(app_data.route(&request_data, "majority")) { "dedicated page" } "."
+                    a href=(app_data.route_simple(&request_data, &["majority"]).as_str()) { "dedicated page" } "."
                 }
                 p { "Reason of blocking :"}
                 ul {

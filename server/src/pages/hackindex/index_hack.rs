@@ -44,7 +44,7 @@ pub async fn index_hack(
                     ul {
                         @for file in files {
                             li {
-                                a href=(app_data.route_hack_file(&hack_id, &file)) { (file) }
+                                a href=(app_data.route_hack_file(&hack_id, &file).as_str()) { (file) }
                             }
                         }
                     }

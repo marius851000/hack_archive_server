@@ -16,7 +16,7 @@ pub async fn index_hacks(app_data: Data<AppData>) -> PreEscaped<String> {
                 ul {
                     @for hack_slug in app_data.storage.hacks.keys() {
                         li {
-                            a href=(app_data.route_index_hack(hack_slug)) { (hack_slug) }
+                            a href=(app_data.route_index_hack(hack_slug).as_str()) { (hack_slug) }
                         }
                     }
                 }

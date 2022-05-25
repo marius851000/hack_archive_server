@@ -60,7 +60,7 @@ pub async fn majority(app_data: Data<AppData>, request_data: RequestData) -> Htt
                 @if request_data.can_certify {
                     p { "You can create for another user. You should make sure, in your own way, that they are actually major as in the legal definition in France (more than 18 year). They will themselves be able to create other majority tokens." }
 
-                    a href=(app_data.route(&request_data, "create_majority_token")) { "Create a new majority token" }
+                    a href=(app_data.route_simple(&request_data, &["create_majority_token"]).as_str()) { "Create a new majority token" }
                 }
             }
         ),

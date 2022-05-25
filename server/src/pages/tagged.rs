@@ -24,7 +24,7 @@ pub async fn tagged(
 
     // create the main page
     let mut translation_args = HashMap::new();
-    translation_args.insert("tag", tag_id.clone().into());
+    translation_args.insert("tag", tag_id.into());
     wrap_page(
         html!(
             h1 { (PreEscaped(request_data.lookup_with_args("hack-list-by-tag-header", &translation_args))) }
