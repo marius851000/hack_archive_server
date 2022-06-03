@@ -20,7 +20,7 @@ pub async fn tagged(
 
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
 
-    let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id.clone()));
+    let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id));
 
     // create the main page
     let mut translation_args = HashMap::new();
