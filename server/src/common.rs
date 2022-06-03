@@ -208,7 +208,7 @@ pub fn render_many_tags(tags: Vec<Tag>, request_data: &RequestData, app_data: &A
                 @let remaining = tags.len() - count - 1;
                 (render_tag(tag, request_data, app_data));
                 @match remaining {
-                    1 => ", and",
+                    1 => ", and ",
                     2.. => ", ",
                     _ => ""
                 }
