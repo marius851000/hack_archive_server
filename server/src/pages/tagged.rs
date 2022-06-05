@@ -1,10 +1,11 @@
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
 use actix_web::{
     get,
     web::{Data, Path},
     HttpResponse,
 };
+use fluent_templates::fluent_bundle::FluentValue;
 use maud::{html, PreEscaped};
 use pmd_hack_storage::{Query, Tag};
 
@@ -20,11 +21,11 @@ pub async fn tagged(
 
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
 
-    let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id));
+    let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id.clone()));
 
     // create the main page
     let mut translation_args = HashMap::new();
-    translation_args.insert("tag", tag_id.into());
+    translation_args.insert("tag", FluentValue::String(Cow::Owned(tag_id)));
     wrap_page(
         html!(
             h1 { (PreEscaped(request_data.lookup_with_args("hack-list-by-tag-header", &translation_args))) }
