@@ -1,12 +1,11 @@
-use actix_web::{
-    cookie::Cookie,
-    post,
-    web::{Data, Form},
-    HttpResponse,
-};
+use actix_web::{cookie::Cookie, post, web::Form, HttpResponse};
 use serde::Deserialize;
 
-use crate::AppData;
+use crate::{
+    extractor::RequestData,
+    message::{MessageKind, Messages},
+    HttpResponseBuilderExtension,
+};
 
 #[derive(Deserialize)]
 pub struct FormData {
@@ -16,19 +15,14 @@ pub struct FormData {
 #[post("/disconnect_majority_token")]
 pub async fn disconnect_majority_token(
     form: Form<FormData>,
-    app_data: Data<AppData>,
+    request_data: RequestData,
 ) -> HttpResponse {
     HttpResponse::SeeOther()
         .cookie(Cookie::new("majority_token", ""))
-        .append_header((
-            "location",
-            app_data
-                .add_get_param_or_root_with_redirect_error(
-                    &form.redirect_url,
-                    "disconnect_success",
-                    "true",
-                )
-                .as_str(),
+        .append_header(("location", form.redirect_url.as_str()))
+        .with_messages(Messages::create_with_message(
+            request_data.lookup("message-majority-token-removed"),
+            MessageKind::Success,
         ))
         .finish()
 }

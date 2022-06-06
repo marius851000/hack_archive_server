@@ -5,6 +5,8 @@ click-to-reveal-button = (click to reveal)
 error-occured-section = Error :
 website-title = Marius's archive of PMD hack-rom
 hidden-click-to-reveal = click to reveal
+error-notication-cant-be-read = The notification to display couldn't be read
+message-majority-token-removed = Majority token correctly removed
 
 footer-credit = Archive created and maintained by marius851000 ({-marius-discord-code} on Discord). This site is not directly affiliated, and not be confused the {$skytemple_hack_link_start}{-skytemple} hack list{$skytemple_hack_link_end}.
 

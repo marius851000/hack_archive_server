@@ -5,6 +5,8 @@ click-to-reveal-button = Cliquer pour afficher
 error-occured-section = Erreur :
 website-title = Archive de Marius des rom-hacks PDM
 hidden-click-to-reveal = cliquer pour montrer
+error-notication-cant-be-read = Certaines notification n'on pas put être décodé
+message-majority-token-removed = Jeton de majorité supprimé
 
 footer-credit = Archive crée et maintenue par marius851000 (<code>marius851000#2522</code> sur Discord). Ce site n'est pas directement affilié, et ne doit pas être confondu avec la {$skytemple_hack_link_start}liste des hacks de {-skytemple}{$skytemple_hack_link_end}.
 

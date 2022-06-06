@@ -7,6 +7,9 @@ pub mod pages;
 
 pub mod message;
 
+mod extension;
+pub use extension::*;
+
 use extractor::RequestData;
 use fluent_templates::ArcLoader;
 use pmd_hack_storage::{Query, Storage, Tag};

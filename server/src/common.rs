@@ -122,6 +122,7 @@ pub fn wrap_page(
     if let Some(token) = request_data.majority_cookie_to_set.as_ref() {
         response_builder.cookie(Cookie::build("majority_token", token).finish());
     };
+    response_builder.cookie(Cookie::build("messages", "").finish());
 
     response_builder.body(markup.into_boxed_str().into_string())
 }

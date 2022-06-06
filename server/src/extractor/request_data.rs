@@ -31,6 +31,8 @@ impl FromRequest for RequestData {
         req: &actix_web::HttpRequest,
         _payload: &mut actix_web::dev::Payload,
     ) -> Self::Future {
+        let mut messages = Messages::default();
+
         let mut path = req.path().to_string();
         if path.starts_with('/') {
             path = path.chars().skip(1).collect();
@@ -43,13 +45,29 @@ impl FromRequest for RequestData {
             .unwrap_or("en")
             .parse()
             .unwrap_or(langid!("en"));
+
+        if let Some(cookie_messages) = req.cookie("messages") {
+            if !cookie_messages.value().is_empty() {
+                match serde_json::from_str::<Messages>(cookie_messages.value()) {
+                    Ok(messages_in_cookie) => messages = messages_in_cookie,
+                    Err(_) => messages.add_message_from_string(
+                        app_data
+                            .locales
+                            .lookup(&language, "error-notication-cant-be-read")
+                            .to_string(),
+                        MessageKind::Error,
+                    ),
+                };
+            };
+        }
+
         if !app_data.use_majority_token {
             return Box::pin(async move {
                 Ok(RequestData {
                     majority: None,
                     have_access_to_major_only_content: false,
                     can_certify: false,
-                    messages: Messages::default(),
+                    messages,
                     majority_cookie_to_set: None,
                     language,
                     path,
@@ -71,7 +89,6 @@ impl FromRequest for RequestData {
         }
 
         Box::pin(async move {
-            let mut messages = Messages::default();
             let parameter_majority_token: Option<String> = parameter_majority_token;
             let mut majority_token: Option<String> =
                 if let Some(token) = parameter_majority_token.as_ref() {
