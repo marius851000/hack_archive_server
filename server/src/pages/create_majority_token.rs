@@ -58,7 +58,7 @@ pub async fn create_majority_token(
         )
     }
 
-    if let Some(majority_token) = &mut request_data.majority {
+    if let Some(majority_token) = &mut request_data.majority_token {
         if request_data.can_certify {
             if get_timestamp() > majority_token.latest_certification_timestamp + 10 {
                 let mut remaining_max_loop: u8 = 100;

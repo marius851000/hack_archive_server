@@ -74,15 +74,7 @@ async fn main() {
         )
     ];
 
-    let app_data = Data::new(AppData {
-        root_url,
-        storage,
-        hidden_by_default,
-        use_majority_token: opts.use_majority_token,
-        locales,
-    });
-
-    let hackclient = HackClient::new_from_connection_info(
+    let hack_client = HackClient::new_from_connection_info(
         &opts.couch_uri,
         &opts.couch_username,
         &opts.couch_password,
@@ -90,28 +82,34 @@ async fn main() {
     .await
     .unwrap();
 
+    let app_data = Data::new(AppData {
+        root_url,
+        storage,
+        hack_client,
+        hidden_by_default,
+        use_majority_token: opts.use_majority_token,
+        locales,
+    });
+
     println!("connected to couchdb");
 
     HttpServer::new(move || {
-        App::new()
-            .app_data(app_data.clone())
-            .app_data(Data::new(hackclient.clone()))
-            .service(
-                web::scope(&opts.scope)
-                    .service(oswald)
-                    .service(css::css)
-                    .service(index::index)
-                    .service(hackindex::index_root::index_root)
-                    .service(hackindex::index_taginfo::index_taginfo)
-                    .service(hackindex::index_hacks::index_hacks)
-                    .service(hackindex::index_hack::index_hack)
-                    .service(majority::majority)
-                    .service(create_majority_token::create_majority_token)
-                    .service(tagged::tagged)
-                    .service(hack::hack)
-                    .service(file::file)
-                    .service(disconnect_majority_token::disconnect_majority_token),
-            )
+        App::new().app_data(app_data.clone()).service(
+            web::scope(&opts.scope)
+                .service(oswald)
+                .service(css::css)
+                .service(index::index)
+                .service(hackindex::index_root::index_root)
+                .service(hackindex::index_taginfo::index_taginfo)
+                .service(hackindex::index_hacks::index_hacks)
+                .service(hackindex::index_hack::index_hack)
+                .service(majority::majority)
+                .service(create_majority_token::create_majority_token)
+                .service(tagged::tagged)
+                .service(hack::hack)
+                .service(file::file)
+                .service(disconnect_majority_token::disconnect_majority_token),
+        )
     })
     .bind(&opts.bind_address)
     .unwrap()

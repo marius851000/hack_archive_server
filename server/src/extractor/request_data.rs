@@ -12,7 +12,7 @@ use crate::{
 };
 
 pub struct RequestData {
-    pub majority: Option<MajorityToken>,
+    pub majority_token: Option<MajorityToken>,
     pub have_access_to_major_only_content: bool,
     pub can_certify: bool,
     pub messages: Messages,
@@ -64,7 +64,7 @@ impl FromRequest for RequestData {
         if !app_data.use_majority_token {
             return Box::pin(async move {
                 Ok(RequestData {
-                    majority: None,
+                    majority_token: None,
                     have_access_to_major_only_content: false,
                     can_certify: false,
                     messages,
@@ -78,7 +78,6 @@ impl FromRequest for RequestData {
 
         //TODO: put the majority token in post
         let cookie = req.cookie("majority_token");
-        let hackclient = req.app_data::<Data<HackClient>>().unwrap().clone();
 
         let mut parameter_majority_token = query_string
             .get("majority_token")
@@ -101,49 +100,17 @@ impl FromRequest for RequestData {
                 majority_token = None;
             };
 
-            let (majority, have_access_to_major_only_content, can_certify) = if let Some(
-                majority_token,
-            ) =
-                majority_token.as_ref()
-            {
-                match hackclient.get_majority_token(majority_token).await {
-                    Ok(Some(majority)) => {
-                        if majority.admin_flags.get().revoked {
-                            messages.add_message_from_string(
-                                "The provided majority token has been revoked by an administrator"
-                                    .into(),
-                                MessageKind::Error,
-                            );
-                            (Some(majority), false, false)
-                        } else {
-                            let can_certify = majority.admin_flags.get().can_certify;
-                            (Some(majority), true, can_certify)
-                        }
-                    }
-                    Ok(None) => {
-                        messages.add_message_from_string(
-                            "The provided majority token doesn't exist".into(),
-                            MessageKind::Error,
-                        );
-                        (None, false, false)
-                    }
-                    Err(e) => {
-                        println!(
-                            "an error occured while checking the majority of the user : {:?}",
-                            e
-                        );
-                        messages.add_message_from_string(
-                        "An (internal ?) error occured while checking wheter you have access to mature content or not. You won't have access to this content. If you need help, contact the author, marius.".into(),
-                        MessageKind::Error
-                        );
-                        (None, false, false)
-                    }
-                }
-            } else {
-                (None, false, false)
-            };
+            let (majority_token, have_access_to_major_only_content, can_certify) =
+                if let Some(token) = majority_token {
+                    app_data
+                        .check_validity_of_majority_token(&token, &mut messages)
+                        .await
+                } else {
+                    (None, false, false)
+                };
+
             Ok(Self {
-                majority,
+                majority_token,
                 have_access_to_major_only_content,
                 can_certify,
                 messages,

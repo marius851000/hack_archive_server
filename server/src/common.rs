@@ -61,8 +61,8 @@ pub fn wrap_page(
                     p {
                         (PreEscaped(request_data.lookup_with_args("footer-credit", &credit_args)))
                     }
-                    @if app_data.use_majority_token && (page_info.display_majority_info || request_data.majority.is_some()) {
-                        @if let Some(majority_check) = request_data.majority.as_ref() {
+                    @if app_data.use_majority_token && (page_info.display_majority_info || request_data.majority_token.is_some()) {
+                        @if let Some(majority_check) = request_data.majority_token.as_ref() {
                             form action=(app_data.route_simple(&request_data, &["disconnect_majority_token"]).as_str()) method="post" {
                                 label for="disconnect_majority_token" {
                                     @if request_data.have_access_to_major_only_content {

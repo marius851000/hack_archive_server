@@ -8,10 +8,12 @@ pub mod pages;
 pub mod message;
 
 mod extension;
+use database::{model::MajorityToken, HackClient};
 pub use extension::*;
 
 use extractor::RequestData;
 use fluent_templates::ArcLoader;
+use message::{MessageKind, Messages};
 use pmd_hack_storage::{Query, Storage, Tag};
 use url::Url;
 
@@ -20,6 +22,7 @@ pub struct AppData {
     // must possible be a base, otherwise, it would panic
     pub root_url: Url,
     pub storage: Storage,
+    pub hack_client: HackClient,
     /// String: description of the reason
     /// Query: when does it match
     pub hidden_by_default: Vec<(String, Query)>,
@@ -99,6 +102,49 @@ impl AppData {
             url.query_pairs_mut()
                 .append_pair("redirect_url_error", "true");
             url
+        }
+    }
+
+    /// Check if a majority token is valid. Return None if it is valid, Some(message) otherwise, with the message being in the user's language
+    /// Result : majority token is valid, a boolean indicated whether the token allow access to major only content, and a last boolean indicating whether the token can create another token
+    //TODO: better API for this function. Maybe move it.
+    pub async fn check_validity_of_majority_token(
+        &self,
+        majority_token: &str,
+        messages: &mut Messages,
+    ) -> (Option<MajorityToken>, bool, bool) {
+        //TODO: actually translate the message... Hey ! I'm not asking for the language !
+        match self.hack_client.get_majority_token(majority_token).await {
+            Ok(Some(majority)) => {
+                if majority.admin_flags.get().revoked {
+                    messages.add_message_from_string(
+                        "The provided majority token has been revoked by an administrator".into(),
+                        MessageKind::Error,
+                    );
+                    (Some(majority), false, false)
+                } else {
+                    let can_certify = majority.admin_flags.get().can_certify;
+                    (Some(majority), true, can_certify)
+                }
+            }
+            Ok(None) => {
+                messages.add_message_from_string(
+                    "The provided majority token doesn't exist".into(),
+                    MessageKind::Error,
+                );
+                (None, false, false)
+            }
+            Err(e) => {
+                println!(
+                    "an error occured while checking the majority of the user : {:?}",
+                    e
+                );
+                messages.add_message_from_string(
+                    "An (internal ?) error occured while checking wheter you have access to mature content or not. You won't have access to this content. If you need help, contact the author, marius.".into(),
+                    MessageKind::Error
+                    );
+                (None, false, false)
+            }
         }
     }
 }

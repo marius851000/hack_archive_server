@@ -54,7 +54,7 @@ pub async fn majority(app_data: Data<AppData>, request_data: RequestData) -> Htt
                 i { "Oh ! And if you know a better solution, I'll be happy to know it too !" }
             }
 
-            @if request_data.majority.is_some() {
+            @if request_data.majority_token.is_some() {
                 hr {}
                 p { "You currently have a majority token loaded. More information about it can be found at the bottom of the page." }
                 @if request_data.can_certify {

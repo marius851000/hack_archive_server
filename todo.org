@@ -18,11 +18,12 @@
 ** DONE hide them in tag search page
 ** TODO Use post parameter instead of Get parameter if possible
 *** DONE disconnect
-**** TODO Display a success message on the redirected route
+**** DONE Display a success message on the redirected route
 *** TODO connection
 **** TODO Display a message
 *** TODO should definitively use post to prevent CSRF
 *** TODO Only display login/majority token stuff when on a page which contain such content (or /majority)
+* TODO reorganize. It seems a bit messed up with all these routes
 * TODO create an appropriate 404 page (and sent it also for hack, tag and filename not found -- maybe with some customisation)
 * TODO CONSIDER moving the hack data to couchdb too
 ** TODO maybe add a new /h/{id} path to get hacks data exclusively for newly added hacks, but still allowing the old path scheme for older hacks (hack data need a version identifier)
