@@ -1,7 +1,7 @@
 use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, sync::Arc};
 
 use actix_web::{web::Data, FromRequest};
-use database::{model::MajorityToken, HackClient};
+use database::model::MajorityToken;
 use fluent_templates::{fluent_bundle::FluentValue, LanguageIdentifier, Loader};
 use qstring::QString;
 use unic_langid::langid;
@@ -103,7 +103,7 @@ impl FromRequest for RequestData {
             let (majority_token, have_access_to_major_only_content, can_certify) =
                 if let Some(token) = majority_token {
                     app_data
-                        .check_validity_of_majority_token(&token, &mut messages)
+                        .check_validity_of_majority_token(&token, &mut messages, &language)
                         .await
                 } else {
                     (None, false, false)

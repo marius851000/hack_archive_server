@@ -12,7 +12,7 @@ use database::{model::MajorityToken, HackClient};
 pub use extension::*;
 
 use extractor::RequestData;
-use fluent_templates::ArcLoader;
+use fluent_templates::{ArcLoader, Loader, LanguageIdentifier};
 use message::{MessageKind, Messages};
 use pmd_hack_storage::{Query, Storage, Tag};
 use url::Url;
@@ -100,6 +100,7 @@ impl AppData {
         } else {
             let mut url = self.root_url.clone();
             url.query_pairs_mut()
+                //TODO: display an error message when this is in the URL
                 .append_pair("redirect_url_error", "true");
             url
         }
@@ -107,18 +108,17 @@ impl AppData {
 
     /// Check if a majority token is valid. Return None if it is valid, Some(message) otherwise, with the message being in the user's language
     /// Result : majority token is valid, a boolean indicated whether the token allow access to major only content, and a last boolean indicating whether the token can create another token
-    //TODO: better API for this function. Maybe move it.
     pub async fn check_validity_of_majority_token(
         &self,
         majority_token: &str,
         messages: &mut Messages,
+        lang: &LanguageIdentifier
     ) -> (Option<MajorityToken>, bool, bool) {
-        //TODO: actually translate the message... Hey ! I'm not asking for the language !
         match self.hack_client.get_majority_token(majority_token).await {
             Ok(Some(majority)) => {
                 if majority.admin_flags.get().revoked {
                     messages.add_message_from_string(
-                        "The provided majority token has been revoked by an administrator".into(),
+                        self.locales.lookup(lang, "message-majority-token-invalidated-by-admin"),
                         MessageKind::Error,
                     );
                     (Some(majority), false, false)
@@ -129,7 +129,7 @@ impl AppData {
             }
             Ok(None) => {
                 messages.add_message_from_string(
-                    "The provided majority token doesn't exist".into(),
+                    self.locales.lookup(lang, "message-majority-token-does-not-exist"),
                     MessageKind::Error,
                 );
                 (None, false, false)
@@ -140,9 +140,9 @@ impl AppData {
                     e
                 );
                 messages.add_message_from_string(
-                    "An (internal ?) error occured while checking wheter you have access to mature content or not. You won't have access to this content. If you need help, contact the author, marius.".into(),
+                    self.locales.lookup(lang, "message-majority-token-unexpected-error"),
                     MessageKind::Error
-                    );
+                );
                 (None, false, false)
             }
         }
