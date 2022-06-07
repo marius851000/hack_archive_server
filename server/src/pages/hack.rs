@@ -28,10 +28,28 @@ pub async fn hack(
 
     let major_only_tags = hack.get_major_only_tags(&app_data.storage.taginfo);
     let major_only_hack = !major_only_tags.is_empty();
+    let major_only_content_presentation = html! {
+        ul {
+            @for (tag_id, tag_info) in &major_only_tags {
+                li class="tagslist" {
+                    @if let Some(description) = tag_info.description.as_ref() {
+                        (render_tag(tag_id, &request_data, &app_data)) " : " (description)
+                    } @else {
+                        "Undescripted tag " (render_tag(tag_id, &request_data, &app_data))
+                    }
+                }
+            }
+        };
+    };
     if !major_only_hack || request_data.have_access_to_major_only_content {
         Ok(wrap_page(
             html!(
                 h1 { (hack.data.name) }
+
+                @if major_only_hack {
+                    p { b { "This hack contain the following mature element :" } }
+                    (major_only_content_presentation)
+                }
 
                 @if !hack.data.authors.is_empty() {
                     p id="authorlist" {
@@ -148,17 +166,7 @@ pub async fn hack(
                     a href=(app_data.route_simple(&request_data, &["majority"]).as_str()) { "dedicated page" } "."
                 }
                 p { "Reason of blocking :"}
-                ul {
-                    @for (tag_id, tag_info) in &major_only_tags {
-                        li class="tagslist" {
-                            @if let Some(description) = tag_info.description.as_ref() {
-                                (render_tag(tag_id, &request_data, &app_data)) " : " (description)
-                            } @else {
-                                "Undescripted tag " (render_tag(tag_id, &request_data, &app_data))
-                            }
-                        }
-                    }
-                }
+                (major_only_content_presentation)
             ),
             PageInfo {
                 name: format!("Major-only hack {}", hack.data.name),

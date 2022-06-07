@@ -12,7 +12,7 @@
 **** DONE seems the tag in the hidding reason have invalid presentation
 *** DONE Should I display them on the search/main page without majority token ? (yes)
 *** NOPE Also do per-version hidding ?
-*** TODO Display a warning on top of the page, even with token.
+*** DONE Display a warning on top of the page, even with token.
 ** DONE ability to create a majority token
 ** DONE Make the majority stuff hideable
 ** DONE hide them in tag search page
