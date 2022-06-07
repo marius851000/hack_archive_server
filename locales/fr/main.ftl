@@ -12,6 +12,9 @@ message-majority-token-does-not-exist = Ce jeton de majorité n'existe pas
 message-majority-token-unexpected-error = Une erreur (interne ?) est survenu en vérifiant la validité du jeton
 message-error-redirect = Une erreur est survenue en vous redirigeant. Vous avez été redirigé vers la page d'acceuil.
 message-majority-token-added = Jeton de majorité correct !
+path-traversal-detected = Une attaque par traversé de chemin à été détecté
+valid-majority-token-needed-to-access-file = Un jeton de majorité valide est necessaire pour acceder à ce fichier
+hack-does-not-exist = La hack n'existe pas
 
 footer-credit = Archive crée et maintenue par marius851000 (<code>marius851000#2522</code> sur Discord). Ce site n'est pas directement affilié, et ne doit pas être confondu avec la {$skytemple_hack_link_start}liste des hacks de {-skytemple}{$skytemple_hack_link_end}.
 

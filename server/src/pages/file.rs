@@ -19,18 +19,22 @@ pub async fn file(
     let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
         hack
     } else {
-        return Err(ErrorNotFound("The given hack doesn't exist"));
+        return Err(ErrorNotFound(request_data.lookup("hack-does-not-exist")));
     };
     if hack.need_majority_token(&app_data.storage.taginfo)
         && !request_data.have_access_to_major_only_content
     {
         return Err(ErrorForbidden(
-            "A valid majority token is required to access this file",
+            request_data.lookup("valid-majority-token-needed-to-access-file"),
         ));
     };
     let path = match hack.folder.safe_join(filename) {
         Ok(v) => v,
-        Err(_) => return Err(ErrorBadRequest("A path traversal attack was detected")),
+        Err(_) => {
+            return Err(ErrorBadRequest(
+                request_data.lookup("path-traversal-detected"),
+            ))
+        }
     };
     Ok(NamedFile::open(path)?)
 }

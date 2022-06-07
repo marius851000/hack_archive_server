@@ -12,6 +12,9 @@ message-majority-token-does-not-exist = This majority token doesn't exist
 message-majority-token-unexpected-error = An (internal ?) error occured while checking the validity of this token.
 message-error-redirect = An error occured while redirecting you. You were sent back to the landing page.
 message-majority-token-added = Majority token correct !
+path-traversal-detected = A path traversal attack was detected
+valid-majority-token-needed-to-access-file = A valid majority token is required to access this file
+hack-does-not-exist = The given hack doesn't exist
 
 footer-credit = Archive created and maintained by marius851000 ({-marius-discord-code} on Discord). This site is not directly affiliated, and not be confused the {$skytemple_hack_link_start}{-skytemple} hack list{$skytemple_hack_link_end}.
 
