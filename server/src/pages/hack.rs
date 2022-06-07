@@ -150,7 +150,7 @@ pub async fn hack(
                 p { "Reason of blocking :"}
                 ul {
                     @for (tag_id, tag_info) in &major_only_tags {
-                        li {
+                        li class="tagslist" {
                             @if let Some(description) = tag_info.description.as_ref() {
                                 (render_tag(tag_id, &request_data, &app_data)) " : " (description)
                             } @else {
