@@ -2,6 +2,7 @@
 
 pub mod majority;
 
+pub mod connect_majority_token;
 pub mod create_majority_token;
 pub mod css;
 pub mod disconnect_majority_token;

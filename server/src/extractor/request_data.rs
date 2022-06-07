@@ -16,7 +16,6 @@ pub struct RequestData {
     pub have_access_to_major_only_content: bool,
     pub can_certify: bool,
     pub messages: Messages,
-    pub majority_cookie_to_set: Option<String>,
     pub language: LanguageIdentifier,
     pub path: String,
     pub app_data: Arc<AppData>,
@@ -53,8 +52,7 @@ impl FromRequest for RequestData {
                     Err(_) => messages.add_message_from_string(
                         app_data
                             .locales
-                            .lookup(&language, "error-notication-cant-be-read")
-                            .to_string(),
+                            .lookup(&language, "error-notication-cant-be-read"),
                         MessageKind::Error,
                     ),
                 };
@@ -63,10 +61,7 @@ impl FromRequest for RequestData {
 
         if query_string.get("redirect_url_error").is_some() {
             messages.add_message_from_string(
-                app_data
-                    .locales
-                    .lookup(&language, "message-error-redirect")
-                    .to_string(),
+                app_data.locales.lookup(&language, "message-error-redirect"),
                 MessageKind::Error,
             )
         }
@@ -78,7 +73,6 @@ impl FromRequest for RequestData {
                     have_access_to_major_only_content: false,
                     can_certify: false,
                     messages,
-                    majority_cookie_to_set: None,
                     language,
                     path,
                     app_data: app_data.into_inner(),
@@ -86,25 +80,11 @@ impl FromRequest for RequestData {
             });
         }
 
-        //TODO: put the majority token in post
-        let cookie = req.cookie("majority_token");
-
-        let mut parameter_majority_token = query_string
-            .get("majority_token")
-            .map(|code| code.to_string());
-
-        if parameter_majority_token.as_deref() == Some("") {
-            parameter_majority_token = None;
-        }
+        let majority_token_cookie = req.cookie("majority_token");
 
         Box::pin(async move {
-            let parameter_majority_token: Option<String> = parameter_majority_token;
             let mut majority_token: Option<String> =
-                if let Some(token) = parameter_majority_token.as_ref() {
-                    Some(token.to_string())
-                } else {
-                    cookie.map(|cookie| cookie.value().to_string())
-                };
+                majority_token_cookie.map(|cookie| cookie.value().to_string());
 
             if majority_token.as_deref() == Some("") {
                 majority_token = None;
@@ -124,11 +104,6 @@ impl FromRequest for RequestData {
                 have_access_to_major_only_content,
                 can_certify,
                 messages,
-                majority_cookie_to_set: if have_access_to_major_only_content {
-                    parameter_majority_token
-                } else {
-                    None
-                },
                 language,
                 path,
                 app_data: app_data.into_inner(),

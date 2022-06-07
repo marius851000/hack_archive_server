@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{extractor::RequestData, AppData};
+use crate::{extractor::RequestData, message::MessageKind, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use maud::{html, Markup, PreEscaped};
@@ -71,7 +71,6 @@ pub fn wrap_page(
                                     }
                                 }
                                 input type="hidden" id="redirect_url" name="redirect_url" value=(app_data.route_this_page(&request_data).as_str()) {}
-                                input type="hidden" id="disconnect_majority_token" name="disconnect_majority_token" value="true" {}
                                 input type="submit" value="Disconnect" {}
                             }
                             @if request_data.can_certify {
@@ -82,16 +81,16 @@ pub fn wrap_page(
                                 }
                             }
                         }
-                        form {
-                            @if page_info.discourage_reload {
-                                p { "Go to a non-interactive page to enter a majority token or disconnect it (it would reload the page)."}
-                            } @else {
+                        @if page_info.discourage_reload {
+                            p { "Go to a non-interactive page to enter a majority token or disconnect it (it would reload the page)."}
+                        } @else {
+                            form action=(app_data.route_simple(&request_data, &["connect_majority_token"]).as_str()) method="post" {
                                 label for="majority_token" {
                                     "Majority code ("
                                     a href=(app_data.route_simple(&request_data, &["majority"]).as_str()) { "more info" }
                                     ") "
                                 }
-                                //TODO: use a form
+                                input type="hidden" id="redirect_url" name="redirect_url" value=(app_data.route_this_page(&request_data).as_str()) {}
                                 input type="text" id="majority_token" name="majority_token" {}
                                 input type="submit" value="Submit" {}
                             }
@@ -113,10 +112,6 @@ pub fn wrap_page(
     let markup: String = markup.into();
     let mut response_builder = HttpResponse::build(StatusCode::OK);
     response_builder.content_type(mime::TEXT_HTML_UTF_8);
-
-    if let Some(token) = request_data.majority_cookie_to_set.as_ref() {
-        response_builder.cookie(Cookie::build("majority_token", token).finish());
-    };
     response_builder.cookie(Cookie::build("messages", "").finish());
 
     response_builder.body(markup.into_boxed_str().into_string())
