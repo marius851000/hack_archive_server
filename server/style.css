@@ -136,25 +136,34 @@ h1 {
     margin-bottom: 0.3em;
 }
 
-.errorcontainer {
+.messagecontainer {
     margin-top: 2em;
     padding-left: 1em;
     padding-right: 1em;
+    padding-top: 0.5em;
     border-color: rgb(68, 0, 0);
-    background-color: rgb(255, 175, 175);
+    background-color: rgb(220, 235, 244);
     border-style: solid;
     border-width: 0.2em;
 }
 
-.errormessage {
-    background-color: rgb(255, 216, 216);
-    border-color: red;
+.message {
     border-width: 1px;
     border-style: solid;
     margin-bottom: 0.5em;
 }
 
-.errormessage p {
+.errormessage {
+    background-color: rgb(255, 216, 216);
+    border-color: red;
+}
+
+.successmessage {
+    background-color: rgb(214, 251, 201);
+    border-color: #2a6800;
+}
+
+.message p {
     margin-top: 0px;
     margin-bottom: 0px;
 }

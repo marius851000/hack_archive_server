@@ -39,16 +39,11 @@ pub fn wrap_page(
                 main {
                     //TODO: better error message displaying. In particular, separate error from other more generic message
                     @if !request_data.messages.is_empty() {
-                        div class="errorcontainer" {
-                            @if request_data.messages.have_error() {
-                                p {
-                                    (request_data.lookup("error-occured-section"))
-                                }
-                            }
+                        div class="messagecontainer" {
                             @for error_message in request_data.messages.messages() {
-                                div class="errormessage" {
+                                div class=(if error_message.kind() == MessageKind::Error { "message errormessage" } else { "message successmessage" }) {
                                     p {
-                                        (error_message.value().clone())
+                                        (error_message.value())
                                     }
                                 }
                             }
