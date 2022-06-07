@@ -10,6 +10,7 @@ message-majority-token-removed = Majority token correctly removed
 message-majority-token-invalidated-by-admin = This majority token has been revoked by an administrator
 message-majority-token-does-not-exist = This majority token doesn't exist
 message-majority-token-unexpected-error = An (internal ?) error occured while checking the validity of this token.
+message-error-redirect = An error occured while redirecting you. You were sent back to the landing page.
 
 footer-credit = Archive created and maintained by marius851000 ({-marius-discord-code} on Discord). This site is not directly affiliated, and not be confused the {$skytemple_hack_link_start}{-skytemple} hack list{$skytemple_hack_link_end}.
 

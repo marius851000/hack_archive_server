@@ -61,6 +61,16 @@ impl FromRequest for RequestData {
             };
         }
 
+        if query_string.get("redirect_url_error").is_some() {
+            messages.add_message_from_string(
+                app_data
+                    .locales
+                    .lookup(&language, "message-error-redirect")
+                    .to_string(),
+                MessageKind::Error,
+            )
+        }
+
         if !app_data.use_majority_token {
             return Box::pin(async move {
                 Ok(RequestData {

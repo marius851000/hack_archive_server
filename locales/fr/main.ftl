@@ -10,6 +10,7 @@ message-majority-token-removed = Jeton de majorité supprimé
 message-majority-token-invalidated-by-admin =  Ce jeton de majorité à été révoqué par un administrateur
 message-majority-token-does-not-exist = Ce jeton de majorité n'existe pas
 message-majority-token-unexpected-error = Une erreur (interne ?) est survenu en vérifiant la validité du jeton
+message-error-redirect = Une erreur est survenue en vous redirigeant. Vous avez été redirigé vers la page d'acceuil.
 
 footer-credit = Archive crée et maintenue par marius851000 (<code>marius851000#2522</code> sur Discord). Ce site n'est pas directement affilié, et ne doit pas être confondu avec la {$skytemple_hack_link_start}liste des hacks de {-skytemple}{$skytemple_hack_link_end}.
 

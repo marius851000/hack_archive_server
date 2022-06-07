@@ -90,7 +90,6 @@ impl AppData {
         } else {
             let mut url = self.root_url.clone();
             url.query_pairs_mut()
-                //TODO: display an error message when this is in the URL
                 .append_pair("redirect_url_error", "true");
             url
         }
