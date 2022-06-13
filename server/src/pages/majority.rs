@@ -1,13 +1,10 @@
-use actix_web::{get, http::StatusCode, web::Data, HttpResponse};
+use actix_web::{get, web::Data, HttpResponse};
 use maud::html;
 
 use crate::{extractor::RequestData, wrap_page, AppData, PageInfo};
 
 #[get("/majority")]
 pub async fn majority(app_data: Data<AppData>, request_data: RequestData) -> HttpResponse {
-    if !app_data.use_majority_token {
-        return HttpResponse::new(StatusCode::NOT_IMPLEMENTED);
-    }
     wrap_page(
         html!(
             h1 { "Information about the majority check" }

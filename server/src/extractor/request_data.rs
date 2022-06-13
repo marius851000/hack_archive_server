@@ -66,20 +66,6 @@ impl FromRequest for RequestData {
             )
         }
 
-        if !app_data.use_majority_token {
-            return Box::pin(async move {
-                Ok(RequestData {
-                    majority_token: None,
-                    have_access_to_major_only_content: false,
-                    can_certify: false,
-                    messages,
-                    language,
-                    path,
-                    app_data: app_data.into_inner(),
-                })
-            });
-        }
-
         let majority_token_cookie = req.cookie("majority_token");
 
         Box::pin(async move {

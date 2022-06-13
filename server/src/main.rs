@@ -28,9 +28,6 @@ pub struct Opts {
     couch_uri: String,
     couch_username: String,
     couch_password: String,
-    /// experimental feature flag to decide if majority token stuff should be visible on every page (doesn't completly disable it, it just hide it)
-    #[clap(short, long)]
-    use_majority_token: bool,
 }
 
 #[tokio::main]
@@ -87,7 +84,6 @@ async fn main() {
         storage,
         hack_client,
         hidden_by_default,
-        use_majority_token: opts.use_majority_token,
         locales,
     });
 

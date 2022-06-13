@@ -34,3 +34,5 @@
 ** TODO include a language switcher
 ** TODO include some check about localisation in CI
 ** TODO consider how to translate hack and tag text
+** TODO deploy Poontoon
+* TODO configuration from environment

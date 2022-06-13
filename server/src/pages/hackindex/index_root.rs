@@ -13,12 +13,10 @@ pub async fn index_root(app_data: Data<AppData>) -> PreEscaped<String> {
             }
             body {
                 h1 { "Index of the pmd hack archive" }
-                @if app_data.use_majority_token {
-                    p {
-                        "Note: There may be hacks here that require a majority token to be mirrored. It should be put into the \"majority_token\" cookie. See "
-                        a href=((app_data.route_simple_static(&["majority"]).as_str())) { "related page" }
-                        " for more information. (it'll otherwise return an error when trying to access the hacks directory)."
-                    }
+                p {
+                    "Note: There may be hacks here that require a majority token to be mirrored. It should be put into the \"majority_token\" cookie. See "
+                    a href=((app_data.route_simple_static(&["majority"]).as_str())) { "related page" }
+                    " for more information. (it'll otherwise return an error when trying to access the hacks directory)."
                 }
                 ul {
                     li {
