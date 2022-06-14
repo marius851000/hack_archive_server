@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
-actix-files = "0.6.0"
+actix-files = "0.6.1"
 #TODO: instead use the latest stable maud version when avalaible
 maud = { git="https://github.com/marius851000/maud.git", rev="27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac", features=["actix-web"] }
 clap = { version="3", features=["derive"] }
