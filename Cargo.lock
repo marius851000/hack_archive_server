@@ -534,15 +534,16 @@ checksum = "5827cebf4670468b8772dd191856768aedcb1b0278a04f989f7766351917b9dc"
 
 [[package]]
 name = "couch_rs"
-version = "0.8.37"
+version = "0.8.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a5d3159e2251973670ed2f8b6fbbd54280b4e913d2ac2ba947a39c9bc008bee"
+checksum = "a0c7f3252ee48e5c4ef99e64bf9a1db1631705dbdb1fad98ebe4ff5334b8460f"
 dependencies = [
  "base64",
  "bytes",
  "couch_rs_derive",
  "futures-core",
  "futures-util",
+ "percent-encoding",
  "reqwest",
  "serde",
  "serde_json",
@@ -554,9 +555,9 @@ dependencies = [
 
 [[package]]
 name = "couch_rs_derive"
-version = "0.8.37"
+version = "0.8.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc303d97f02bb00f8bb2ac449178dee10549576ebd9eec2f9511ccd51be01c5a"
+checksum = "74ddab3c2822549ee5085ed2cfb7e097e1dd3ff63b5e55260a4eb7a4ca071dbe"
 dependencies = [
  "proc-macro2",
  "quote",
