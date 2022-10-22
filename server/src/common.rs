@@ -1,10 +1,12 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, borrow::Cow};
 
 use crate::{extractor::RequestData, message::MessageKind, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
+use fluent_templates::fluent_bundle::FluentValue;
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Query, Tag};
+use map_macro::map;
 
 pub struct PageInfo {
     pub name: String,
@@ -97,9 +99,11 @@ pub fn wrap_page(
                         }
                     }
                     p {
-                        "Site data can be mirrored with rclone using the http directory at "
-                        a href="https://hacknews.pmdcollab.org/archive" { "hacknews.pmdcollab.org/archive" }
-                        "."
+                        (PreEscaped(request_data.lookup_with_args("footer-mirroring-info", &map! {
+                            "link_start" => FluentValue::String(Cow::Borrowed("<a href=\"https://hacknews.pmdcollab.org/archive\">")),
+                            "link_end" => FluentValue::String(Cow::Borrowed("</a>")),
+                            "url" => FluentValue::String(Cow::Borrowed("hacknews.pmdcollab.org/archive"))
+                        })))
                     }
                     p {
                         "Source code of the site avalaible on " a href="https://github.com/marius851000/hack_archive_server" { "GitHub" } "."

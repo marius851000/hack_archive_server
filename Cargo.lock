@@ -1295,6 +1295,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "map-macro"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d5b0858fc6e216d2d6222d661021d9b184550acd757fbd80a8f86224069422c"
+
+[[package]]
 name = "maplit"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1974,6 +1980,7 @@ dependencies = [
  "env_logger",
  "fluent-templates",
  "log",
+ "map-macro",
  "maud",
  "mime",
  "pmd_hack_storage",

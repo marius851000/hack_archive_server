@@ -17,12 +17,13 @@ valid-majority-token-needed-to-access-file = Un jeton de majorité valide est ne
 hack-does-not-exist = La hack n'existe pas
 
 footer-credit = Archive crée et maintenue par marius851000 (<code>marius851000#2522</code> sur Discord). Ce site n'est pas directement affilié, et ne doit pas être confondu avec la {$skytemple_hack_link_start}liste des hacks de {-skytemple}{$skytemple_hack_link_end}.
+footer-mirroring-info = Les données du site peuvent être dupliqué avec rclone en utilisant le répertoire HTTP à {$link_start}{$url}{$link_end}.
 
 ## main page
 landpage-presentation = Ceci est la partie de mon archive qui stocke les rom-hacks. Son but est d'archivé toutes les versions de toutes les hacks.
 landpage-missing = Si vous remarquer qu'une hack ou version est manquante, n'hésitez pas à me contacter sur Discord à {-marius-discord-code} (ou une de mes autres adresses de contact).
 landpage-list-of-hacks = Liste des hacks
-landpage-title = Archive d'hacks PDM
+landpage-title = Archive d'hacks de PDM
 
 ## List of hack with tags
 hack-list-by-tag-header = Liste des hacks avec le tag <code>{$tag}</code>.

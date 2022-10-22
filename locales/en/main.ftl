@@ -17,6 +17,8 @@ valid-majority-token-needed-to-access-file = A valid majority token is required 
 hack-does-not-exist = The given hack doesn't exist
 
 footer-credit = Archive created and maintained by marius851000 ({-marius-discord-code} on Discord). This site is not directly affiliated, and not be confused the {$skytemple_hack_link_start}{-skytemple} hack list{$skytemple_hack_link_end}.
+footer-mirroring-info = Site data can be mirrored with rclone using the http directory at {$link_start}{$url}{$link_end}.
+footer-server-source = Source code of this site avalaible on {$link_start}{-github}{$link_end}.
 
 ## main page
 landpage-presentation = This is the part of my archive that store rom-hacks patches. The goal of this archive is to save every version of every hacks.
