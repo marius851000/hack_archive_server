@@ -111,7 +111,7 @@ impl Hack {
             if referenced_files.contains(&file_name) {
                 referenced_files.remove(&file_name);
             } else {
-                panic!("{:?} doesn't exist, while being referenced", file.path());
+                println!("{:?} doesn't exist, while being referenced", file.path());
             }
         }
 
