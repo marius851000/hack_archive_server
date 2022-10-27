@@ -4,7 +4,7 @@ use actix_web::{
     web::{Data, Path},
     HttpResponse, Result,
 };
-use maud::html;
+use maud::{html, PreEscaped};
 
 use crate::{
     extractor::RequestData, render_many_tags, render_markdown, render_tag, wrap_page, AppData,
@@ -121,7 +121,7 @@ pub async fn hack(
                                 p {
                                     a href=(app_data.route_hack_file(&hack_id, &file.filename).as_str()) { "download" }
                                 }
-                                /*@if let Some(description) = &file.description {
+                                @if let Some(description) = &file.description {
                                     @let rendered = render_markdown(description);
                                     @if description.len() < 500 && description.matches('\n').count() < 6 {
                                         div class="filedescription" { (rendered) }
@@ -136,8 +136,7 @@ pub async fn hack(
                                             (rendered)
                                         }
                                     }
-
-                                }*/
+                                }
                                 //TODO: find a good way to present this
                                 @let file_tags = &file.get_all_tags();
                                 @if !file_tags.is_empty() {
