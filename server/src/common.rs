@@ -174,7 +174,25 @@ pub fn make_hack_list_hidden(
 }
 
 pub fn render_markdown(text: &str) -> PreEscaped<String> {
-    PreEscaped(markdown_to_html(text, &ComrakOptions::default()))
+    let text_initial = markdown_to_html(text, &ComrakOptions::default());
+    // Add spoiler as a post-processing filter
+    let mut result = String::with_capacity(text_initial.len() + 20);
+    let mut inside_spoiler = false;
+    for (count, part) in text_initial.split("||").enumerate() {
+        if count != 0 {
+            if inside_spoiler {
+                result.push_str("<span class=\"inline_spoiler\">");
+            } else {
+                result.push_str("</span>");
+            }
+        }
+        result.push_str(part);
+        inside_spoiler = !inside_spoiler;
+    }
+    if !inside_spoiler {
+        result.push_str("</span>");
+    };
+    PreEscaped(result)
 }
 
 pub fn render_tag(tag: &Tag, request_data: &RequestData, app_data: &AppData) -> Markup {

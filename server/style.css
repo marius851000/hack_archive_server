@@ -167,3 +167,13 @@ h1 {
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+.inline_spoiler {
+    color: transparent;
+    background-color: black;
+}
+
+.inline_spoiler:hover {
+    color: inherit;
+    background-color: inherit;
+}
