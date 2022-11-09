@@ -1,12 +1,12 @@
-use std::{collections::HashMap, borrow::Cow};
+use std::{borrow::Cow, collections::HashMap};
 
 use crate::{extractor::RequestData, message::MessageKind, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use fluent_templates::fluent_bundle::FluentValue;
+use map_macro::map;
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Query, Tag};
-use map_macro::map;
 
 pub struct PageInfo {
     pub name: String,
@@ -126,9 +126,14 @@ pub fn make_hack_list(
     request_data: &RequestData,
     app_data: &AppData,
 ) -> Markup {
+    let mut hacks_sorted = hacks
+        .iter()
+        .map(|(s, hack_ref)| (s, *hack_ref))
+        .collect::<Vec<_>>();
+    hacks_sorted.sort_by_key(|x| &x.1.data.name);
     html! {
         ul {
-            @for (hack_id, hack) in hacks {
+            @for (hack_id, hack) in hacks_sorted.iter() {
                 li {
                     a href=(app_data.route_hack(request_data, hack_id).as_str()) {
                         (hack.data.name)
