@@ -820,9 +820,9 @@ dependencies = [
 
 [[package]]
 name = "fluent-template-macros"
-version = "0.7.1"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0209363718816f86738043b0e337119133a6135bde1c25e654a563c8a666addb"
+checksum = "dec7592cd1f45c1afe9084ce59c62a3a7c266c125c4c2ec97e95b0563c4aa914"
 dependencies = [
  "flume",
  "ignore",
@@ -835,9 +835,9 @@ dependencies = [
 
 [[package]]
 name = "fluent-templates"
-version = "0.7.1"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "968769c4890659e8262fae40c43fb63b9d59c8e205d7696bda75e89e5a371154"
+checksum = "7c3ef2c2152757885365abce32ddf682746062f1b6b3c0824a29fbed6ee4d080"
 dependencies = [
  "arc-swap",
  "fluent",
@@ -863,10 +863,6 @@ version = "0.10.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1657b4441c3403d9f7b3409e47575237dac27b1b5726df654a6ecbf92f0f7577"
 dependencies = [
- "futures-core",
- "futures-sink",
- "nanorand",
- "pin-project",
  "spin",
 ]
 
@@ -969,10 +965,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c05aeb6a22b8f62540c194aac980f2115af067bfe15a0734d7277a768d396b31"
 dependencies = [
  "cfg-if",
- "js-sys",
  "libc",
  "wasi",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -1370,15 +1364,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nanorand"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a51313c5820b0b02bd422f4b44776fbf47961755c74ce64afc73bfad10226c3"
-dependencies = [
- "getrandom",
-]
-
-[[package]]
 name = "native-tls"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1591,26 +1576,6 @@ dependencies = [
  "once_cell",
  "pest",
  "sha1",
-]
-
-[[package]]
-name = "pin-project"
-version = "1.0.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad29a609b6bcd67fee905812e544992d216af9d755757c05ed2d0e15a74c6ecc"
-dependencies = [
- "pin-project-internal",
-]
-
-[[package]]
-name = "pin-project-internal"
-version = "1.0.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "069bdb1e05adc7a8990dce9cc75370895fbe4e3d58b9b73bf1aee56359344a55"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
