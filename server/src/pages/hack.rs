@@ -120,6 +120,10 @@ pub async fn hack(
                                 h4 { (file.label) }
                                 p {
                                     a href=(app_data.route_hack_file(&hack_id, &file.filename).as_str()) { "download" }
+                                    @if file.filename.ends_with(".zip") {
+                                        " "
+                                        a href=(app_data.route_hack_decompress_file_list(&request_data, &hack_id, &file.filename).as_str()) { "browse" }
+                                    }
                                 }
                                 @if let Some(description) = &file.description {
                                     @let rendered = render_markdown(description);

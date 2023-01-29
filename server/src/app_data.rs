@@ -31,6 +31,14 @@ impl AppData {
         self.route_simple_static(&[hack_slug, hack_file])
     }
 
+    pub fn route_hack_decompress_file_list(&self, request_data: &RequestData, hack_slug: &str, hack_file: &str) -> Url {
+        self.route_simple(request_data, &["decompress", hack_slug, hack_file, ""])
+    }
+
+    pub fn route_hack_decompress_file(&self, hack_slug: &str, hack_file: &str, path: &str) -> Url {
+        self.route_simple_static(&["decompress", hack_slug, hack_file, path])
+    }
+
     pub fn route_hack(&self, request_data: &RequestData, hack_slug: &str) -> Url {
         self.route_simple(request_data, &[hack_slug])
     }

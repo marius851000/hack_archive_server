@@ -8,7 +8,7 @@ use fluent_templates::ArcLoader;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{
     connect_majority_token, create_majority_token, css, disconnect_majority_token, file, hack,
-    hackindex, index, majority, oswald, tagged,
+    hackindex, index, majority, oswald, tagged, decompress
 };
 use server::AppData;
 use std::path::PathBuf;
@@ -105,7 +105,8 @@ async fn main() {
                 .service(hack::hack)
                 .service(file::file)
                 .service(disconnect_majority_token::disconnect_majority_token)
-                .service(connect_majority_token::connect_majority_token),
+                .service(connect_majority_token::connect_majority_token)
+                .service(decompress::decompress),
         )
     })
     .bind(&opts.bind_address)
