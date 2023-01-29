@@ -1,11 +1,11 @@
-use actix_web::{get, web::Data};
-use maud::{html, PreEscaped};
+use actix_web::{get, web::Data, HttpResponse, http::StatusCode, cookie::Cookie};
+use maud::html;
 
 use crate::AppData;
 
 #[get("/index")]
-pub async fn index_root(app_data: Data<AppData>) -> PreEscaped<String> {
-    html! {
+pub async fn index_root(app_data: Data<AppData>) -> HttpResponse {
+    let body = (html! {
         html {
             head {
                 meta charset="utf-8" {}
@@ -28,5 +28,10 @@ pub async fn index_root(app_data: Data<AppData>) -> PreEscaped<String> {
                 }
             }
         }
-    }
+    }).into_string();
+
+    let mut response_builder = HttpResponse::build(StatusCode::OK);
+    response_builder.content_type(mime::TEXT_HTML_UTF_8);
+    response_builder.cookie(Cookie::build("messages", "").finish());
+    response_builder.body(body)
 }

@@ -19,7 +19,7 @@ pub enum StorageLoadError {
     CantGetFileType(#[source] io::Error, PathBuf),
     #[error("Cant load the hack in the folder {1:?}")]
     CantLoadHack(#[source] HackLoadError, PathBuf),
-    #[error("The file name \"{0}\" is an invalid UTF-8 string (sub-file of {:?})")]
+    #[error("The file name \"{0}\" is an invalid UTF-8 string (sub-file of {1:?})")]
     InvalidFilename(String, PathBuf),
     #[error("Cant load the tag info file at {1:?}")]
     CantLoadTagInfo(#[source] TagInfoLoadError, PathBuf),

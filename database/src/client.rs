@@ -155,9 +155,9 @@ impl HackClient {
 
             for result in database.bulk_docs(&mut raw_docs).await? {
                 if let Err(e) = result {
-                    if !matches!(e.status, StatusCode::CONFLICT | StatusCode::NOT_FOUND) {
+                    if !matches!(e.status(), Some(StatusCode::CONFLICT) | Some(StatusCode::NOT_FOUND)) {
                         return Err(HackClientError::InternalDBError(e));
-                    } else if e.status == StatusCode::CONFLICT {
+                    } else if e.status() == Some(StatusCode::CONFLICT) {
                         continue 'main;
                     }
                 }
@@ -213,7 +213,7 @@ impl HackClient {
         match database.save(&mut document).await {
             Ok(_) => Ok(()),
             Err(e) => {
-                if e.status == http::StatusCode::CONFLICT {
+                if e.status() == Some(http::StatusCode::CONFLICT) {
                     //Damn ! A conflict
                     let id: DocumentId = document.get_id().into();
                     self.handle_conflict(database, id, Some(document)).await?;

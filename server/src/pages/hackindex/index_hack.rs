@@ -4,9 +4,9 @@ use actix_web::{
     error::{ErrorForbidden, ErrorNotFound},
     get,
     web::{Data, Path},
-    Result,
+    Result, HttpResponse, http::StatusCode, cookie::Cookie,
 };
-use maud::{html, PreEscaped};
+use maud::html;
 
 use crate::{extractor::RequestData, AppData};
 
@@ -15,7 +15,7 @@ pub async fn index_hack(
     app_data: Data<AppData>,
     path: Path<String>,
     request_data: RequestData,
-) -> Result<PreEscaped<String>> {
+) -> Result<HttpResponse> {
     let hack_id = path.into_inner();
     if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
         let mut files = BTreeSet::new();
@@ -33,7 +33,7 @@ pub async fn index_hack(
                 "A valid majority token is required to access this file",
             ));
         };
-        Ok(html! {
+        let body = (html! {
             html {
                 head {
                     meta charset="utf-8" {}
@@ -50,7 +50,12 @@ pub async fn index_hack(
                     }
                 }
             }
-        })
+        }).into_string();
+        let mut response_builder = HttpResponse::build(StatusCode::OK);
+        response_builder.content_type(mime::TEXT_HTML_UTF_8);
+        response_builder.cookie(Cookie::build("messages", "").finish());
+
+        Ok(response_builder.body(body))
     } else {
         Err(ErrorNotFound("The hack doesn't exist"))
     }

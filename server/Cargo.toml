@@ -8,19 +8,18 @@ edition = "2021"
 [dependencies]
 actix-web = "4"
 actix-files = "0.6.2"
-#TODO: instead use the latest stable maud version when avalaible
-maud = { git="https://github.com/marius851000/maud.git", rev="27bf5d421d4f1dc8aa3d1d0f74c00ec31fe810ac", features=["actix-web"] }
-clap = { version="3", features=["derive"] }
+maud = "0.24.0"
+clap = { version="4.1.4", features=["derive"] }
 #TODO: get rid of this safe_join
 safe_join = { git = "https://github.com/marius851000/safe_join_mirror.git", rev="3f541a0222685f45b816a80664bb84ed825b93df"}
-comrak = "0.14.0"
+comrak = "0.16.0"
 pmd_hack_storage = { path = "../storage" }
 qstring = "0.7.2"
 database = { path = "../database" }
 tokio = { version = "1.20.1", features = ["full"] }
 mime = "0.3.16"
 log = "0.4.17"
-env_logger = "0.9.0"
+env_logger = "0.10.0"
 rand = "0.8.5"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.83"
