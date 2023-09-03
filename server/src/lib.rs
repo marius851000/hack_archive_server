@@ -13,6 +13,9 @@ pub use extension::*;
 mod app_data;
 pub use app_data::AppData;
 
+mod fileref;
+pub use fileref::{FileRef, FILE_REF_GET_FILE_TYPE};
+
 /// Return true if the hack id is illegal (due to being reserved/user for a page)
 /// Currently unused
 pub fn is_illegal_hack_slug(name: &str) -> bool {
