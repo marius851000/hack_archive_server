@@ -11,6 +11,7 @@ message-majority-token-invalidated-by-admin =  Ce jeton de majorité à été r�
 message-majority-token-does-not-exist = Ce jeton de majorité n'existe pas
 message-majority-token-unexpected-error = Une erreur (interne ?) est survenu en vérifiant la validité du jeton
 message-error-redirect = Une erreur est survenue en vous redirigeant. Vous avez été redirigé vers la page d'acceuil.
+message-error-file-open = Une erreur est survenue en lisant un fichier sur le serveur.
 message-majority-token-added = Jeton de majorité correct !
 path-traversal-detected = Une attaque par traversé de chemin à été détecté
 valid-majority-token-needed-to-access-file = Un jeton de majorité valide est necessaire pour acceder à ce fichier

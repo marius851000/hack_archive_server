@@ -11,6 +11,7 @@ message-majority-token-invalidated-by-admin = This majority token has been revok
 message-majority-token-does-not-exist = This majority token doesn't exist
 message-majority-token-unexpected-error = An (internal ?) error occured while checking the validity of this token.
 message-error-redirect = An error occured while redirecting you. You were sent back to the landing page.
+message-error-file-open = An error occured while reading a file on the server.
 message-majority-token-added = Majority token correct !
 path-traversal-detected = A path traversal attack was detected
 valid-majority-token-needed-to-access-file = A valid majority token is required to access this file
