@@ -4,14 +4,14 @@ use actix_web::{
     Result,
 };
 
-use crate::{extractor::RequestData, AppData, FileRef, FILE_REF_GET_FILE_TYPE};
+use crate::{extractor::RequestData, AppData, FileRef, FileRefGetFileType};
 
 #[get("/{hack_id}/{filename}")]
 pub async fn file(
     app_data: Data<AppData>,
     path: Path<(String, String)>,
     request_data: RequestData,
-) -> Result<FILE_REF_GET_FILE_TYPE> {
+) -> Result<FileRefGetFileType> {
     let (hack_id, filename) = path.into_inner();
     let file_ref = FileRef::HackFile(hack_id, filename);
     

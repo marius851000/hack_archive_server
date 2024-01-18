@@ -4,7 +4,7 @@ use crate::{extractor::RequestData, message::MessageKind, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
 use comrak::{markdown_to_html, ComrakOptions};
 use fluent_templates::fluent_bundle::FluentValue;
-use map_macro::map;
+use map_macro::hash_map;
 use maud::{html, Markup, PreEscaped};
 use pmd_hack_storage::{Hack, Query, Tag};
 
@@ -99,7 +99,7 @@ pub fn wrap_page(
                         }
                     }
                     p {
-                        (PreEscaped(request_data.lookup_with_args("footer-mirroring-info", &map! {
+                        (PreEscaped(request_data.lookup_with_args("footer-mirroring-info", &hash_map! {
                             "link_start" => FluentValue::String(Cow::Borrowed("<a href=\"https://hacknews.pmdcollab.org/archive\">")),
                             "link_end" => FluentValue::String(Cow::Borrowed("</a>")),
                             "url" => FluentValue::String(Cow::Borrowed("hacknews.pmdcollab.org/archive"))

@@ -1,13 +1,13 @@
 use std::{path::PathBuf, fs::File, io::Read};
 
 use actix_files::NamedFile;
-use actix_web::{Result, error::{ErrorNotFound, ErrorForbidden, ErrorBadRequest, ErrorInternalServerError}, Responder, Either};
+use actix_web::{Result, error::{ErrorNotFound, ErrorForbidden, ErrorBadRequest, ErrorInternalServerError}, Either};
 use pmd_hack_storage::{Storage, Hack};
 use zip::ZipArchive;
 
 use crate::{AppData, extractor::RequestData};
 
-pub type FILE_REF_GET_FILE_TYPE = Either<NamedFile, Vec<u8>>;
+pub type FileRefGetFileType = Either<NamedFile, Vec<u8>>;
 use safe_join::SafeJoin;
 
 pub enum FileRef {
@@ -26,7 +26,7 @@ impl FileRef {
         storage.hacks.get(hack_id)
     }
 
-    pub fn get_file(&self, app_data: &AppData, request_data: &RequestData) -> Result<FILE_REF_GET_FILE_TYPE> {
+    pub fn get_file(&self, app_data: &AppData, request_data: &RequestData) -> Result<FileRefGetFileType> {
         let hack = if let Some(hack) = self.get_hack(&app_data.storage) {
             hack
         } else {
