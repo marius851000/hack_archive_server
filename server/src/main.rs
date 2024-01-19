@@ -1,5 +1,6 @@
 use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
+use arc_swap::ArcSwap;
 use clap::Parser;
 use database::HackClient;
 use fluent_templates::ArcLoader;
@@ -12,6 +13,7 @@ use server::pages::{
 };
 use server::AppData;
 use std::path::PathBuf;
+use std::sync::Arc;
 use unic_langid::langid;
 use url::Url;
 
@@ -81,7 +83,7 @@ async fn main() {
 
     let app_data = Data::new(AppData {
         root_url,
-        storage,
+        storage: ArcSwap::new(Arc::new(storage)),
         hack_client,
         hidden_by_default,
         locales,

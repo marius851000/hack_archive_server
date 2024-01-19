@@ -149,6 +149,7 @@ pub fn make_hack_list_hidden(
     request_data: &RequestData,
     app_data: &AppData,
 ) -> Markup {
+    let storage = app_data.storage.load();
     let unfiltered_hacks = (Query::Difference(
         Box::new(query.clone()),
         Box::new(Query::Or(
@@ -159,13 +160,13 @@ pub fn make_hack_list_hidden(
                 .collect(),
         )),
     ))
-    .get_matching(&app_data.storage)
+    .get_matching(&storage)
     .0;
 
     html! {
         (make_hack_list(&unfiltered_hacks, request_data, app_data))
         @for (hidden_string, hidden_query) in &app_data.hidden_by_default {
-            @let hidden_hacks = Query::Intersection(Box::new(query.clone()), Box::new(hidden_query.clone())).get_matching(&app_data.storage).0;
+            @let hidden_hacks = Query::Intersection(Box::new(query.clone()), Box::new(hidden_query.clone())).get_matching(&storage).0;
             @if !hidden_hacks.is_empty() {
                 details {
                     summary {
@@ -201,11 +202,12 @@ pub fn render_markdown(text: &str) -> PreEscaped<String> {
 }
 
 pub fn render_tag(tag: &Tag, request_data: &RequestData, app_data: &AppData) -> Markup {
+    let storage = app_data.storage.load();
     html! {
         a href=(app_data.route_hack_list_by_tag(request_data, tag).as_str()) {
-            @if let Some(single_tag_info) = app_data.storage.taginfo.get_tag(tag) {
+            @if let Some(single_tag_info) = storage.taginfo.get_tag(tag) {
                 @let label = single_tag_info.label.as_ref().unwrap_or(&tag.0);
-                @if let Some(category_data) = app_data.storage.taginfo.get_category_for_single_tag_info(single_tag_info, tag) {
+                @if let Some(category_data) = storage.taginfo.get_category_for_single_tag_info(single_tag_info, tag) {
                     span class="tag" style=(format!("border-color:{};background-color:{}", category_data.border_color, category_data.background_color)) { (label) }
                 } @else {
                     span class="tag" { (label) }
@@ -218,7 +220,8 @@ pub fn render_tag(tag: &Tag, request_data: &RequestData, app_data: &AppData) -> 
 }
 
 pub fn render_many_tags(tags: Vec<Tag>, request_data: &RequestData, app_data: &AppData) -> Markup {
-    let tags = app_data.storage.taginfo.orders_tags(tags);
+    let storage = app_data.storage.load();
+    let tags = storage.taginfo.orders_tags(tags);
     html! {
         p class="tagslist" {
             "tags : "

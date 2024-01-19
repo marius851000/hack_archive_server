@@ -12,8 +12,9 @@ pub async fn file(
     path: Path<(String, String)>,
     request_data: RequestData,
 ) -> Result<FileRefGetFileType> {
+    let storage = app_data.storage.load();
     let (hack_id, filename) = path.into_inner();
     let file_ref = FileRef::HackFile(hack_id, filename);
 
-    return file_ref.get_file(&app_data, &request_data);
+    return file_ref.get_file(&storage, &request_data);
 }

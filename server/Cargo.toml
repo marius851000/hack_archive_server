@@ -29,3 +29,4 @@ unic-langid = { version = "0.9.0", features = ["macros"] }
 map-macro = "0.2.1"
 zip = "0.6.3"
 fluent-bundle = "0.15.2"
+arc-swap = "1.6.0"

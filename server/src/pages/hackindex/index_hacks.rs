@@ -5,6 +5,7 @@ use crate::AppData;
 
 #[get("/index/hacks")]
 pub async fn index_hacks(app_data: Data<AppData>) -> HttpResponse {
+    let storage = app_data.storage.load();
     let body = (html! {
         html {
             head {
@@ -14,7 +15,7 @@ pub async fn index_hacks(app_data: Data<AppData>) -> HttpResponse {
             body {
                 h1 { "Index of the hacks in the pmd hack archive" }
                 ul {
-                    @for hack_slug in app_data.storage.hacks.keys() {
+                    @for hack_slug in storage.hacks.keys() {
                         li {
                             a href=(app_data.route_index_hack(hack_slug).as_str()) { (hack_slug) }
                         }

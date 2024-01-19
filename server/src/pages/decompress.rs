@@ -15,11 +15,12 @@ pub async fn decompress(
     path: Path<(String, String, String)>,
     request_data: RequestData,
 ) -> Result<Either<HttpResponse, FileRefGetFileType>> {
+    let storage = app_data.storage.load();
     let (hack_id, filename, inner_path) = path.into_inner();
     let file_ref = FileRef::HackFile(hack_id.clone(), filename.clone());
 
     if inner_path.is_empty() {
-        let file = file_ref.get_reader(&app_data, &request_data)?;
+        let file = file_ref.get_reader(&storage, &request_data)?;
         let mut zip = ZipArchive::new(file).map_err(ErrorInternalServerError)?;
 
         let mut list_of_files = Vec::with_capacity(zip.len());
@@ -36,7 +37,7 @@ pub async fn decompress(
         return Ok(Either::Left(wrap_page(
             html! {
                 ul {
-                    h1 { (format!("List of files in {} of {}", filename, file_ref.get_hack(&app_data.storage).unwrap().data.name))}
+                    h1 { (format!("List of files in {} of {}", filename, file_ref.get_hack(&storage).unwrap().data.name))}
                     @for file_path in &list_of_files {
                         li {
                             a href=(app_data.route_hack_decompress_file(&hack_id, &filename, file_path).as_str()) { (file_path) }
@@ -54,6 +55,6 @@ pub async fn decompress(
         )));
     } else {
         let sub_file = FileRef::Zipped(Box::new(file_ref), inner_path);
-        Ok(Either::Right(sub_file.get_file(&app_data, &request_data)?))
+        Ok(Either::Right(sub_file.get_file(&storage, &request_data)?))
     }
 }

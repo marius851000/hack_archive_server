@@ -18,8 +18,9 @@ pub async fn index_hack(
     path: Path<String>,
     request_data: RequestData,
 ) -> Result<HttpResponse> {
+    let storage = app_data.storage.load();
     let hack_id = path.into_inner();
-    if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
+    if let Some(hack) = storage.hacks.get(&hack_id) {
         let mut files = BTreeSet::new();
         files.insert("hack.json".to_string());
         for release in &hack.data.files {
@@ -28,7 +29,7 @@ pub async fn index_hack(
         for screenshot in &hack.data.screenshots {
             files.insert(screenshot.to_string());
         }
-        if hack.need_majority_token(&app_data.storage.taginfo)
+        if hack.need_majority_token(&storage.taginfo)
             && !request_data.have_access_to_major_only_content
         {
             return Err(ErrorForbidden(

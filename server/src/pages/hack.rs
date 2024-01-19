@@ -17,8 +17,9 @@ pub async fn hack(
     path: Path<String>,
     request_data: RequestData,
 ) -> Result<HttpResponse> {
+    let storage = app_data.storage.load();
     let hack_id = path.into_inner();
-    let hack = if let Some(hack) = app_data.storage.hacks.get(&hack_id) {
+    let hack = if let Some(hack) = storage.hacks.get(&hack_id) {
         hack
     } else {
         return Err(ErrorNotFound(
@@ -26,7 +27,7 @@ pub async fn hack(
         ));
     };
 
-    let major_only_tags = hack.get_major_only_tags(&app_data.storage.taginfo);
+    let major_only_tags = hack.get_major_only_tags(&storage.taginfo);
     let major_only_hack = !major_only_tags.is_empty();
     let major_only_content_presentation = html! {
         ul {

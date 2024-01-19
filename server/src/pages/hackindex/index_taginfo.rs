@@ -5,7 +5,8 @@ use crate::AppData;
 
 #[get("/index/taginfo.json")]
 pub async fn index_taginfo(app_data: Data<AppData>) -> Result<String> {
-    app_data.storage.taginfo.to_json().map_err(|e| {
+    let storage = app_data.storage.load();
+    storage.taginfo.to_json().map_err(|e| {
         error!(
             "An error occured while generating the taginfo json file ! {:?}",
             e

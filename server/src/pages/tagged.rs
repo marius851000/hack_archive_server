@@ -17,11 +17,13 @@ pub async fn tagged(
     path: Path<String>,
     request_data: RequestData,
 ) -> HttpResponse {
+    let storage = app_data.storage.load();
+    
     let tag_id = path.into_inner();
 
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
 
-    let tag_info_single = app_data.storage.taginfo.get_tag(&Tag(tag_id.clone()));
+    let tag_info_single = storage.taginfo.get_tag(&Tag(tag_id.clone()));
 
     // create the main page
     let mut translation_args = HashMap::new();

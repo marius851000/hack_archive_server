@@ -1,3 +1,4 @@
+use arc_swap::ArcSwap;
 use database::{model::MajorityToken, HackClient};
 use fluent_templates::{ArcLoader, LanguageIdentifier};
 use pmd_hack_storage::{Query, Storage, Tag};
@@ -12,7 +13,7 @@ use crate::{
 pub struct AppData {
     // must possible be a base, otherwise, it would panic
     pub root_url: Url,
-    pub storage: Storage,
+    pub storage: ArcSwap<Storage>,
     pub hack_client: HackClient,
     /// String: description of the reason
     /// Query: when does it match

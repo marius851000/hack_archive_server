@@ -11,7 +11,7 @@ use actix_web::{
 use pmd_hack_storage::{Hack, Storage};
 use zip::ZipArchive;
 
-use crate::{extractor::RequestData, AppData};
+use crate::extractor::RequestData;
 
 pub type FileRefGetFileType = Either<NamedFile, Vec<u8>>;
 use safe_join::SafeJoin;
@@ -37,16 +37,16 @@ impl FileRef {
 
     pub fn get_file(
         &self,
-        app_data: &AppData,
+        storage: &Storage,
         request_data: &RequestData,
     ) -> Result<FileRefGetFileType> {
-        let hack = if let Some(hack) = self.get_hack(&app_data.storage) {
+        let hack = if let Some(hack) = self.get_hack(&storage) {
             hack
         } else {
             return Err(ErrorNotFound(request_data.lookup("hack-does-not-exist")));
         };
 
-        if hack.need_majority_token(&app_data.storage.taginfo)
+        if hack.need_majority_token(&storage.taginfo)
             && !request_data.have_access_to_major_only_content
         {
             return Err(ErrorForbidden(
@@ -73,7 +73,7 @@ impl FileRef {
                 Either::Left(NamedFile::open(path)?)
             }
             Self::Zipped(source_hack, inner_path) => {
-                let hack_file = source_hack.get_reader(&app_data, &request_data)?;
+                let hack_file = source_hack.get_reader(&storage, &request_data)?;
 
                 //ErrorNotFound
                 let mut zip = ZipArchive::new(hack_file).map_err(ErrorInternalServerError)?;
@@ -90,10 +90,10 @@ impl FileRef {
 
     pub fn get_reader(
         &self,
-        app_data: &AppData,
+        storage: &Storage,
         request_data: &RequestData,
     ) -> Result<Box<dyn ReadSeek>> {
-        Ok(match self.get_file(&app_data, &request_data)? {
+        Ok(match self.get_file(&storage, &request_data)? {
             Either::Left(mut named_file) => {
                 let mut file_content = Vec::new();
                 named_file
