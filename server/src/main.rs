@@ -3,9 +3,8 @@ use actix_web::{web, App, HttpServer};
 use arc_swap::ArcSwap;
 use clap::Parser;
 use database::HackClient;
+use display_error_chain::DisplayErrorChain;
 use fluent_templates::ArcLoader;
-//use database::MongoDriver;
-//use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{
     connect_majority_token, create_majority_token, css, decompress, disconnect_majority_token,
@@ -48,8 +47,14 @@ async fn main() {
         .build()
         .unwrap();
 
-    let storage = Storage::load_from_folder(&opts.archive_folder).unwrap();
-    storage.warn_missing_tags();
+    let storage = Storage::load_from_folder(&opts.archive_folder);
+
+    if !storage.errors.is_empty() {
+        println!("There are errors that occured during the loading of the datas! :");
+        for error in &storage.errors {
+            println!("{}", DisplayErrorChain::new(error).to_string());
+        }
+    }
 
     println!("hacks loaded");
 

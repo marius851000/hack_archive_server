@@ -22,11 +22,10 @@ impl HttpResponseBuilderExtension for HttpResponseBuilder {
 //TODO: use a fallack (a.k.a english) language?
 pub trait FluentLookupInfaillable: Loader {
     fn lookup_infaillable(&self, lang: &LanguageIdentifier, text_id: &str) -> String {
-        self.lookup(lang, text_id)
-            .unwrap_or_else(|| {
-                warn!("Missing translation in {} without args: {}", lang, text_id);
-                format!("<missing translation for {}>", text_id)
-            })
+        self.lookup(lang, text_id).unwrap_or_else(|| {
+            warn!("Missing translation in {} without args: {}", lang, text_id);
+            format!("<missing translation for {}>", text_id)
+        })
     }
 
     fn lookup_with_args_infaillable<T: AsRef<str> + std::fmt::Debug>(

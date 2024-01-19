@@ -57,6 +57,12 @@ pub enum HackLoadError {
     CantOpenFile(#[source] io::Error, PathBuf),
     #[error("Can't read or parse the file {1:?} as a hack data file")]
     CantParseReadFile(#[source] serde_json::Error, PathBuf),
+    #[error("The file {0:?} was listed by the hack, but is non-existant")]
+    MissingFiles(String),
+    #[error("The file at {0:?} is present in the hacks folder’s, but seems to be not referenced. All files here are public.")]
+    UnreferencedFile(PathBuf),
+    #[error("The thing at {0:?} is not a file (an hack folder should only contain files)")]
+    FileNotFile(PathBuf),
 }
 
 pub struct Hack {
@@ -66,7 +72,10 @@ pub struct Hack {
 }
 
 impl Hack {
-    pub fn load_from_folder(folder: PathBuf, taginfo: &TagInfo) -> Result<Self, HackLoadError> {
+    pub fn load_from_folder(
+        folder: PathBuf,
+        taginfo: &TagInfo,
+    ) -> Result<(Self, Vec<HackLoadError>), HackLoadError> {
         let hack_data_path = folder.join("hack.json");
         let json_file = File::open(&hack_data_path)
             .map_err(|e| HackLoadError::CantOpenFile(e, hack_data_path.clone()))?;
@@ -84,12 +93,14 @@ impl Hack {
             folder,
             implied_tags,
         };
-        result.check_files();
-        Ok(result)
+        let non_fatal_errors = result.check_files();
+        Ok((result, non_fatal_errors))
     }
 
-    /// Check for missing files. Panic if one is found
-    pub fn check_files(&self) {
+    /// Check for missing files.
+    pub fn check_files(&self) -> Vec<HackLoadError> {
+        let mut errors = Vec::new();
+
         let mut referenced_files = HashSet::new();
         for screenshot in &self.data.screenshots {
             referenced_files.insert(screenshot.to_string());
@@ -102,7 +113,7 @@ impl Hack {
         for file in read_dir(&self.folder).unwrap().map(|e| e.unwrap()) {
             let metadata = metadata(file.path()).unwrap();
             if !metadata.is_file() {
-                panic!("{:?} isn't a file", file.path());
+                errors.push(HackLoadError::FileNotFile(file.path()))
             };
             let file_name = file.file_name().to_str().unwrap().to_string();
             if file_name == "index.html" {
@@ -111,19 +122,15 @@ impl Hack {
             if referenced_files.contains(&file_name) {
                 referenced_files.remove(&file_name);
             } else {
-                println!(
-                    "There is a file named {:?} existing, but that is not referenced.",
-                    file.path()
-                );
+                errors.push(HackLoadError::UnreferencedFile(file.path()));
             }
         }
 
-        if !referenced_files.is_empty() {
-            panic!(
-                "the hack at {:?} references the files {:?} while there are non-existant",
-                self.folder, referenced_files
-            );
+        for missing_file in referenced_files.into_iter() {
+            errors.push(HackLoadError::MissingFiles(missing_file));
         }
+
+        errors
     }
 
     pub fn all_tags(&self) -> HashSet<Tag> {

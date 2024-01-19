@@ -18,7 +18,7 @@ pub async fn tagged(
     request_data: RequestData,
 ) -> HttpResponse {
     let storage = app_data.storage.load();
-    
+
     let tag_id = path.into_inner();
 
     let base_query = Query::AtLeastOneOfTag(vec![Tag(tag_id.clone())]);
