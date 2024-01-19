@@ -155,7 +155,10 @@ impl HackClient {
 
             for result in database.bulk_docs(&mut raw_docs).await? {
                 if let Err(e) = result {
-                    if !matches!(e.status(), Some(StatusCode::CONFLICT) | Some(StatusCode::NOT_FOUND)) {
+                    if !matches!(
+                        e.status(),
+                        Some(StatusCode::CONFLICT) | Some(StatusCode::NOT_FOUND)
+                    ) {
                         return Err(HackClientError::InternalDBError(e));
                     } else if e.status() == Some(StatusCode::CONFLICT) {
                         continue 'main;

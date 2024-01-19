@@ -96,12 +96,12 @@ impl FileRef {
         Ok(match self.get_file(&app_data, &request_data)? {
             Either::Left(mut named_file) => {
                 let mut file_content = Vec::new();
-                named_file.read_to_end(&mut file_content).map_err(
-                    |_| ErrorBadRequest(request_data.lookup("message-error-file-open")),
-                )?;
+                named_file
+                    .read_to_end(&mut file_content)
+                    .map_err(|_| ErrorBadRequest(request_data.lookup("message-error-file-open")))?;
 
                 Box::new(Cursor::new(file_content))
-            },
+            }
             Either::Right(byte_vec) => Box::new(Cursor::new(byte_vec)),
         })
     }

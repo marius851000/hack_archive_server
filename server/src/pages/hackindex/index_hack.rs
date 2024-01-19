@@ -1,10 +1,12 @@
 use std::collections::BTreeSet;
 
 use actix_web::{
+    cookie::Cookie,
     error::{ErrorForbidden, ErrorNotFound},
     get,
+    http::StatusCode,
     web::{Data, Path},
-    Result, HttpResponse, http::StatusCode, cookie::Cookie,
+    HttpResponse, Result,
 };
 use maud::html;
 

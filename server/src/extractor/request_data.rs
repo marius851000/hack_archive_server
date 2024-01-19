@@ -2,13 +2,13 @@ use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, s
 
 use actix_web::{web::Data, FromRequest};
 use database::model::MajorityToken;
-use fluent_templates::{fluent_bundle::FluentValue, LanguageIdentifier, Loader};
+use fluent_templates::{fluent_bundle::FluentValue, LanguageIdentifier};
 use qstring::QString;
 use unic_langid::langid;
 
 use crate::{
     message::{MessageKind, Messages},
-    AppData,
+    AppData, FluentLookupInfaillable,
 };
 
 pub struct RequestData {
@@ -52,7 +52,7 @@ impl FromRequest for RequestData {
                     Err(_) => messages.add_message_from_string(
                         app_data
                             .locales
-                            .lookup(&language, "error-notication-cant-be-read"),
+                            .lookup_infaillable(&language, "error-notication-cant-be-read"),
                         MessageKind::Error,
                     ),
                 };
@@ -61,7 +61,9 @@ impl FromRequest for RequestData {
 
         if query_string.get("redirect_url_error").is_some() {
             messages.add_message_from_string(
-                app_data.locales.lookup(&language, "message-error-redirect"),
+                app_data
+                    .locales
+                    .lookup_infaillable(&language, "message-error-redirect"),
                 MessageKind::Error,
             )
         }
@@ -100,12 +102,14 @@ impl FromRequest for RequestData {
 
 impl RequestData {
     pub fn lookup(&self, text_id: &str) -> String {
-        self.app_data.locales.lookup(&self.language, text_id)
+        self.app_data
+            .locales
+            .lookup_infaillable(&self.language, text_id)
     }
 
     pub fn lookup_with_args(&self, text_id: &str, args: &HashMap<&str, FluentValue>) -> String {
         self.app_data
             .locales
-            .lookup_with_args(&self.language, text_id, args)
+            .lookup_with_args_infaillable(&self.language, text_id, args)
     }
 }

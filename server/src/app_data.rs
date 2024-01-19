@@ -1,11 +1,12 @@
 use database::{model::MajorityToken, HackClient};
-use fluent_templates::{ArcLoader, LanguageIdentifier, Loader};
+use fluent_templates::{ArcLoader, LanguageIdentifier};
 use pmd_hack_storage::{Query, Storage, Tag};
 use url::Url;
 
 use crate::{
     extractor::RequestData,
     message::{MessageKind, Messages},
+    FluentLookupInfaillable,
 };
 
 pub struct AppData {
@@ -31,7 +32,12 @@ impl AppData {
         self.route_simple_static(&[hack_slug, hack_file])
     }
 
-    pub fn route_hack_decompress_file_list(&self, request_data: &RequestData, hack_slug: &str, hack_file: &str) -> Url {
+    pub fn route_hack_decompress_file_list(
+        &self,
+        request_data: &RequestData,
+        hack_slug: &str,
+        hack_file: &str,
+    ) -> Url {
         self.route_simple(request_data, &["decompress", hack_slug, hack_file, ""])
     }
 
@@ -114,8 +120,10 @@ impl AppData {
             Ok(Some(majority)) => {
                 if majority.admin_flags.get().revoked {
                     messages.add_message_from_string(
-                        self.locales
-                            .lookup(lang, "message-majority-token-invalidated-by-admin"),
+                        self.locales.lookup_infaillable(
+                            lang,
+                            "message-majority-token-invalidated-by-admin",
+                        ),
                         MessageKind::Error,
                     );
                     (Some(majority), false, false)
@@ -127,7 +135,7 @@ impl AppData {
             Ok(None) => {
                 messages.add_message_from_string(
                     self.locales
-                        .lookup(lang, "message-majority-token-does-not-exist"),
+                        .lookup_infaillable(lang, "message-majority-token-does-not-exist"),
                     MessageKind::Error,
                 );
                 (None, false, false)
@@ -139,7 +147,7 @@ impl AppData {
                 );
                 messages.add_message_from_string(
                     self.locales
-                        .lookup(lang, "message-majority-token-unexpected-error"),
+                        .lookup_infaillable(lang, "message-majority-token-unexpected-error"),
                     MessageKind::Error,
                 );
                 (None, false, false)

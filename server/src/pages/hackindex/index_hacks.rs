@@ -1,4 +1,4 @@
-use actix_web::{get, web::Data, HttpResponse, http::StatusCode, cookie::Cookie};
+use actix_web::{cookie::Cookie, get, http::StatusCode, web::Data, HttpResponse};
 use maud::html;
 
 use crate::AppData;
@@ -22,7 +22,8 @@ pub async fn index_hacks(app_data: Data<AppData>) -> HttpResponse {
                 }
             }
         }
-    }).into_string();
+    })
+    .into_string();
     let mut response_builder = HttpResponse::build(StatusCode::OK);
     response_builder.content_type(mime::TEXT_HTML_UTF_8);
     response_builder.cookie(Cookie::build("messages", "").finish());

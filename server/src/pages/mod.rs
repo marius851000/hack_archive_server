@@ -5,13 +5,13 @@ pub mod majority;
 pub mod connect_majority_token;
 pub mod create_majority_token;
 pub mod css;
+pub mod decompress;
 pub mod disconnect_majority_token;
 pub mod file;
 pub mod hack;
 pub mod hackindex;
 pub mod index;
 pub mod tagged;
-pub mod decompress;
 
 use actix_web::get;
 

@@ -14,6 +14,6 @@ pub async fn file(
 ) -> Result<FileRefGetFileType> {
     let (hack_id, filename) = path.into_inner();
     let file_ref = FileRef::HackFile(hack_id, filename);
-    
+
     return file_ref.get_file(&app_data, &request_data);
 }

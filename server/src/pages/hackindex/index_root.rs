@@ -1,4 +1,4 @@
-use actix_web::{get, web::Data, HttpResponse, http::StatusCode, cookie::Cookie};
+use actix_web::{cookie::Cookie, get, http::StatusCode, web::Data, HttpResponse};
 use maud::html;
 
 use crate::AppData;

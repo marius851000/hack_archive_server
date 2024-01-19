@@ -7,8 +7,8 @@ use fluent_templates::ArcLoader;
 //use mongodb::options::ClientOptions;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{
-    connect_majority_token, create_majority_token, css, disconnect_majority_token, file, hack,
-    hackindex, index, majority, oswald, tagged, decompress
+    connect_majority_token, create_majority_token, css, decompress, disconnect_majority_token,
+    file, hack, hackindex, index, majority, oswald, tagged,
 };
 use server::AppData;
 use std::path::PathBuf;

@@ -1,8 +1,13 @@
-use actix_web::{web::{Data, Path}, get, HttpResponse, Result, error::ErrorInternalServerError, Either};
+use actix_web::{
+    error::ErrorInternalServerError,
+    get,
+    web::{Data, Path},
+    Either, HttpResponse, Result,
+};
 use maud::html;
 use zip::ZipArchive;
 
-use crate::{AppData, extractor::RequestData, wrap_page, FileRef, FileRefGetFileType};
+use crate::{extractor::RequestData, wrap_page, AppData, FileRef, FileRefGetFileType};
 
 #[get("/decompress/{hack_id}/{filename}/{tail:.*}")]
 pub async fn decompress(
@@ -28,16 +33,25 @@ pub async fn decompress(
 
         list_of_files.sort();
 
-        return Ok(Either::Left(wrap_page(html!{
-            ul {
-                h1 { (format!("List of files in {} of {}", filename, file_ref.get_hack(&app_data.storage).unwrap().data.name))}
-                @for file_path in &list_of_files {
-                    li {
-                        a href=(app_data.route_hack_decompress_file(&hack_id, &filename, file_path).as_str()) { (file_path) }
+        return Ok(Either::Left(wrap_page(
+            html! {
+                ul {
+                    h1 { (format!("List of files in {} of {}", filename, file_ref.get_hack(&app_data.storage).unwrap().data.name))}
+                    @for file_path in &list_of_files {
+                        li {
+                            a href=(app_data.route_hack_decompress_file(&hack_id, &filename, file_path).as_str()) { (file_path) }
+                        }
                     }
                 }
-            }
-        }, crate::PageInfo { name: format!("browsing {}", filename), discourage_reload: false, display_majority_info: false }, &app_data, request_data)));
+            },
+            crate::PageInfo {
+                name: format!("browsing {}", filename),
+                discourage_reload: false,
+                display_majority_info: false,
+            },
+            &app_data,
+            request_data,
+        )));
     } else {
         let sub_file = FileRef::Zipped(Box::new(file_ref), inner_path);
         Ok(Either::Right(sub_file.get_file(&app_data, &request_data)?))
