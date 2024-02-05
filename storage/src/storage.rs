@@ -32,6 +32,16 @@ pub enum StorageLoadError {
     MissingTag(String, HashSet<String>),
 }
 
+impl StorageLoadError {
+    pub fn is_not_much_important(&self) -> bool {
+        match self {
+            Self::MissingTag(_, _) => true,
+            Self::TagForFileLacking(_, _, _) => true,
+            _ => false,
+        }
+    }
+}
+
 #[derive(Default)]
 pub struct Storage {
     pub hacks: HashMap<String, Hack>,

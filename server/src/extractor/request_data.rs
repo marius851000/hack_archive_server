@@ -19,6 +19,7 @@ pub struct RequestData {
     pub language: LanguageIdentifier,
     pub path: String,
     pub app_data: Arc<AppData>,
+    pub reload_secret: Option<String>,
 }
 
 impl FromRequest for RequestData {
@@ -95,6 +96,7 @@ impl FromRequest for RequestData {
                 language,
                 path,
                 app_data: app_data.into_inner(),
+                reload_secret: query_string.get("reload_secret").map(|x| x.to_string()),
             })
         })
     }

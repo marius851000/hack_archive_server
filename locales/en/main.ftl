@@ -31,3 +31,11 @@ landpage-title = Archive of PMD hacks
 hack-list-by-tag-title = List of hacks with the tag <code>{$tag}</code>.
 hack-list-by-tag-non-exaustive-note = Please note that this list may not be exaustive. Send me a message if an hack is missing in it.
 hack-list-by-tag-header = Hack tagged {$tag}
+
+## reload storage
+reload-header = Storage reloading
+reload-no-error = No errors or warnings detected. Changes applied.
+reload-error-section = Errors:
+reload-important-error-found-no-reload = Important errors where found. Datas weren’t reload, but they’ll be in case the server restart.
+reload-warning-found-reload = Warnings were found, but no important errors. Changes are applied.
+reload-warning-section = Warnings:

@@ -1,4 +1,6 @@
 mod common;
+use serde::Deserialize;
+
 pub use common::*;
 
 pub mod extractor;
@@ -24,7 +26,7 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
     } else {
         matches!(
             name,
-            //already user
+            //already used
             "Oswald-Medium.ttf"|
             "style.css"|
             "majority"|
@@ -33,6 +35,7 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
             "disconnect_majority_token"|
             "connect_majority_token"|
             "index"|
+            "reload"|
 
             //likely to be used
             "faq"|
@@ -50,6 +53,11 @@ pub fn is_illegal_hack_slug(name: &str) -> bool {
             "gates"
         )
     }
+}
+
+#[derive(Deserialize)]
+pub struct Secrets {
+    reload_page_password: String,
 }
 
 #[cfg(test)]

@@ -11,6 +11,7 @@ pub mod file;
 pub mod hack;
 pub mod hackindex;
 pub mod index;
+pub mod reload_storage;
 pub mod tagged;
 
 use actix_web::get;

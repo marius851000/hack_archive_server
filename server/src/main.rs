@@ -8,9 +8,10 @@ use fluent_templates::ArcLoader;
 use pmd_hack_storage::{Query, Storage, Tag};
 use server::pages::{
     connect_majority_token, create_majority_token, css, decompress, disconnect_majority_token,
-    file, hack, hackindex, index, majority, oswald, tagged,
+    file, hack, hackindex, index, majority, oswald, reload_storage, tagged,
 };
 use server::AppData;
+use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
 use unic_langid::langid;
@@ -29,6 +30,7 @@ pub struct Opts {
     couch_uri: String,
     couch_username: String,
     couch_password: String,
+    secret_file: PathBuf,
 }
 
 #[tokio::main]
@@ -46,6 +48,9 @@ async fn main() {
         .shared_resources(Some(&[opts.locales_folder.join("core.ftl")]))
         .build()
         .unwrap();
+
+    let secret_file = File::open(&opts.secret_file).unwrap();
+    let secrets = serde_json::from_reader(secret_file).unwrap();
 
     let storage = Storage::load_from_folder(&opts.archive_folder);
 
@@ -88,10 +93,12 @@ async fn main() {
 
     let app_data = Data::new(AppData {
         root_url,
+        archive_folder: opts.archive_folder,
         storage: ArcSwap::new(Arc::new(storage)),
         hack_client,
         hidden_by_default,
         locales,
+        secrets,
     });
 
     println!("connected to couchdb");
@@ -99,6 +106,7 @@ async fn main() {
     HttpServer::new(move || {
         App::new().app_data(app_data.clone()).service(
             web::scope(&opts.scope)
+                .service(reload_storage::reload)
                 .service(oswald)
                 .service(css::css)
                 .service(index::index)
@@ -109,10 +117,10 @@ async fn main() {
                 .service(majority::majority)
                 .service(create_majority_token::create_majority_token)
                 .service(tagged::tagged)
-                .service(hack::hack)
-                .service(file::file)
                 .service(disconnect_majority_token::disconnect_majority_token)
                 .service(connect_majority_token::connect_majority_token)
+                .service(hack::hack)
+                .service(file::file)
                 .service(decompress::decompress),
         )
     })

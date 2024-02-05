@@ -19,6 +19,7 @@ hack-does-not-exist = La hack n'existe pas
 
 footer-credit = Archive crée et maintenue par marius851000 (<code>marius851000#2522</code> sur Discord). Ce site n'est pas directement affilié, et ne doit pas être confondu avec la {$skytemple_hack_link_start}liste des hacks de {-skytemple}{$skytemple_hack_link_end}.
 footer-mirroring-info = Les données du site peuvent être dupliqué avec rclone en utilisant le répertoire HTTP à {$link_start}{$url}{$link_end}.
+footer-server-source = Le code source de ce site est disponible sur {$link_start}{-github}{$link_end}.
 
 ## main page
 landpage-presentation = Ceci est la partie de mon archive qui stocke les rom-hacks. Son but est d'archivé toutes les versions de toutes les hacks.
@@ -30,3 +31,11 @@ landpage-title = Archive d'hacks de PDM
 hack-list-by-tag-header = Liste des hacks avec le tag <code>{$tag}</code>.
 hack-list-by-tag-non-exaustive-note = Veuillez noter que cette liste peut ne pas être exhaustive. N'hésiter pas à m'écrire si vous en connaissez une manquante.
 hack-list-by-tag-title = Hack taggé {$tag}
+
+## reload storage
+reload-header = Rechargement du stockage
+reload-no-error = Aucune erreurs ou avertissement détecté. Changement appliqué.
+reload-error-section = Erreurs !
+reload-important-error-found-no-reload = Des erreurs importantes ont été trouvées. Les données n’ont pas été rechargé, mais elle seront forcé à l’être si le serveur redémarre.
+reload-warning-found-reload = Des avertissement ont été trouvées, mais pas d’erreur importantes. Les données ont été rechargé.
+reload-warning-section = Avertissement:

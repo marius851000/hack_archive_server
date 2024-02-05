@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use arc_swap::ArcSwap;
 use database::{model::MajorityToken, HackClient};
 use fluent_templates::{ArcLoader, LanguageIdentifier};
@@ -7,18 +9,20 @@ use url::Url;
 use crate::{
     extractor::RequestData,
     message::{MessageKind, Messages},
-    FluentLookupInfaillable,
+    FluentLookupInfaillable, Secrets,
 };
 
 pub struct AppData {
     // must possible be a base, otherwise, it would panic
     pub root_url: Url,
+    pub archive_folder: PathBuf,
     pub storage: ArcSwap<Storage>,
     pub hack_client: HackClient,
     /// String: description of the reason
     /// Query: when does it match
     pub hidden_by_default: Vec<(String, Query)>,
     pub locales: ArcLoader,
+    pub secrets: Secrets,
 }
 
 impl AppData {
