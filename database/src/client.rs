@@ -9,8 +9,8 @@ use couch_rs::{
         query::QueryParams,
     },
     Client,
+    http::StatusCode
 };
-use http::StatusCode;
 use serde_json::json;
 use uuid::Uuid;
 
@@ -216,7 +216,7 @@ impl HackClient {
         match database.save(&mut document).await {
             Ok(_) => Ok(()),
             Err(e) => {
-                if e.status() == Some(http::StatusCode::CONFLICT) {
+                if e.status() == Some(StatusCode::CONFLICT) {
                     //Damn ! A conflict
                     let id: DocumentId = document.get_id().into();
                     self.handle_conflict(database, id, Some(document)).await?;
