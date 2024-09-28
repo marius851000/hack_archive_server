@@ -22,7 +22,7 @@
           inherit system;
         };
 
-        craneLib = crane.lib.${system};
+        craneLib = crane.mkLib pkgs;
         src = ./.;
 
         # Build *just* the cargo dependencies, so we can reuse
