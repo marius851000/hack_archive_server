@@ -27,10 +27,10 @@ pub struct Opts {
     /// base url, shouldn't end with /
     root_url: String,
     scope: String,
-    couch_uri: String,
-    couch_username: String,
-    couch_password: String,
     secret_file: PathBuf,
+    couch_uri: Option<String>,
+    couch_username: Option<String>,
+    couch_password: Option<String>,
 }
 
 #[tokio::main]
@@ -83,13 +83,17 @@ async fn main() {
         )
     ];
 
-    let hack_client = HackClient::new_from_connection_info(
-        &opts.couch_uri,
-        &opts.couch_username,
-        &opts.couch_password,
-    )
-    .await
-    .unwrap();
+    let hack_client = if opts.couch_uri.is_some() || opts.couch_username.is_some() || opts.couch_password.is_some() {
+        Some(HackClient::new_from_connection_info(
+            &opts.couch_uri.expect("No couch uri provided"),
+            &opts.couch_username.expect("No couch username provided"),
+            &opts.couch_password.expect("No couch password provided"),
+        )
+        .await
+        .unwrap())
+    } else {
+        None
+    };
 
     let app_data = Data::new(AppData {
         root_url,

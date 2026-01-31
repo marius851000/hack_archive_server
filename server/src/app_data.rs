@@ -17,7 +17,7 @@ pub struct AppData {
     pub root_url: Url,
     pub archive_folder: PathBuf,
     pub storage: ArcSwap<Storage>,
-    pub hack_client: HackClient,
+    pub hack_client: Option<HackClient>,
     /// String: description of the reason
     /// Query: when does it match
     pub hidden_by_default: Vec<(String, Query)>,
@@ -121,42 +121,46 @@ impl AppData {
         messages: &mut Messages,
         lang: &LanguageIdentifier,
     ) -> (Option<MajorityToken>, bool, bool) {
-        match self.hack_client.get_majority_token(majority_token).await {
-            Ok(Some(majority)) => {
-                if majority.admin_flags.get().revoked {
+        if let Some(hack_client) = &self.hack_client {
+            match hack_client.get_majority_token(majority_token).await {
+                Ok(Some(majority)) => {
+                    if majority.admin_flags.get().revoked {
+                        messages.add_message_from_string(
+                            self.locales.lookup_infaillable(
+                                lang,
+                                "message-majority-token-invalidated-by-admin",
+                            ),
+                            MessageKind::Error,
+                        );
+                        (Some(majority), false, false)
+                    } else {
+                        let can_certify = majority.admin_flags.get().can_certify;
+                        (Some(majority), true, can_certify)
+                    }
+                }
+                Ok(Option::None) => {
                     messages.add_message_from_string(
-                        self.locales.lookup_infaillable(
-                            lang,
-                            "message-majority-token-invalidated-by-admin",
-                        ),
+                        self.locales
+                            .lookup_infaillable(lang, "message-majority-token-does-not-exist"),
                         MessageKind::Error,
                     );
-                    (Some(majority), false, false)
-                } else {
-                    let can_certify = majority.admin_flags.get().can_certify;
-                    (Some(majority), true, can_certify)
+                    (None, false, false)
+                }
+                Err(e) => {
+                    println!(
+                        "an error occured while checking the majority of the user : {:?}",
+                        e
+                    );
+                    messages.add_message_from_string(
+                        self.locales
+                            .lookup_infaillable(lang, "message-majority-token-unexpected-error"),
+                        MessageKind::Error,
+                    );
+                    (None, false, false)
                 }
             }
-            Ok(None) => {
-                messages.add_message_from_string(
-                    self.locales
-                        .lookup_infaillable(lang, "message-majority-token-does-not-exist"),
-                    MessageKind::Error,
-                );
-                (None, false, false)
-            }
-            Err(e) => {
-                println!(
-                    "an error occured while checking the majority of the user : {:?}",
-                    e
-                );
-                messages.add_message_from_string(
-                    self.locales
-                        .lookup_infaillable(lang, "message-majority-token-unexpected-error"),
-                    MessageKind::Error,
-                );
-                (None, false, false)
-            }
+        } else {
+            (None, false, false)
         }
     }
 }
