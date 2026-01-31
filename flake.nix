@@ -6,12 +6,10 @@
 
     crane = {
       url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     flake-utils = {
       url = "github:numtide/flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -29,6 +27,8 @@
         # all of that work (e.g. via cachix) when running in CI
         cargoArtifacts = craneLib.buildDepsOnly {
           inherit src;
+          pname = "hack-archive-server";
+          version = "git";
           buildInputs = [ pkgs.openssl ];
           nativeBuildInputs = [ pkgs.pkg-config ];
         };
@@ -37,6 +37,8 @@
         # artifacts from above.
         pmd_hack_archive_server = craneLib.buildPackage {
           inherit src cargoArtifacts;
+          pname = "hack-archive-server";
+          version = "git";
           buildInputs = [ pkgs.openssl ];
           nativeBuildInputs = [ pkgs.pkg-config ];
         };
