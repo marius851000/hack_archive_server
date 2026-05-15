@@ -4,12 +4,12 @@ use couch_rs::{
     database::Database,
     document::TypedCouchDocument,
     error::CouchError,
+    http::StatusCode,
     types::{
         document::{DocumentCreatedDetails, DocumentId},
         query::QueryParams,
     },
     Client,
-    http::StatusCode
 };
 use serde_json::json;
 use uuid::Uuid;

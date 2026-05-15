@@ -1,4 +1,6 @@
-use std::{collections::HashMap, convert::Infallible, future::Future, pin::Pin, sync::Arc};
+use std::{
+    borrow::Cow, collections::HashMap, convert::Infallible, future::Future, pin::Pin, sync::Arc,
+};
 
 use actix_web::{web::Data, FromRequest};
 use database::model::MajorityToken;
@@ -109,7 +111,11 @@ impl RequestData {
             .lookup_infaillable(&self.language, text_id)
     }
 
-    pub fn lookup_with_args(&self, text_id: &str, args: &HashMap<&str, FluentValue>) -> String {
+    pub fn lookup_with_args(
+        &self,
+        text_id: &str,
+        args: &HashMap<Cow<'static, str>, FluentValue>,
+    ) -> String {
         self.app_data
             .locales
             .lookup_with_args_infaillable(&self.language, text_id, args)

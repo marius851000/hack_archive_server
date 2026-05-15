@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
 use actix_web::{cookie::Cookie, HttpResponseBuilder};
 use fluent_bundle::types::FluentValue;
@@ -22,19 +22,19 @@ impl HttpResponseBuilderExtension for HttpResponseBuilder {
 //TODO: use a fallack (a.k.a english) language?
 pub trait FluentLookupInfaillable: Loader {
     fn lookup_infaillable(&self, lang: &LanguageIdentifier, text_id: &str) -> String {
-        self.lookup(lang, text_id).unwrap_or_else(|| {
+        self.try_lookup(lang, text_id).unwrap_or_else(|| {
             warn!("Missing translation in {} without args: {}", lang, text_id);
             format!("<missing translation for {}>", text_id)
         })
     }
 
-    fn lookup_with_args_infaillable<T: AsRef<str> + std::fmt::Debug>(
+    fn lookup_with_args_infaillable(
         &self,
         lang: &LanguageIdentifier,
         text_id: &str,
-        args: &HashMap<T, FluentValue<'_>>,
+        args: &HashMap<Cow<'static, str>, FluentValue<'_>>,
     ) -> String {
-        self.lookup_with_args(lang, text_id, args)
+        self.try_lookup_with_args(lang, text_id, args)
             .unwrap_or_else(|| {
                 warn!("Missing translation in {} without args: {}", lang, text_id);
                 format!("<missing translation for {} (args: {:?})>", text_id, args)

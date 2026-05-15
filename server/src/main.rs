@@ -83,14 +83,19 @@ async fn main() {
         )
     ];
 
-    let hack_client = if opts.couch_uri.is_some() || opts.couch_username.is_some() || opts.couch_password.is_some() {
-        Some(HackClient::new_from_connection_info(
-            &opts.couch_uri.expect("No couch uri provided"),
-            &opts.couch_username.expect("No couch username provided"),
-            &opts.couch_password.expect("No couch password provided"),
+    let hack_client = if opts.couch_uri.is_some()
+        || opts.couch_username.is_some()
+        || opts.couch_password.is_some()
+    {
+        Some(
+            HackClient::new_from_connection_info(
+                &opts.couch_uri.expect("No couch uri provided"),
+                &opts.couch_username.expect("No couch username provided"),
+                &opts.couch_password.expect("No couch password provided"),
+            )
+            .await
+            .unwrap(),
         )
-        .await
-        .unwrap())
     } else {
         None
     };

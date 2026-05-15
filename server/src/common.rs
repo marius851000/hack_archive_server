@@ -22,10 +22,10 @@ pub fn wrap_page(
 ) -> HttpResponse {
     let mut credit_args = HashMap::new();
     credit_args.insert(
-        "skytemple_hack_link_start",
+        Cow::from("skytemple_hack_link_start"),
         "<a href=\"https://hacks.skytemple.org\">".into(),
     );
-    credit_args.insert("skytemple_hack_link_end", "</a>".into());
+    credit_args.insert(Cow::from("skytemple_hack_link_end"), "</a>".into());
     let markup = html!(
         html {
             head {
@@ -100,9 +100,9 @@ pub fn wrap_page(
                     }
                     p {
                         (PreEscaped(request_data.lookup_with_args("footer-mirroring-info", &hash_map! {
-                            "link_start" => FluentValue::String(Cow::Borrowed("<a href=\"https://hacknews.pmdcollab.org/archive\">")),
-                            "link_end" => FluentValue::String(Cow::Borrowed("</a>")),
-                            "url" => FluentValue::String(Cow::Borrowed("hacknews.pmdcollab.org/archive"))
+                            Cow::from("link_start") => FluentValue::String(Cow::Borrowed("<a href=\"https://hacknews.pmdcollab.org/archive\">")),
+                            Cow::from("link_end") => FluentValue::String(Cow::Borrowed("</a>")),
+                            Cow::from("url") => FluentValue::String(Cow::Borrowed("hacknews.pmdcollab.org/archive"))
                         })))
                     }
                     p {

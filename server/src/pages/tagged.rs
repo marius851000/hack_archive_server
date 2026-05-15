@@ -27,7 +27,7 @@ pub async fn tagged(
 
     // create the main page
     let mut translation_args = HashMap::new();
-    translation_args.insert("tag", FluentValue::String(Cow::Owned(tag_id)));
+    translation_args.insert(Cow::from("tag"), FluentValue::String(Cow::Owned(tag_id)));
     wrap_page(
         html!(
             h1 { (PreEscaped(request_data.lookup_with_args("hack-list-by-tag-header", &translation_args))) }
