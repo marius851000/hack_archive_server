@@ -114,7 +114,7 @@ pub async fn hack(
                 h2 { "files" }
                 @if hack.data.files.is_empty() {
                     p { "no file" }
-                } else {
+                } @else {
                     div class="filelist" {
                         @for file in &hack.data.files {
                             div class="hack" {

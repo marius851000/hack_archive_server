@@ -7,7 +7,7 @@ use database::{
     FieldWithTime, HackClient, HackClientError,
 };
 use maud::html;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::{RngExt, distr::Alphanumeric};
 
 use crate::{extractor::RequestData, wrap_page, AppData, PageInfo};
 
@@ -71,7 +71,7 @@ pub async fn create_majority_token(
                             false,
                             &app_data, request_data);
                     };
-                    let token: String = rand::thread_rng()
+                    let token: String = rand::rng()
                         .sample_iter(&Alphanumeric)
                         .take(16)
                         .map(char::from)

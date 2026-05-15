@@ -2,7 +2,7 @@ use std::{borrow::Cow, collections::HashMap};
 
 use crate::{extractor::RequestData, message::MessageKind, AppData};
 use actix_web::{cookie::Cookie, http::StatusCode, HttpResponse};
-use comrak::{markdown_to_html, ComrakOptions};
+use comrak::{markdown_to_html, Options};
 use fluent_templates::fluent_bundle::FluentValue;
 use map_macro::hash_map;
 use maud::{html, Markup, PreEscaped};
@@ -180,7 +180,7 @@ pub fn make_hack_list_hidden(
 }
 
 pub fn render_markdown(text: &str) -> PreEscaped<String> {
-    let text_initial = markdown_to_html(text, &ComrakOptions::default());
+    let text_initial = markdown_to_html(text, &Options::default());
     // Add spoiler as a post-processing filter
     let mut result = String::with_capacity(text_initial.len() + 20);
     let mut inside_spoiler = false;
